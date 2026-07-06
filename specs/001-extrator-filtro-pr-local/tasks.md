@@ -54,15 +54,15 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Create ParserFactory and TxtParser class in backend/src/services/parsers.py
-- [ ] T010 [P] [US1] Implement cl100k_base token counting and split algorithm in backend/src/services/chunker.py
-- [ ] T011 [US1] Implement OpenAI client manager with exponential backoff retry in backend/src/services/openai_client.py
-- [ ] T012 [US1] Implement WebSocket processor connection handler and FIFO queue in backend/src/api/websocket.py
-- [ ] T013 [P] [US1] Implement WebSocket client service connection manager in frontend/src/services/websocket.ts
-- [ ] T014 [US1] Create file upload drag-and-drop, upload list showing status/size, and progress bar component in frontend/src/components/FileUploader.tsx
-- [ ] T015 [US1] Implement log viewer pane with level-based syntax highlighting in frontend/src/components/LogViewer.tsx
-- [ ] T016 [P] [US1] Write backend unit tests for chunker, parsers, and processor in backend/tests/test_processing.py
-- [ ] T016a [P] [US1] Write frontend component tests for FileUploader and LogViewer in frontend/tests/components.test.tsx using Vitest
+- [X] T009 [P] [US1] Create ParserFactory and TxtParser class in backend/src/services/parsers.py
+- [X] T010 [P] [US1] Implement cl100k_base token counting and split algorithm in backend/src/services/chunker.py
+- [X] T011 [US1] Implement OpenAI client manager with exponential backoff retry in backend/src/services/openai_client.py
+- [X] T012 [US1] Implement WebSocket processor connection handler and FIFO queue in backend/src/api/websocket.py
+- [X] T013 [P] [US1] Implement WebSocket client service connection manager in frontend/src/services/websocket.ts
+- [X] T014 [US1] Create file upload drag-and-drop, upload list showing status/size, and progress bar component in frontend/src/components/FileUploader.tsx
+- [X] T015 [US1] Implement log viewer pane with level-based syntax highlighting in frontend/src/components/LogViewer.tsx
+- [X] T016 [P] [US1] Write backend unit tests for chunker, parsers, and processor in backend/tests/test_processing.py
+- [X] T016a [P] [US1] Write frontend component tests for FileUploader and LogViewer in frontend/tests/components.test.tsx using Vitest
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
