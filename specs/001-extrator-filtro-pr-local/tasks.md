@@ -23,11 +23,11 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 **Purpose**: Project initialization and workspace folder creation
 
-- [ ] T001 Initialize workspace directory structure under backend/ and frontend/
-- [ ] T002 Initialize backend FastAPI app configuration and dependencies in backend/requirements.txt
-- [ ] T003 Initialize frontend React Vite app config, shadcn/ui configuration (components.json), and install dependencies in frontend/package.json and frontend/vite.config.ts
-- [ ] T003a Configure Vitest testing environment and dependencies in frontend/
-- [ ] T004 [P] Configure development server scripts and Docker environment files in docker-compose.yml and .env
+- [X] T001 Initialize workspace directory structure under backend/ and frontend/
+- [X] T002 Initialize backend FastAPI app configuration and dependencies in backend/requirements.txt
+- [X] T003 Initialize frontend React Vite app config, shadcn/ui configuration (components.json), and install dependencies in frontend/package.json and frontend/vite.config.ts
+- [X] T003a Configure Vitest testing environment and dependencies in frontend/
+- [X] T004 [P] Configure development server scripts and Docker environment files in docker-compose.yml and .env
 
 ---
 
