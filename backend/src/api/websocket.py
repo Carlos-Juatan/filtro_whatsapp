@@ -324,10 +324,24 @@ async def _process_queue(
 
     await _send_log(
         ws,
-        f"Processamento concluído. Total de {len(all_pairs)} par(es) P&R extraído(s).",
+        f"Iniciando consolidação semântica de {len(all_pairs)} par(es)...",
+        TipoLog.INFO,
+    )
+
+    from src.services.consolidator import consolidate_qna_pairs
+    consolidated_pairs = await consolidate_qna_pairs(
+        pairs=all_pairs,
+        api_key=api_key,
+        model=model,
+        prompt_config=prompt_config,
+    )
+
+    await _send_log(
+        ws,
+        f"Processamento concluído. {len(all_pairs)} originais consolidados em {len(consolidated_pairs)} par(es) únicos.",
         TipoLog.SUCESSO,
     )
-    await _send_queue_complete(ws, all_pairs)
+    await _send_queue_complete(ws, consolidated_pairs)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

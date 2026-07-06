@@ -76,12 +76,12 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Implement LLM semantic deduplication and consolidation service (extracting metadata and category labels) in backend/src/services/consolidator.py
-- [ ] T018 [P] [US2] Write unit tests for semantic consolidation logic in backend/tests/test_consolidator.py
-- [ ] T019 [US2] Create results table component with search and sorting in frontend/src/components/ResultsTable.tsx
-- [ ] T020 [P] [US2] Implement TXT/JSON generation (with client-side JSON schema validation against ResultadoParPR) and download trigger in frontend/src/utils/export.ts
-- [ ] T021 [US2] Orchestrate main application layout, tab selection, and global state in frontend/src/App.tsx
-- [ ] T021a [P] [US2] Write frontend component tests for ResultsTable and export utilities in frontend/tests/results.test.tsx using Vitest
+- [x] T017 [US2] Implement LLM semantic deduplication and consolidation service (extracting metadata and category labels) in backend/src/services/consolidator.py
+- [x] T018 [P] [US2] Write unit tests for semantic consolidation logic in backend/tests/test_consolidator.py
+- [x] T019 [US2] Create results table component with search and sorting in frontend/src/components/ResultsTable.tsx
+- [x] T020 [P] [US2] Implement TXT/JSON generation (with client-side JSON schema validation against ResultadoParPR) and download trigger in frontend/src/utils/export.ts
+- [x] T021 [US2] Orchestrate main application layout, tab selection, and global state in frontend/src/App.tsx
+- [x] T021a [P] [US2] Write frontend component tests for ResultsTable and export utilities in frontend/tests/results.test.tsx using Vitest
 
 **Checkpoint**: At this point, User Stories 1 AND 2 are functional together.
 
