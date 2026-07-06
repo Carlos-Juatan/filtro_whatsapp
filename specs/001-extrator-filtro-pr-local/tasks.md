@@ -37,10 +37,10 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Define Pydantic models for ChaveAPI, PromptConfig, and LogItem in backend/src/models/schemas.py
-- [ ] T006 Configure FastAPI router registry and error handlers in backend/src/main.py
-- [ ] T007 Configure frontend routing, Axios API client instance, proxy, and ApiClientFactory in frontend/src/services/api.ts
-- [ ] T008 Setup single-container production multi-stage build instructions in backend/Dockerfile
+- [X] T005 Define Pydantic models for ChaveAPI, PromptConfig, and LogItem in backend/src/models/schemas.py
+- [X] T006 Configure FastAPI router registry and error handlers in backend/src/main.py
+- [X] T007 Configure frontend routing, Axios API client instance, proxy, and ApiClientFactory in frontend/src/services/api.ts
+- [X] T008 Setup single-container production multi-stage build instructions in backend/Dockerfile
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in priority order
 
