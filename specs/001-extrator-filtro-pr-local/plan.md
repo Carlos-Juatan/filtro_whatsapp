@@ -11,17 +11,17 @@ The goal of this feature is to implement a local, single-user desktop utility pa
 **Primary Dependencies**: FastAPI, uvicorn, openai (python SDK), tiktoken, pydantic, pytest (Backend) / React, Tailwind CSS, shadcn/ui, lucide-react, vitest (Frontend)  
 **Storage**: JSON-based local files persisted in a Docker volume for configuration (`ChaveAPI`, `PromptConfig`); in-memory state for runtime data (`ArquivoProcessamento`, `ResultadoParPR`, `ItemLog`)  
 **Testing**: `pytest` for backend unit/integration tests; `vitest` for frontend components  
-**Target Platform**: Linux/MacOS/Windows via Docker (Single Container, exposing a single local port)  
+**Target Platform**: Linux/MacOS/Windows via Docker (Single Container exposing port 8100, frontend dev port 5100)  
 **Project Type**: web-service & web-app (single container)  
 **Performance Goals**: Frontend render time < 200ms for up to 500 P&R pairs; chunk size processing <= 10,000 characters  
 **Constraints**: Estritamente local (localhost), offline-capable (except for OpenAI API requests), no authentication/login, Docker volume mount for persistent configs  
 **Scale/Scope**: Single user, documents up to 1,000,000 characters, automatic rate-limit retries (exponential backoff)  
 
-**Design Decisions Needing Detail (Phase 0 Research)**:
-- **Frontend Serving**: NEEDS CLARIFICATION (How FastAPI serves Vite-compiled static assets and routes them under a single Docker container)
-- **Text Chunking Strategy**: NEEDS CLARIFICATION (Algorithm for smart text slicing by paragraphs/lines while keeping under OpenAI token limits via `tiktoken`)
-- **Factory Pattern**: NEEDS CLARIFICATION (How to structure factories for file parsers in the backend and API clients in the frontend)
-- **Semantic Deduplication**: NEEDS CLARIFICATION (Prompt engineering and aggregation logic for merging semantically similar Q&As)
+**Design Decisions (Phase 0 Research Resolved)**:
+- **Frontend Serving**: Served via FastAPI `StaticFiles` at `/assets`, with fallback requests serving the compiled `index.html` to support client-side routing in a single container.
+- **Text Chunking Strategy**: Chunks calculated via `tiktoken` using `cl100k_base` encoding, with a limit of 8,000 tokens per chunk. Split hierarchy: Double newlines (`\n\n`), single newlines (`\n`), then sentence punctuation.
+- **Factory Pattern**: Applied on backend (`ParserFactory` returning `TxtParser`) and frontend (`ApiClientFactory` resolving real or mock clients) to support test isolation.
+- **Semantic Deduplication**: Two-stage logic: chunk-level JSON extraction followed by a final post-queue consolidation API call to merge semantically identical items.
 
 ## Constitution Check
 

@@ -25,7 +25,8 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 - [ ] T001 Initialize workspace directory structure under backend/ and frontend/
 - [ ] T002 Initialize backend FastAPI app configuration and dependencies in backend/requirements.txt
-- [ ] T003 Initialize frontend React Vite app config and dependencies in frontend/package.json and frontend/vite.config.ts
+- [ ] T003 Initialize frontend React Vite app config, shadcn/ui configuration (components.json), and install dependencies in frontend/package.json and frontend/vite.config.ts
+- [ ] T003a Configure Vitest testing environment and dependencies in frontend/
 - [ ] T004 [P] Configure development server scripts and Docker environment files in docker-compose.yml and .env
 
 ---
@@ -38,7 +39,7 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 - [ ] T005 Define Pydantic models for ChaveAPI, PromptConfig, and LogItem in backend/src/models/schemas.py
 - [ ] T006 Configure FastAPI router registry and error handlers in backend/src/main.py
-- [ ] T007 Configure frontend routing, Axios API client instance, and proxy in frontend/src/services/api.ts
+- [ ] T007 Configure frontend routing, Axios API client instance, proxy, and ApiClientFactory in frontend/src/services/api.ts
 - [ ] T008 Setup single-container production multi-stage build instructions in backend/Dockerfile
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in priority order
@@ -58,9 +59,10 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 - [ ] T011 [US1] Implement OpenAI client manager with exponential backoff retry in backend/src/services/openai_client.py
 - [ ] T012 [US1] Implement WebSocket processor connection handler and FIFO queue in backend/src/api/websocket.py
 - [ ] T013 [P] [US1] Implement WebSocket client service connection manager in frontend/src/services/websocket.ts
-- [ ] T014 [US1] Create file upload drag-and-drop and progress bar component in frontend/src/components/FileUploader.tsx
+- [ ] T014 [US1] Create file upload drag-and-drop, upload list showing status/size, and progress bar component in frontend/src/components/FileUploader.tsx
 - [ ] T015 [US1] Implement log viewer pane with level-based syntax highlighting in frontend/src/components/LogViewer.tsx
 - [ ] T016 [P] [US1] Write backend unit tests for chunker, parsers, and processor in backend/tests/test_processing.py
+- [ ] T016a [P] [US1] Write frontend component tests for FileUploader and LogViewer in frontend/tests/components.test.tsx using Vitest
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -74,11 +76,12 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Implement LLM semantic deduplication and consolidation service in backend/src/services/consolidator.py
+- [ ] T017 [US2] Implement LLM semantic deduplication and consolidation service (extracting metadata and category labels) in backend/src/services/consolidator.py
 - [ ] T018 [P] [US2] Write unit tests for semantic consolidation logic in backend/tests/test_consolidator.py
 - [ ] T019 [US2] Create results table component with search and sorting in frontend/src/components/ResultsTable.tsx
-- [ ] T020 [P] [US2] Implement TXT/JSON generation and download trigger in frontend/src/utils/export.ts
+- [ ] T020 [P] [US2] Implement TXT/JSON generation (with client-side JSON schema validation against ResultadoParPR) and download trigger in frontend/src/utils/export.ts
 - [ ] T021 [US2] Orchestrate main application layout, tab selection, and global state in frontend/src/App.tsx
+- [ ] T021a [P] [US2] Write frontend component tests for ResultsTable and export utilities in frontend/tests/results.test.tsx using Vitest
 
 **Checkpoint**: At this point, User Stories 1 AND 2 are functional together.
 
@@ -97,6 +100,7 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 - [ ] T024 [P] [US3] Create API client interface for key operations in frontend/src/services/keys.ts
 - [ ] T025 [US3] Create key management setting form and list in frontend/src/components/KeySettings.tsx
 - [ ] T026 [P] [US3] Write unit tests for API key serialization and unique constraint in backend/tests/test_keys.py
+- [ ] T026a [P] [US3] Write frontend component tests for KeySettings in frontend/tests/keys.test.tsx using Vitest
 
 **Checkpoint**: At this point, API keys can be managed and selected.
 
@@ -115,6 +119,7 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 - [ ] T029 [P] [US4] Create API client interface for prompt operations in frontend/src/services/prompts.ts
 - [ ] T030 [US4] Create prompt/model/language configurations UI form in frontend/src/components/PromptSettings.tsx
 - [ ] T031 [P] [US4] Write unit tests for prompt formatting and persistence in backend/tests/test_prompts.py
+- [ ] T031a [P] [US4] Write frontend component tests for PromptSettings in frontend/tests/prompts.test.tsx using Vitest
 
 **Checkpoint**: Prompt configuration and language parameters are fully integrated.
 
