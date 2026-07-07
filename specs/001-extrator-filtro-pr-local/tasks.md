@@ -114,12 +114,12 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 ### Implementation for User Story 4
 
-- [ ] T027 [P] [US4] Implement JSON-file-based persistent storage for PromptConfig in backend/src/services/prompt_storage.py
-- [ ] T028 [US4] Implement PromptConfig endpoints GET and POST in backend/src/api/routes/prompts.py
-- [ ] T029 [P] [US4] Create API client interface for prompt operations in frontend/src/services/prompts.ts
-- [ ] T030 [US4] Create prompt/model/language configurations UI form in frontend/src/components/PromptSettings.tsx
-- [ ] T031 [P] [US4] Write unit tests for prompt formatting and persistence in backend/tests/test_prompts.py
-- [ ] T031a [P] [US4] Write frontend component tests for PromptSettings in frontend/tests/prompts.test.tsx using Vitest
+- [x] T027 [P] [US4] Implement JSON-file-based persistent storage for PromptConfig in backend/src/services/prompt_storage.py
+- [x] T028 [US4] Implement PromptConfig endpoints GET and POST in backend/src/api/routes/prompts.py
+- [x] T029 [P] [US4] Create API client interface for prompt operations in frontend/src/services/prompts.ts
+- [x] T030 [US4] Create prompt/model/language configurations UI form in frontend/src/components/PromptSettings.tsx
+- [x] T031 [P] [US4] Write unit tests for prompt formatting and persistence in backend/tests/test_prompts.py
+- [x] T031a [P] [US4] Write frontend component tests for PromptSettings in frontend/tests/prompts.test.tsx using Vitest
 
 **Checkpoint**: Prompt configuration and language parameters are fully integrated.
 
