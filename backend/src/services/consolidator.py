@@ -44,11 +44,32 @@ def _parse_consolidation_response(raw_content: str) -> list[ResultadoParPR]:
     except json.JSONDecodeError as exc:
         raise ValueError(f"Model returned invalid JSON for consolidation: {exc}") from exc
 
-    if not isinstance(data, dict) or "qna_pairs" not in data:
+    if not isinstance(data, dict):
         raise ValueError(f"Expected JSON object with 'qna_pairs' key, got: {type(data).__name__}")
 
+    raw_pairs = data.get("qna_pairs")
+
+    if raw_pairs is None:
+        list_keys = [k for k, v in data.items() if isinstance(v, list)]
+        if list_keys:
+            fallback_key = list_keys[0]
+            logger.warning(
+                "'qna_pairs' key not found in consolidation response. "
+                "Falling back to first list-valued key: '%s'. Keys: %s",
+                fallback_key,
+                list(data.keys()),
+            )
+            raw_pairs = data[fallback_key]
+        else:
+            logger.warning(
+                "Consolidation response has no list values and no 'qna_pairs' key. "
+                "Keys: %s. Returning empty list.",
+                list(data.keys()),
+            )
+            return []
+
     pairs: list[ResultadoParPR] = []
-    for item in data["qna_pairs"]:
+    for item in raw_pairs:
         try:
             pairs.append(
                 ResultadoParPR(
