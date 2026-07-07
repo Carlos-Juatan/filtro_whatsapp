@@ -95,12 +95,12 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 ### Implementation for User Story 3
 
-- [ ] T022 [P] [US3] Implement JSON-file-based persistent storage for API keys in backend/src/services/key_storage.py
-- [ ] T023 [US3] Implement API key router endpoints GET, POST, and DELETE in backend/src/api/routes/keys.py
-- [ ] T024 [P] [US3] Create API client interface for key operations in frontend/src/services/keys.ts
-- [ ] T025 [US3] Create key management setting form and list in frontend/src/components/KeySettings.tsx
-- [ ] T026 [P] [US3] Write unit tests for API key serialization and unique constraint in backend/tests/test_keys.py
-- [ ] T026a [P] [US3] Write frontend component tests for KeySettings in frontend/tests/keys.test.tsx using Vitest
+- [x] T022 [P] [US3] Implement JSON-file-based persistent storage for API keys in backend/src/services/key_storage.py
+- [x] T023 [US3] Implement API key router endpoints GET, POST, and DELETE in backend/src/api/routes/keys.py
+- [x] T024 [P] [US3] Create API client interface for key operations in frontend/src/services/keys.ts
+- [x] T025 [US3] Create key management setting form and list in frontend/src/components/KeySettings.tsx
+- [x] T026 [P] [US3] Write unit tests for API key serialization and unique constraint in backend/tests/test_keys.py
+- [x] T026a [P] [US3] Write frontend component tests for KeySettings in frontend/tests/keys.test.tsx using Vitest
 
 **Checkpoint**: At this point, API keys can be managed and selected.
 
