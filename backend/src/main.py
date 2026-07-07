@@ -41,7 +41,7 @@ logger = logging.getLogger("filtro_whatsapp")
 # ──────────────────────────────────────────────────────────────────────────────
 
 _HERE = Path(__file__).resolve().parent
-_FRONTEND_DIST = _HERE.parent.parent.parent / "frontend" / "dist"
+_FRONTEND_DIST = _HERE.parent.parent / "frontend" / "dist"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lifespan (startup / shutdown hooks)

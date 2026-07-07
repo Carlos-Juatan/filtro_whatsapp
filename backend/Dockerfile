@@ -56,11 +56,11 @@ WORKDIR /app
 # Copy the virtualenv from the deps stage
 COPY --from=python-deps /opt/venv /opt/venv
 
-# Copy backend source
+# Copy backend source to /app/backend/
 COPY --chown=appuser:appuser backend/ ./backend/
 
-# Copy compiled frontend assets from frontend-builder stage
-# FastAPI serves them from backend/src/main.py via StaticFiles + catch-all route
+# Copy compiled frontend assets from frontend-builder stage to /app/frontend/dist/
+# FastAPI serves them via StaticFiles + catch-all route
 COPY --from=frontend-builder --chown=appuser:appuser /app/frontend/dist ./frontend/dist
 
 # Persistent volume mount point for configuration files
@@ -69,7 +69,9 @@ RUN mkdir -p /app/data && chown appuser:appuser /app/data
 VOLUME ["/app/data"]
 
 # Activate virtualenv in PATH
+# PYTHONPATH=/app/backend ensures `src.*` imports resolve correctly
 ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH="/app/backend" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     DATA_DIR=/app/data
@@ -85,4 +87,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8100/api/health')" || exit 1
 
 # Uvicorn serves the FastAPI app; workers=1 (single-user local tool)
-CMD ["uvicorn", "backend.src.main:app", "--host", "0.0.0.0", "--port", "8100", "--workers", "1"]
+# src.main:app resolves because PYTHONPATH=/app/backend makes `src` a top-level package
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8100", "--workers", "1"]

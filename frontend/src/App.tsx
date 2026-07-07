@@ -50,6 +50,10 @@ export default function App() {
     };
 
     wsClient.connect({
+      onOpen: () => {
+        // WebSocket handshake complete — safe to send now
+        wsClient.send(startMsg);
+      },
       onLog: (log) => setLogs(prev => [...prev, log]),
       onChunkSuccess: (_data) => {
         // chunk events received – full results arrive with onComplete
@@ -82,8 +86,6 @@ export default function App() {
         setIsProcessing(false);
       },
     });
-
-    wsClient.send(startMsg);
   }, []);
 
   return (
