@@ -26,7 +26,6 @@
 
 import React, {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -78,7 +77,7 @@ interface LogRowProps {
   index: number;
 }
 
-const LogRow = React.memo(function LogRow({ entry, index }: LogRowProps) {
+const LogRow = React.memo(function LogRow({ entry }: LogRowProps) {
   const styles = LOG_LEVEL_STYLES[entry.tipo];
   return (
     <li

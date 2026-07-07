@@ -129,9 +129,9 @@ description: "Implementation tasks for the Extrator e Filtro de P&R (Local) feat
 
 **Purpose**: Visual improvements, container building validation, and complete E2E system testing.
 
-- [ ] T032 Verify system functionality end-to-end under docker-compose local build using docker-compose.yml
-- [ ] T033 Apply premium custom styling, Outfit font integration, dark-mode styling, and transitions in frontend/src/index.css
-- [ ] T034 [P] Write integration tests for end-to-end processing pipeline in backend/tests/test_integration.py
+- [X] T032 Verify system functionality end-to-end under docker-compose local build using docker-compose.yml
+- [X] T033 Apply premium custom styling, Outfit font integration, dark-mode styling, and transitions in frontend/src/index.css
+- [X] T034 [P] Write integration tests for end-to-end processing pipeline in backend/tests/test_integration.py
 
 ---
 

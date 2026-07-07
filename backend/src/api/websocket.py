@@ -46,6 +46,7 @@ from src.models.schemas import (
     WSStartMessage,
 )
 from src.services.chunker import split_text
+from src.services.consolidator import consolidate_qna_pairs
 from src.services.openai_client import extract_qna_from_chunk
 from src.services.parsers import ParserFactory
 
@@ -157,10 +158,13 @@ async def _resolve_api_key(key_id: str) -> str:
         return key
 
     try:
-        from src.services.key_storage import KeyStorage
+        from src.services.key_storage import KeyStorageService
 
-        storage = KeyStorage()
-        return storage.get_key(key_id)
+        storage = KeyStorageService()
+        key_obj = storage.get_by_id(key_id)
+        if key_obj is None:
+            raise KeyError(f"API key with id='{key_id}' not found in storage.")
+        return key_obj.chave
     except ModuleNotFoundError:
         # key_storage not yet implemented; raise informative error
         raise KeyError(
@@ -178,10 +182,10 @@ async def _resolve_prompt_config(prompt_id: str) -> PromptConfig | None:
         return None
 
     try:
-        from src.services.prompt_storage import PromptStorage
+        from src.services.prompt_storage import PromptStorageService
 
-        storage = PromptStorage()
-        return storage.get_prompt(prompt_id)
+        storage = PromptStorageService()
+        return storage.get_by_id(prompt_id)
     except ModuleNotFoundError:
         logger.warning(
             "Prompt storage module not found. Using default prompt for prompt_id='%s'.",
@@ -328,7 +332,6 @@ async def _process_queue(
         TipoLog.INFO,
     )
 
-    from src.services.consolidator import consolidate_qna_pairs
     consolidated_pairs = await consolidate_qna_pairs(
         pairs=all_pairs,
         api_key=api_key,

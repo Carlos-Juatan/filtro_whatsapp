@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { ResultadoParPR } from '../services/api';
 import { exportToJson, exportToTxt } from '../utils/export';
 import { Search, ArrowUpDown, Download } from 'lucide-react';
