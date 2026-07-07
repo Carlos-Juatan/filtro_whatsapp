@@ -6,12 +6,12 @@ from src.services.prompt_storage import prompt_storage
 
 router = APIRouter()
 
-@router.get("/", response_model=List[PromptConfig])
+@router.get("", response_model=List[PromptConfig])
 def get_prompts():
     """Get all saved Prompt Configs."""
     return prompt_storage.get_all()
 
-@router.post("/", response_model=PromptConfig, status_code=status.HTTP_201_CREATED, responses={400: {"model": ErrorDetail}})
+@router.post("", response_model=PromptConfig, status_code=status.HTTP_201_CREATED, responses={400: {"model": ErrorDetail}})
 def create_prompt(prompt_create: PromptConfigCreate):
     """Add a new Prompt Config."""
     try:

@@ -6,12 +6,12 @@ from src.services.key_storage import key_storage
 
 router = APIRouter()
 
-@router.get("/", response_model=List[ChaveAPI])
+@router.get("", response_model=List[ChaveAPI])
 def get_keys():
     """Get all saved API keys."""
     return key_storage.get_all()
 
-@router.post("/", response_model=ChaveAPI, status_code=status.HTTP_201_CREATED, responses={400: {"model": ErrorDetail}})
+@router.post("", response_model=ChaveAPI, status_code=status.HTTP_201_CREATED, responses={400: {"model": ErrorDetail}})
 def create_key(key_create: ChaveAPICreate):
     """Add a new API key."""
     try:

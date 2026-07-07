@@ -6,12 +6,19 @@ import { wsClient } from './services/websocket';
 import { ItemLog, ResultadoParPR, WSStartMessage } from './services/api';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Activity, Database, Settings } from 'lucide-react';
+import { SettingsModal } from './components/SettingsModal';
+import { StartProcessModal } from './components/StartProcessModal';
 
 export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [logs, setLogs] = useState<ItemLog[]>([]);
   const [results, setResults] = useState<ResultadoParPR[]>([]);
   const [activeTab, setActiveTab] = useState('process');
+  
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('keys');
+  const [isStartModalOpen, setIsStartModalOpen] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   useEffect(() => {
     // We clean up when component unmounts
@@ -20,11 +27,17 @@ export default function App() {
     };
   }, []);
 
-  const handleFilesReady = useCallback(async (files: File[]) => {
+  const handleFilesReady = useCallback((files: File[]) => {
     if (files.length === 0) return;
+    setPendingFiles(files);
+    setIsStartModalOpen(true);
+  }, []);
 
+  const handleStartProcess = useCallback(async (keyId: string, promptId: string) => {
+    setIsStartModalOpen(false);
+    
     // Read files content
-    const filePayloads = await Promise.all(files.map((f) =>
+    const filePayloads = await Promise.all(pendingFiles.map((f) =>
       new Promise<{ nomeArquivo: string; conteudoBruto: string }>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -44,8 +57,8 @@ export default function App() {
 
     const startMsg: WSStartMessage = {
       action: 'START',
-      key_id: 'env',    // resolved from OPENAI_API_KEY env var
-      prompt_id: 'env', // use default prompt
+      key_id: keyId,
+      prompt_id: promptId,
       files: filePayloads
     };
 
@@ -86,7 +99,7 @@ export default function App() {
         setIsProcessing(false);
       },
     });
-  }, []);
+  }, [pendingFiles]);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans selection:bg-blue-200 dark:selection:bg-blue-900">
@@ -101,9 +114,13 @@ export default function App() {
             </h1>
           </div>
           <button
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-not-allowed opacity-50"
-            title="Configurações (Em breve)"
-            aria-label="Configurações (em breve)"
+            className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+            title="Configurações"
+            aria-label="Configurações"
+            onClick={() => {
+              setSettingsTab('keys');
+              setIsSettingsOpen(true);
+            }}
           >
             <Settings size={20} />
           </button>
@@ -161,6 +178,22 @@ export default function App() {
           </Tabs.Content>
         </Tabs.Root>
       </main>
+
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onOpenChange={setIsSettingsOpen} 
+        defaultTab={settingsTab} 
+      />
+
+      <StartProcessModal 
+        isOpen={isStartModalOpen} 
+        onOpenChange={setIsStartModalOpen} 
+        onConfirm={handleStartProcess}
+        onOpenSettings={(tab) => {
+          setSettingsTab(tab);
+          setIsSettingsOpen(true);
+        }}
+      />
     </div>
   );
 }
