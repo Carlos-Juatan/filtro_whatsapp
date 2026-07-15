@@ -24,7 +24,7 @@ DEFAULT_SYSTEM_PROMPT_TEXT = (
     "Cada item em 'qna_pairs' deve ter os campos: "
     "'question' (string com a pergunta do cliente), 'answer' (string com a resposta do suporte), "
     "'frequency' (integer, mínimo 1), "
-    "'metadata' (string ou null com contexto adicional), 'category' (string com categoria da dúvida)."
+    "'metadata' (string com categoria da dúvida), 'category' (string 'FAQ' por padrão)."
 )
 
 # Fixed UUID for the built-in default prompt — stable across restarts

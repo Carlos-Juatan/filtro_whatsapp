@@ -7,7 +7,7 @@ interface ResultsTableProps {
   results: ResultadoParPR[];
 }
 
-type SortField = 'perguntaPadronizada' | 'category' | 'frequencia';
+type SortField = 'perguntaPadronizada' | 'category' | 'metadata' | 'frequencia';
 
 export function ResultsTable({ results }: ResultsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,12 +18,19 @@ export function ResultsTable({ results }: ResultsTableProps) {
     let filtered = results.filter(r => 
       r.perguntaPadronizada.toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.respostaConsolidada.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (r.metadata || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     filtered.sort((a, b) => {
       let aVal = a[sortField];
       let bVal = b[sortField];
+
+      // Handle fallback for category sorting if metadata is empty
+      if (sortField === 'metadata') {
+        aVal = a.metadata || a.category;
+        bVal = b.metadata || b.category;
+      }
       
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return sortDesc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
@@ -82,7 +89,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
         <table className="w-full text-left text-sm text-gray-700 dark:text-gray-300">
           <thead className="bg-gray-50 dark:bg-gray-800/80 text-xs uppercase text-gray-600 dark:text-gray-400 font-semibold border-b border-gray-200 dark:border-gray-800">
             <tr>
-              <th className="px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => handleSort('category')}>
+              <th className="px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => handleSort('metadata')}>
                 <div className="flex items-center">Categoria <ArrowUpDown className="ml-1 h-3 w-3" /></div>
               </th>
               <th className="px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-1/3" onClick={() => handleSort('perguntaPadronizada')}>
@@ -99,7 +106,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
               <tr key={idx} className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
                 <td className="px-4 py-3 align-top whitespace-nowrap">
                   <span className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs rounded-full font-medium">
-                    {item.category}
+                    {item.metadata || item.category}
                   </span>
                 </td>
                 <td className="px-4 py-3 align-top font-medium text-gray-900 dark:text-gray-100 min-w-[200px]">{item.perguntaPadronizada}</td>

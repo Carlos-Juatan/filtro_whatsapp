@@ -15,10 +15,9 @@ export function exportToJson(data: ResultadoParPR[], filename = "resultados.json
 export function exportToTxt(data: ResultadoParPR[], filename = "resultados.txt") {
   const lines = data.map(
     (item) =>
-      `[${item.category}] (Frequência: ${item.frequencia})\n` +
+      `[${item.metadata || item.category}] (Frequência: ${item.frequencia})\n` +
       `Q: ${item.perguntaPadronizada}\n` +
       `A: ${item.respostaConsolidada}\n` +
-      (item.metadata ? `Meta: ${item.metadata}\n` : "") +
       `----------------------------------------`
   );
   const blob = new Blob([lines.join("\n\n")], { type: "text/plain" });
