@@ -226,16 +226,17 @@ export class MockWebSocketClient implements WebSocketClient {
   }
 
   /** Simulate a QUEUE_COMPLETE event. */
-  simulateComplete(results: ResultadoParPR[]): void {
-    this._callbacks.onComplete?.({ results });
+  simulateComplete(results: ResultadoParPR[], uncategorized_database_content: string[] = []): void {
+    this._callbacks.onComplete?.({ results, uncategorized_database_content });
   }
 
   /** Simulate a QUEUE_ERROR event. */
-  simulateError(mensagem: string, partial_results: ResultadoParPR[] = []): void {
+  simulateError(mensagem: string, partial_results: ResultadoParPR[] = [], uncategorized_database_content: string[] = []): void {
     this._callbacks.onError?.({
       timestamp: new Date().toISOString().slice(11, 19),
       mensagem,
       partial_results,
+      uncategorized_database_content,
     });
   }
 }

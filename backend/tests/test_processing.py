@@ -200,7 +200,7 @@ class TestParseQnaResponse:
         from src.services.openai_client import _parse_qna_response
 
         raw = '{"qna_pairs": [{"question": "Qual o horário?", "answer": "8h às 18h.", "frequency": 2, "metadata": "horário", "category": "Suporte"}]}'
-        result = _parse_qna_response(raw)
+        result, _ = _parse_qna_response(raw)
         assert len(result) == 1
         assert result[0].perguntaPadronizada == "Qual o horário?"
         assert result[0].respostaConsolidada == "8h às 18h."
@@ -211,20 +211,24 @@ class TestParseQnaResponse:
         from src.services.openai_client import _parse_qna_response
 
         raw = '```json\n{"qna_pairs": [{"question": "P?", "answer": "R.", "frequency": 1, "metadata": null, "category": "Geral"}]}\n```'
-        result = _parse_qna_response(raw)
+        result, _ = _parse_qna_response(raw)
         assert len(result) == 1
 
     def test_empty_qna_pairs_returns_empty_list(self):
         from src.services.openai_client import _parse_qna_response
 
-        result = _parse_qna_response('{"qna_pairs": []}')
+        result, _ = _parse_qna_response('{"qna_pairs": []}')
         assert result == []
 
-    def test_missing_qna_pairs_key_raises_value_error(self):
+    def test_missing_qna_pairs_key_uses_fallback(self):
         from src.services.openai_client import _parse_qna_response
 
-        with pytest.raises(ValueError, match="qna_pairs"):
-            _parse_qna_response('{"something_else": []}')
+        # With the fallback logic, a missing 'qna_pairs' key but another list key
+        # will cause it to fallback to that list. Here, it falls back to 'something_else'
+        # which is empty, so it returns an empty list for pairs.
+        result, uncategorized = _parse_qna_response('{"something_else": []}')
+        assert result == []
+        assert uncategorized == []
 
     def test_invalid_json_raises_value_error(self):
         from src.services.openai_client import _parse_qna_response
@@ -236,14 +240,14 @@ class TestParseQnaResponse:
         from src.services.openai_client import _parse_qna_response
 
         raw = '{"qna_pairs": [{"question": "Q?", "answer": "A.", "frequency": -5, "metadata": null, "category": "X"}]}'
-        result = _parse_qna_response(raw)
+        result, _ = _parse_qna_response(raw)
         assert result[0].frequencia == 1
 
     def test_missing_category_defaults_to_geral(self):
         from src.services.openai_client import _parse_qna_response
 
         raw = '{"qna_pairs": [{"question": "Q?", "answer": "A.", "frequency": 1, "metadata": null}]}'
-        result = _parse_qna_response(raw)
+        result, _ = _parse_qna_response(raw)
         assert result[0].category == "Geral"
 
     def test_multiple_pairs(self):
@@ -253,6 +257,6 @@ class TestParseQnaResponse:
             {"question": "Q1?", "answer": "A1.", "frequency": 1, "metadata": null, "category": "Cat1"},
             {"question": "Q2?", "answer": "A2.", "frequency": 3, "metadata": "tag", "category": "Cat2"}
         ]}"""
-        result = _parse_qna_response(raw)
+        result, _ = _parse_qna_response(raw)
         assert len(result) == 2
         assert result[1].frequencia == 3

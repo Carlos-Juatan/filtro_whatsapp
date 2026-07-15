@@ -232,6 +232,7 @@ class WSChunkSuccessData(BaseModel):
     chunk_index: int
     total_chunks: int
     extracted_pairs: List[ResultadoParPR]
+    uncategorized_database_content: List[str] = Field(default_factory=list, description="Useful facts/statements extracted from the chunk that are not Q&A pairs.")
 
 
 class WSChunkSuccessEvent(BaseModel):
@@ -245,6 +246,7 @@ class WSQueueErrorData(BaseModel):
     timestamp: str
     mensagem: str
     partial_results: List[ResultadoParPR]
+    uncategorized_database_content: List[str] = Field(default_factory=list, description="Partially accumulated uncategorized content up to the point of error.")
 
 
 class WSQueueErrorEvent(BaseModel):
@@ -256,6 +258,7 @@ class WSQueueErrorEvent(BaseModel):
 
 class WSQueueCompleteData(BaseModel):
     results: List[ResultadoParPR]
+    uncategorized_database_content: List[str] = Field(default_factory=list, description="Deduplicated list of all useful facts/statements extracted across all files.")
 
 
 class WSQueueCompleteEvent(BaseModel):

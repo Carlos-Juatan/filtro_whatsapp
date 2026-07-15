@@ -46,7 +46,7 @@ from src.models.schemas import (
     WSStartMessage,
 )
 from src.services.chunker import split_text
-from src.services.consolidator import consolidate_qna_pairs
+from src.services.consolidator import consolidate_qna_pairs, deduplicate_uncategorized
 from src.services.openai_client import extract_qna_from_chunk
 from src.services.parsers import ParserFactory
 
@@ -91,6 +91,7 @@ async def _send_chunk_success(
     chunk_index: int,
     total_chunks: int,
     extracted_pairs: list[ResultadoParPR],
+    uncategorized_database_content: list[str] | None = None,
 ) -> None:
     payload = {
         "event": "CHUNK_SUCCESS",
@@ -99,6 +100,7 @@ async def _send_chunk_success(
             "chunk_index": chunk_index,
             "total_chunks": total_chunks,
             "extracted_pairs": [p.model_dump() for p in extracted_pairs],
+            "uncategorized_database_content": uncategorized_database_content or [],
         },
     }
     await ws.send_text(json.dumps(payload, ensure_ascii=False))
@@ -108,6 +110,7 @@ async def _send_queue_error(
     ws: WebSocket,
     mensagem: str,
     partial_results: list[ResultadoParPR],
+    uncategorized_database_content: list[str] | None = None,
 ) -> None:
     payload = {
         "event": "QUEUE_ERROR",
@@ -115,6 +118,7 @@ async def _send_queue_error(
             "timestamp": _now_ts(),
             "mensagem": mensagem,
             "partial_results": [p.model_dump() for p in partial_results],
+            "uncategorized_database_content": uncategorized_database_content or [],
         },
     }
     await ws.send_text(json.dumps(payload, ensure_ascii=False))
@@ -123,11 +127,13 @@ async def _send_queue_error(
 async def _send_queue_complete(
     ws: WebSocket,
     results: list[ResultadoParPR],
+    uncategorized_database_content: list[str] | None = None,
 ) -> None:
     payload = {
         "event": "QUEUE_COMPLETE",
         "data": {
             "results": [p.model_dump() for p in results],
+            "uncategorized_database_content": uncategorized_database_content or [],
         },
     }
     await ws.send_text(json.dumps(payload, ensure_ascii=False))
@@ -220,6 +226,7 @@ async def _process_queue(
     """
     all_pairs: list[ResultadoParPR] = []
     partial_pairs: list[ResultadoParPR] = []
+    all_uncategorized: list[str] = []  # accumulates across all chunks
 
     # Build ArquivoProcessamento objects and chunk each file
     arquivo_list: list[ArquivoProcessamento] = []
@@ -279,7 +286,7 @@ async def _process_queue(
         arquivo.status = StatusArquivo.PROCESSANDO
 
         try:
-            pairs = await extract_qna_from_chunk(
+            pairs, chunk_uncategorized = await extract_qna_from_chunk(
                 chunk_text=chunk_text,
                 api_key=api_key,
                 model=model,
@@ -287,6 +294,7 @@ async def _process_queue(
             )
             all_pairs.extend(pairs)
             partial_pairs.extend(pairs)
+            all_uncategorized.extend(chunk_uncategorized)  # accumulate uncategorized
 
             await _send_chunk_success(
                 ws,
@@ -294,10 +302,11 @@ async def _process_queue(
                 chunk_index=chunk_idx,
                 total_chunks=total,
                 extracted_pairs=pairs,
+                uncategorized_database_content=chunk_uncategorized,
             )
             await _send_log(
                 ws,
-                f"Chunk {chunk_idx + 1}/{total} concluído: {len(pairs)} par(es) extraído(s).",
+                f"Chunk {chunk_idx + 1}/{total} concluído: {len(pairs)} par(es), {len(chunk_uncategorized)} conteúdo(s) não classificado(s).",
                 TipoLog.SUCESSO,
             )
 
@@ -308,14 +317,20 @@ async def _process_queue(
                 f"Erro da API OpenAI: {exc}"
             )
             await _send_log(ws, err_msg, TipoLog.ERRO)
-            await _send_queue_error(ws, err_msg, partial_pairs)
+            await _send_queue_error(
+                ws, err_msg, partial_pairs,
+                uncategorized_database_content=deduplicate_uncategorized(all_uncategorized),
+            )
             return
 
         except Exception as exc:  # noqa: BLE001
             arquivo.status = StatusArquivo.ERRO
             err_msg = f"Erro inesperado ao processar chunk {chunk_idx + 1}: {exc}"
             await _send_log(ws, err_msg, TipoLog.ERRO)
-            await _send_queue_error(ws, err_msg, partial_pairs)
+            await _send_queue_error(
+                ws, err_msg, partial_pairs,
+                uncategorized_database_content=deduplicate_uncategorized(all_uncategorized),
+            )
             return
 
         finally:
@@ -339,12 +354,15 @@ async def _process_queue(
         prompt_config=prompt_config,
     )
 
+    # Deduplicate all uncategorized content accumulated across chunks (FR-004)
+    final_uncategorized = deduplicate_uncategorized(all_uncategorized)
+
     await _send_log(
         ws,
-        f"Processamento concluído. {len(all_pairs)} originais consolidados em {len(consolidated_pairs)} par(es) únicos.",
+        f"Processamento concluído. {len(all_pairs)} originais consolidados em {len(consolidated_pairs)} par(es) únicos. {len(final_uncategorized)} conteúdo(s) não classificado(s) extraído(s).",
         TipoLog.SUCESSO,
     )
-    await _send_queue_complete(ws, consolidated_pairs)
+    await _send_queue_complete(ws, consolidated_pairs, uncategorized_database_content=final_uncategorized)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

@@ -18,6 +18,35 @@ from src.models.schemas import ModeloOpenAI, PromptConfig, ResultadoParPR
 
 logger = logging.getLogger(__name__)
 
+
+def deduplicate_uncategorized(items: list[str]) -> list[str]:
+    """
+    Deduplicate a list of uncategorized content strings.
+
+    Deduplication is case-insensitive and ignores leading/trailing whitespace.
+    The first occurrence casing is preserved. Empty/whitespace-only strings
+    are excluded from the result (FR-004).
+
+    Args:
+        items: Raw list of uncategorized content strings, possibly with duplicates.
+
+    Returns:
+        Ordered, deduplicated list of non-empty strings.
+    """
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        stripped = item.strip()
+        if not stripped:
+            continue  # skip whitespace-only items
+        normalized = stripped.lower()
+        if normalized not in seen:
+            seen.add(normalized)
+            result.append(stripped)
+    return result
+
+
+
 _CONSOLIDATION_SYSTEM_PROMPT = (
     "Você é um especialista em consolidação de base de conhecimento. "
     "Sua tarefa é analisar uma lista de pares de perguntas e respostas e mesclar "

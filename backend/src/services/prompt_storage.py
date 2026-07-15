@@ -20,11 +20,17 @@ DEFAULT_SYSTEM_PROMPT_TEXT = (
     "Ignore mensagens do sistema, notificações de grupo, arquivos não revelados e mensagens eliminadas. "
     "Foque em pares onde um participante faz uma pergunta ou relata um problema e outro responde com "
     "uma solução, explicação ou encaminhamento. "
-    "Retorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', sem nenhum texto adicional. "
+    "Além disso, identifique e extraia fatos úteis, regras de negócio, preços, horários e informações "
+    "relevantes que NÃO estejam estruturadas na forma de pergunta e resposta, mas que sirvam para "
+    "enriquecer uma base de conhecimento. "
+    "Retorne SOMENTE um objeto JSON válido com as chaves 'qna_pairs' e 'uncategorized_database_content', "
+    "sem nenhum texto adicional. "
     "Cada item em 'qna_pairs' deve ter os campos: "
     "'question' (string com a pergunta do cliente), 'answer' (string com a resposta do suporte), "
     "'frequency' (integer, mínimo 1), "
-    "'metadata' (string com categoria da dúvida), 'category' (string 'FAQ' por padrão)."
+    "'metadata' (string com categoria da dúvida), 'category' (string 'FAQ' por padrão). "
+    "O campo 'uncategorized_database_content' deve ser uma lista de strings, onde cada string é uma "
+    "afirmação ou fato útil extraído da conversa (uma afirmação por item)."
 )
 
 # Fixed UUID for the built-in default prompt — stable across restarts

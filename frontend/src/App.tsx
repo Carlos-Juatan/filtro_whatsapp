@@ -13,6 +13,7 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [logs, setLogs] = useState<ItemLog[]>([]);
   const [results, setResults] = useState<ResultadoParPR[]>([]);
+  const [uncategorizedContent, setUncategorizedContent] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('process');
   
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -53,6 +54,7 @@ export default function App() {
 
     setLogs([]);
     setResults([]);
+    setUncategorizedContent([]);
     setIsProcessing(true);
 
     const startMsg: WSStartMessage = {
@@ -73,6 +75,7 @@ export default function App() {
       },
       onComplete: (data) => {
         setResults(data.results);
+        setUncategorizedContent(data.uncategorized_database_content ?? []);
         setIsProcessing(false);
         setActiveTab('results'); // auto-switch to results tab
         wsClient.disconnect();
@@ -81,6 +84,9 @@ export default function App() {
         // Capture any partial results on error
         if (data.partial_results && data.partial_results.length > 0) {
           setResults(data.partial_results);
+        }
+        if (data.uncategorized_database_content && data.uncategorized_database_content.length > 0) {
+          setUncategorizedContent(data.uncategorized_database_content);
         }
         setLogs(prev => [...prev, {
           timestamp: data.timestamp,
@@ -174,7 +180,7 @@ export default function App() {
           </Tabs.Content>
 
           <Tabs.Content value="results" className="outline-none">
-            <ResultsTable results={results} />
+            <ResultsTable results={results} uncategorizedContent={uncategorizedContent} />
           </Tabs.Content>
         </Tabs.Root>
       </main>

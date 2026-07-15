@@ -105,6 +105,7 @@ export interface WSChunkSuccessData {
   chunk_index: number;
   total_chunks: number;
   extracted_pairs: ResultadoParPR[];
+  uncategorized_database_content: string[];
 }
 
 export interface WSChunkSuccessEvent {
@@ -116,6 +117,7 @@ export interface WSQueueErrorData {
   timestamp: string;
   mensagem: string;
   partial_results: ResultadoParPR[];
+  uncategorized_database_content: string[];
 }
 
 export interface WSQueueErrorEvent {
@@ -125,6 +127,7 @@ export interface WSQueueErrorEvent {
 
 export interface WSQueueCompleteData {
   results: ResultadoParPR[];
+  uncategorized_database_content: string[];
 }
 
 export interface WSQueueCompleteEvent {
