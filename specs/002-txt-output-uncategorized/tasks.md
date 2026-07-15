@@ -27,8 +27,8 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 
 **Purpose**: Verify the test and development environment before starting.
 
-- [ ] T001 [P] Verify the project's current tests run successfully using pytest in backend/
-- [ ] T002 [P] Verify that frontend compiles and launches with npm run dev in frontend/
+- [X] T001 [P] Verify the project's current tests run successfully using pytest in backend/
+- [X] T002 [P] Verify that frontend compiles and launches with npm run dev in frontend/
 
 ---
 
@@ -38,9 +38,9 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Update WebSocket schemas in backend/src/models/schemas.py to include uncategorized_database_content: List[str] in WSChunkSuccessData, WSQueueCompleteData, and WSQueueErrorData
-- [ ] T004 [P] Update frontend WebSocket types in frontend/src/services/api.ts to include uncategorized_database_content: string[] in WSChunkSuccessData, WSQueueCompleteData, and WSQueueErrorData
-- [ ] T005 [P] Update the default system prompt text DEFAULT_SYSTEM_PROMPT_TEXT in backend/src/services/prompt_storage.py to instruct OpenAI to extract uncategorized_database_content
+- [X] T003 [P] Update WebSocket schemas in backend/src/models/schemas.py to include uncategorized_database_content: List[str] in WSChunkSuccessData, WSQueueCompleteData, and WSQueueErrorData
+- [X] T004 [P] Update frontend WebSocket types in frontend/src/services/api.ts to include uncategorized_database_content: string[] in WSChunkSuccessData, WSQueueCompleteData, and WSQueueErrorData
+- [X] T005 [P] Update the default system prompt text DEFAULT_SYSTEM_PROMPT_TEXT in backend/src/services/prompt_storage.py to instruct OpenAI to extract uncategorized_database_content
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -55,14 +55,14 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 ### Tests for User Story 1
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T006 [P] [US1] Create unit tests in backend/tests/test_openai_client.py to verify prompt construction and response parsing of uncategorized_database_content
-- [ ] T008 [P] [US1] Create unit test in backend/tests/test_consolidator.py to verify deduplicate_uncategorized logic
+- [X] T006 [P] [US1] Create unit tests in backend/tests/test_openai_client.py to verify prompt construction and response parsing of uncategorized_database_content
+- [X] T008 [P] [US1] Create unit test in backend/tests/test_consolidator.py to verify deduplicate_uncategorized logic
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Implement deduplicate_uncategorized helper in backend/src/services/consolidator.py to perform case-insensitive deduplication and strip whitespace
-- [ ] T009 [US1] Update prompt building logic in backend/src/services/openai_client.py to append instruction suffix to CUSTOMIZADO prompts and parse uncategorized_database_content from JSON response
-- [ ] T010 [US1] Update WebSocket queue processing in backend/src/api/websocket.py to accumulate uncategorized content from chunks and send in events
+- [X] T007 [P] [US1] Implement deduplicate_uncategorized helper in backend/src/services/consolidator.py to perform case-insensitive deduplication and strip whitespace
+- [X] T009 [US1] Update prompt building logic in backend/src/services/openai_client.py to append instruction suffix to CUSTOMIZADO prompts and parse uncategorized_database_content from JSON response
+- [X] T010 [US1] Update WebSocket queue processing in backend/src/api/websocket.py to accumulate uncategorized content from chunks and send in events
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -76,9 +76,9 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 
 ### Implementation for User Story 2
 
-- [ ] T011 [P] [US2] Implement exportToUncategorizedTxt function in frontend/src/utils/export.ts to generate and download nao_classificados.txt file
-- [ ] T012 [P] [US2] Add mock data for uncategorized content in frontend/src/services/websocket.ts to support local mock testing
-- [ ] T013 [US2] Update App.tsx state to track uncategorized_database_content and handle it from completed and error WebSocket events
+- [X] T011 [P] [US2] Implement exportToUncategorizedTxt function in frontend/src/utils/export.ts to generate and download nao_classificados.txt file
+- [X] T012 [P] [US2] Add mock data for uncategorized content in frontend/src/services/websocket.ts to support local mock testing
+- [X] T013 [US2] Update App.tsx state to track uncategorized_database_content and handle it from completed and error WebSocket events
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -92,8 +92,8 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Update frontend/src/components/ResultsTable.tsx to display a tabbed interface (Q&A vs Uncategorized Content) and show the extracted statements list
-- [ ] T015 [US3] Add the export button "Baixar Conteúdo Adicional (TXT)" to the results panel in frontend/src/components/ResultsTable.tsx
+- [X] T014 [US3] Update frontend/src/components/ResultsTable.tsx to display a tabbed interface (Q&A vs Uncategorized Content) and show the extracted statements list
+- [X] T015 [US3] Add the export button "Baixar Conteúdo Adicional (TXT)" to the results panel in frontend/src/components/ResultsTable.tsx
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -103,8 +103,8 @@ description: "Task list for Exportar Conteúdo Não Classificado para Base de Da
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T016 Run all backend unit tests using pytest in backend/
-- [ ] T017 Validate the end-to-end user scenario manually using the quickstart.md guidelines
+- [X] T016 Run all backend unit tests using pytest in backend/
+- [X] T017 Validate the end-to-end user scenario manually using the quickstart.md guidelines
 
 ---
 

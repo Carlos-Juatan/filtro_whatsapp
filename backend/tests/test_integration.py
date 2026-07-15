@@ -363,7 +363,7 @@ class TestWebSocketProcessing:
         with (
             patch(
                 "src.api.websocket.extract_qna_from_chunk",
-                new=AsyncMock(return_value=mock_pairs),
+                new=AsyncMock(return_value=(mock_pairs, ["Fato extraído"])),
             ),
             patch(
                 "src.api.websocket.consolidate_qna_pairs",
@@ -473,7 +473,7 @@ class TestWebSocketProcessing:
         with (
             patch(
                 "src.api.websocket.extract_qna_from_chunk",
-                new=AsyncMock(return_value=mock_pairs),
+                new=AsyncMock(return_value=(mock_pairs, ["Fato extraído"])),
             ),
             patch(
                 "src.api.websocket.consolidate_qna_pairs",

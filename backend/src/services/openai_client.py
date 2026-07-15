@@ -52,9 +52,18 @@ def _build_system_prompt(prompt_config: PromptConfig | None) -> str:
     - None → use the built-in default prompt text.
     - FIXO with textoInstrucao → use its textoInstrucao (the seeded default).
     - FIXO without textoInstrucao → use the built-in default prompt text.
-    - CUSTOMIZADO with textoInstrucao → use it as-is (user is responsible for
-      the full instruction; a keyword hint is appended when keywords are present).
+    - CUSTOMIZADO with textoInstrucao → use it, appending the uncategorized
+      extraction suffix automatically (FR-001) plus any keyword hint.
     """
+    # Suffix appended to CUSTOMIZADO prompts to ensure uncategorized extraction
+    _UNCATEGORIZED_SUFFIX = (
+        "\n\nIMPORTANTE: Além das perguntas e respostas, você deve obrigatoriamente "
+        "identificar e extrair fatos úteis, regras de negócio ou informações relevantes "
+        "presentes na conversa que não estejam estruturadas como pergunta e resposta, mas "
+        "que sirvam para enriquecer uma base de conhecimento. Retorne-os como uma lista de "
+        "strings sob a chave JSON 'uncategorized_database_content' no mesmo objeto de retorno."
+    )
+
     if prompt_config is None:
         return _DEFAULT_SYSTEM_PROMPT
 
@@ -64,15 +73,16 @@ def _build_system_prompt(prompt_config: PromptConfig | None) -> str:
     if prompt_config.tipo == TipoPrompt.FIXO:
         return prompt_config.textoInstrucao if prompt_config.textoInstrucao else _DEFAULT_SYSTEM_PROMPT
 
-    # CUSTOMIZADO: use user-provided instruction, appending keyword hint only.
+    # CUSTOMIZADO: append uncategorized suffix + optional keyword hint.
     if prompt_config.textoInstrucao:
         kw_hint = ""
         if prompt_config.palavrasChave:
             kw_list = ", ".join(f"'{k}'" for k in prompt_config.palavrasChave)
             kw_hint = f"\nPriorize perguntas relacionadas aos seguintes temas: {kw_list}."
-        return prompt_config.textoInstrucao + kw_hint
+        return prompt_config.textoInstrucao + kw_hint + _UNCATEGORIZED_SUFFIX
 
     return _DEFAULT_SYSTEM_PROMPT
+
 
 
 
@@ -93,9 +103,11 @@ def _build_user_message(chunk_text: str, language: str = "pt-br") -> str:
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def _parse_qna_response(raw_content: str) -> list[ResultadoParPR]:
+def _parse_qna_response(raw_content: str) -> tuple[list[ResultadoParPR], list[str]]:
     """
-    Parse the model's raw text response into a list of ResultadoParPR objects.
+    Parse the model's raw text response into a tuple of:
+      - list[ResultadoParPR]: extracted Q&A pairs
+      - list[str]: uncategorized database content items
 
     The model is instructed to return pure JSON, but we defensively strip any
     markdown code fences before attempting to parse.
@@ -104,10 +116,10 @@ def _parse_qna_response(raw_content: str) -> list[ResultadoParPR]:
         raw_content: Raw string returned by the model.
 
     Returns:
-        A (possibly empty) list of ResultadoParPR instances.
+        A tuple (pairs, uncategorized) — both may be empty lists.
 
     Raises:
-        ValueError: If the JSON cannot be parsed or lacks the 'qna_pairs' key.
+        ValueError: If the JSON cannot be parsed.
     """
     # Strip optional markdown code fences: ```json ... ``` or ``` ... ```
     content = raw_content.strip()
@@ -126,13 +138,12 @@ def _parse_qna_response(raw_content: str) -> list[ResultadoParPR]:
             f"Expected JSON object with 'qna_pairs' key, got: {type(data).__name__}"
         )
 
-    # Primary key
+    # ── Parse qna_pairs ──────────────────────────────────────────────────────
     raw_pairs = data.get("qna_pairs")
 
     # Fallback: if 'qna_pairs' is missing, look for any list-valued key in the dict.
-    # The model sometimes returns {"pairs": [...]} or {"results": [...]} instead.
     if raw_pairs is None:
-        list_keys = [k for k, v in data.items() if isinstance(v, list)]
+        list_keys = [k for k, v in data.items() if isinstance(v, list) and k != "uncategorized_database_content"]
         if list_keys:
             fallback_key = list_keys[0]
             logger.warning(
@@ -149,7 +160,7 @@ def _parse_qna_response(raw_content: str) -> list[ResultadoParPR]:
                 "Keys returned: %s. Returning empty result for this chunk.",
                 list(data.keys()),
             )
-            return []
+            raw_pairs = []
 
     pairs: list[ResultadoParPR] = []
     for item in raw_pairs:
@@ -166,7 +177,19 @@ def _parse_qna_response(raw_content: str) -> list[ResultadoParPR]:
         except Exception as exc:  # noqa: BLE001
             logger.warning("Skipping malformed qna item %s: %s", item, exc)
 
-    return pairs
+    # ── Parse uncategorized_database_content ─────────────────────────────────
+    raw_uncategorized = data.get("uncategorized_database_content", [])
+    uncategorized: list[str] = []
+    if isinstance(raw_uncategorized, list):
+        for entry in raw_uncategorized:
+            if entry is None:
+                continue
+            stripped = str(entry).strip()
+            if stripped:
+                uncategorized.append(stripped)
+
+    return pairs, uncategorized
+
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -179,10 +202,10 @@ async def extract_qna_from_chunk(
     api_key: str,
     model: ModeloOpenAI = ModeloOpenAI.GPT_4O_MINI,
     prompt_config: PromptConfig | None = None,
-) -> list[ResultadoParPR]:
+) -> tuple[list[ResultadoParPR], list[str]]:
     """
     Send *chunk_text* to the OpenAI Chat Completions API and return extracted
-    Q&A pairs as a list of ResultadoParPR objects.
+    Q&A pairs and uncategorized content as a tuple.
 
     Retries up to MAX_RETRIES times on HTTP 429 (RateLimitError), applying
     exponential backoff between attempts.
@@ -194,13 +217,14 @@ async def extract_qna_from_chunk(
         prompt_config: Optional prompt configuration; uses default if None.
 
     Returns:
-        List of extracted Q&A pairs (may be empty if the chunk yielded nothing).
+        Tuple of (pairs, uncategorized) — both may be empty lists.
 
     Raises:
         RuntimeError: If all retries are exhausted due to rate-limiting.
         ValueError:   If the model returns malformed JSON.
         Exception:    Any other unexpected API error is re-raised.
     """
+
     client = AsyncOpenAI(api_key=api_key)
 
     language = prompt_config.idiomaModelo if prompt_config else "pt-br"
@@ -230,11 +254,13 @@ async def extract_qna_from_chunk(
                 response_format={"type": "json_object"},
             )
             raw_content = response.choices[0].message.content or ""
-            pairs = _parse_qna_response(raw_content)
+            pairs, uncategorized = _parse_qna_response(raw_content)
             logger.info(
-                "OpenAI extraction succeeded: %d Q&A pairs extracted.", len(pairs)
+                "OpenAI extraction succeeded: %d Q&A pairs, %d uncategorized items.",
+                len(pairs),
+                len(uncategorized),
             )
-            return pairs
+            return pairs, uncategorized
 
         except RateLimitError as exc:
             last_exc = exc

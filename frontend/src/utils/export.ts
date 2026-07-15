@@ -34,3 +34,17 @@ function triggerDownload(blob: Blob, filename: string) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Export the deduplicated uncategorized content statements as a plain .txt file.
+ * Each statement is on its own line, separated by \n, with no markers or prefixes.
+ * (FR-006, SC-002, SC-003)
+ */
+export function exportToUncategorizedTxt(
+  items: string[],
+  filename = "nao_classificados.txt"
+) {
+  const content = items.join("\n");
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  triggerDownload(blob, filename);
+}

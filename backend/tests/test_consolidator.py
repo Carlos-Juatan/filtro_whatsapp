@@ -84,3 +84,66 @@ async def test_consolidate_empty_or_single():
         )
     ]
     assert await consolidate_qna_pairs(single, "test") == single
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# T008: Tests for deduplicate_uncategorized helper (US1 / FR-004)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestDeduplicateUncategorized:
+    """Tests for the deduplicate_uncategorized utility in consolidator.py."""
+
+    def test_empty_list_returns_empty_list(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        assert deduplicate_uncategorized([]) == []
+
+    def test_single_item_list_returned_unchanged(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        result = deduplicate_uncategorized(["Fato único."])
+        assert result == ["Fato único."]
+
+    def test_exact_duplicates_removed(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Fato A.", "Fato B.", "Fato A."]
+        result = deduplicate_uncategorized(items)
+        assert len(result) == 2
+        assert "Fato A." in result
+        assert "Fato B." in result
+
+    def test_case_insensitive_deduplication(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Entregamos de segunda a sexta.", "entregamos de segunda a sexta.", "ENTREGAMOS DE SEGUNDA A SEXTA."]
+        result = deduplicate_uncategorized(items)
+        assert len(result) == 1
+
+    def test_original_casing_of_first_occurrence_preserved(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Horário: 8h às 18h.", "horário: 8h às 18h."]
+        result = deduplicate_uncategorized(items)
+        assert result == ["Horário: 8h às 18h."]
+
+    def test_leading_trailing_whitespace_stripped(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["  Fato com espaços.  ", "Fato com espaços.", "\tFato com espaços.\n"]
+        result = deduplicate_uncategorized(items)
+        assert len(result) == 1
+        assert result[0] == "Fato com espaços."
+
+    def test_whitespace_only_items_are_excluded(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Fato real.", "   ", "\t", ""]
+        result = deduplicate_uncategorized(items)
+        assert result == ["Fato real."]
+
+    def test_order_of_first_occurrence_preserved(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Terceiro.", "Primeiro.", "Segundo.", "Primeiro.", "Terceiro."]
+        result = deduplicate_uncategorized(items)
+        assert result == ["Terceiro.", "Primeiro.", "Segundo."]
+
+    def test_large_list_with_many_duplicates(self):
+        from src.services.consolidator import deduplicate_uncategorized
+        items = ["Fato único."] * 100 + ["Outro fato."] * 50
+        result = deduplicate_uncategorized(items)
+        assert result == ["Fato único.", "Outro fato."]
