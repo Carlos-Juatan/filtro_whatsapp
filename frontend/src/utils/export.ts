@@ -44,7 +44,7 @@ export function exportToUncategorizedTxt(
   items: string[],
   filename = "nao_classificados.txt"
 ) {
-  const content = items.join("\n");
+  const content = `\n${items.join("\n\n----------------------------------------\n\n")}\n`;
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   triggerDownload(blob, filename);
 }
