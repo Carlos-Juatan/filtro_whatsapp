@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: filtro_whatsapp_app
+    ports:
+      - "8100:8100"
+    volumes:
+      # Persistent volume for API keys and prompt config
+      - app_data:/app/data
+    environment:
+      - APP_ENV=${APP_ENV:-development}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DATA_DIR=/app/data
+      - HOST=0.0.0.0
+      - PORT=8100
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  app_data:
+    driver: local

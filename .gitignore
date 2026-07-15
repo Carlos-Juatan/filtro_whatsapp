@@ -1,0 +1,48 @@
+# ─── Python / Backend ───────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+dist/
+build/
+*.egg-info/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.log
+
+# ─── Node.js / Frontend ─────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+*.tsbuildinfo
+
+# ─── Docker ─────────────────────────────────────────────────────────────────
+# (keep Dockerfiles tracked; ignore generated volumes)
+docker-volumes/
+*.tar.gz
+
+# ─── Universal / OS ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ─── Testes Temporários ─────────────────────────────────────────────────────
+Temporario_Test/
