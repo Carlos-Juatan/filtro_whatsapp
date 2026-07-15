@@ -5,6 +5,7 @@ export function usePrompts() {
   const [prompts, setPrompts] = useState<PromptConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [defaultPromptText, setDefaultPromptText] = useState<string | null>(null);
 
   const fetchPrompts = async () => {
     setLoading(true);
@@ -16,6 +17,17 @@ export function usePrompts() {
       setError(err.message || "Falha ao carregar prompts");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDefaultPromptText = async (): Promise<string> => {
+    if (defaultPromptText !== null) return defaultPromptText;
+    try {
+      const text = await apiClient.getDefaultPromptText();
+      setDefaultPromptText(text);
+      return text;
+    } catch {
+      return "";
     }
   };
 
@@ -34,9 +46,32 @@ export function usePrompts() {
     }
   };
 
+  const deletePrompt = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await apiClient.deletePrompt(id);
+      setPrompts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: any) {
+      setError(err.message || "Falha ao excluir prompt");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchPrompts();
   }, []);
 
-  return { prompts, loading, error, fetchPrompts, addPrompt };
+  return {
+    prompts,
+    loading,
+    error,
+    defaultPromptText,
+    fetchPrompts,
+    fetchDefaultPromptText,
+    addPrompt,
+    deletePrompt,
+  };
 }

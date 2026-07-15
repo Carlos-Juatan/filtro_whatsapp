@@ -27,6 +27,7 @@ from typing import Any
 from openai import AsyncOpenAI, RateLimitError
 
 from src.models.schemas import ModeloOpenAI, PromptConfig, ResultadoParPR
+from src.services.prompt_storage import DEFAULT_SYSTEM_PROMPT_TEXT as _DEFAULT_SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -42,48 +43,37 @@ MAX_BACKOFF_S: float = 60.0
 # Extraction prompt builder
 # ──────────────────────────────────────────────────────────────────────────────
 
-_DEFAULT_SYSTEM_PROMPT = (
-    "Você é um especialista em extração e análise de conversas de atendimento ao cliente. "
-    "Sua tarefa é identificar TODAS as perguntas feitas e suas respectivas respostas "
-    "no texto de transcrição fornecido. "
-    "Retorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', sem nenhum texto adicional. "
-    "Cada item em 'qna_pairs' deve ter os campos: "
-    "'question' (string), 'answer' (string), 'frequency' (integer, mínimo 1), "
-    "'metadata' (string ou null), 'category' (string)."
-)
 
 
 def _build_system_prompt(prompt_config: PromptConfig | None) -> str:
     """
     Construct the LLM system prompt from *prompt_config*.
 
-    If *prompt_config* is None or is a FIXO type with no custom instruction,
-    the default extraction prompt is used.
+    - None → use the built-in default prompt text.
+    - FIXO with textoInstrucao → use its textoInstrucao (the seeded default).
+    - FIXO without textoInstrucao → use the built-in default prompt text.
+    - CUSTOMIZADO with textoInstrucao → use it as-is (user is responsible for
+      the full instruction; a keyword hint is appended when keywords are present).
     """
     if prompt_config is None:
         return _DEFAULT_SYSTEM_PROMPT
 
     from src.models.schemas import TipoPrompt
 
-    if prompt_config.tipo == TipoPrompt.CUSTOMIZADO and prompt_config.textoInstrucao:
-        # Inject keyword filter hint when keywords are provided
+    # For FIXO prompts that carry the system textoInstrucao, use it directly.
+    if prompt_config.tipo == TipoPrompt.FIXO:
+        return prompt_config.textoInstrucao if prompt_config.textoInstrucao else _DEFAULT_SYSTEM_PROMPT
+
+    # CUSTOMIZADO: use user-provided instruction, appending keyword hint only.
+    if prompt_config.textoInstrucao:
         kw_hint = ""
         if prompt_config.palavrasChave:
             kw_list = ", ".join(f"'{k}'" for k in prompt_config.palavrasChave)
-            kw_hint = (
-                f" Priorize perguntas relacionadas aos seguintes temas: {kw_list}."
-            )
-        return (
-            prompt_config.textoInstrucao
-            + kw_hint
-            + "\nRetorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', "
-            "sem nenhum texto adicional. "
-            "Cada item em 'qna_pairs' deve ter os campos: "
-            "'question' (string), 'answer' (string), 'frequency' (integer, mínimo 1), "
-            "'metadata' (string ou null), 'category' (string)."
-        )
+            kw_hint = f"\nPriorize perguntas relacionadas aos seguintes temas: {kw_list}."
+        return prompt_config.textoInstrucao + kw_hint
 
     return _DEFAULT_SYSTEM_PROMPT
+
 
 
 def _build_user_message(chunk_text: str, language: str = "pt-br") -> str:

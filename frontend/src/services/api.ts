@@ -188,7 +188,9 @@ export interface ApiClient {
 
   // Prompt config operations
   listPrompts(): Promise<PromptConfig[]>;
+  getDefaultPromptText(): Promise<string>;
   savePrompt(payload: PromptConfigCreate): Promise<PromptConfig>;
+  deletePrompt(id: string): Promise<void>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -225,9 +227,18 @@ export class ProductionApiClient implements ApiClient {
     return res.data;
   }
 
+  async getDefaultPromptText(): Promise<string> {
+    const res: AxiosResponse<{ textoInstrucao: string }> = await this.http.get("/api/prompts/default");
+    return res.data.textoInstrucao;
+  }
+
   async savePrompt(payload: PromptConfigCreate): Promise<PromptConfig> {
     const res: AxiosResponse<PromptConfig> = await this.http.post("/api/prompts", payload);
     return res.data;
+  }
+
+  async deletePrompt(id: string): Promise<void> {
+    await this.http.delete(`/api/prompts/${id}`);
   }
 }
 
@@ -281,6 +292,14 @@ export class MockApiClient implements ApiClient {
     return [...this.prompts];
   }
 
+  async getDefaultPromptText(): Promise<string> {
+    return (
+      "Você é um especialista em extração e análise de conversas de atendimento ao cliente. " +
+      "Sua tarefa é identificar TODAS as perguntas feitas pelos clientes e suas respectivas respostas " +
+      "dadas pelo suporte no texto de conversa fornecido (exportado do WhatsApp)."
+    );
+  }
+
   async savePrompt(payload: PromptConfigCreate): Promise<PromptConfig> {
     const saved: PromptConfig = {
       id: `mock-prompt-${Date.now()}`,
@@ -289,6 +308,12 @@ export class MockApiClient implements ApiClient {
     };
     this.prompts.push(saved);
     return saved;
+  }
+
+  async deletePrompt(id: string): Promise<void> {
+    const idx = this.prompts.findIndex((p) => p.id === id);
+    if (idx === -1) throw new Error("Prompt não encontrado.");
+    this.prompts.splice(idx, 1);
   }
 }
 
