@@ -88,9 +88,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Implement export to TXT logic using the exact ResultadoParPR structure in frontend/src/components/GeneratorPanel.tsx
-- [ ] T022 [US3] Implement export to JSON logic matching the schema with qna_pairs key in frontend/src/components/GeneratorPanel.tsx
-- [ ] T023 [P] [US3] Add interactive browser validation test scenario or unit tests for export download actions in frontend/src/test/export.test.ts
+- [x] T021 [US3] Implement export to TXT logic using the exact ResultadoParPR structure in frontend/src/components/GeneratorPanel.tsx
+- [x] T022 [US3] Implement export to JSON logic matching the schema with qna_pairs key in frontend/src/components/GeneratorPanel.tsx
+- [x] T023 [P] [US3] Add interactive browser validation test scenario or unit tests for export download actions in frontend/src/test/export.test.ts
 
 **Checkpoint**: Exported TXT and JSON output structures match the Extrator output exactly.
 
