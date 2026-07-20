@@ -100,9 +100,9 @@
 
 **Purpose**: Validate edge cases, clean up unused logs/debug details, and run validation of the quickstart guide.
 
-- [ ] T024 Run linting, formatting, and quickstart.md validation manually
-- [ ] T025 Verify edge cases (empty files, API rate limit exhaustion) behave safely without connection leaks
-- [ ] T026 Update user documentation and clean up any debug statements
+- [x] T024 Run linting, formatting, and quickstart.md validation manually
+- [x] T025 Verify edge cases (empty files, API rate limit exhaustion) behave safely without connection leaks
+- [x] T026 Update user documentation and clean up any debug statements
 
 ---
 
