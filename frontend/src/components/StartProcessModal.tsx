@@ -9,16 +9,18 @@ export interface StartProcessModalProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: (keyId: string, promptId: string) => void;
   onOpenSettings: (tab: string) => void;
+  ferramenta?: "extrator" | "gerador";
 }
 
 export const StartProcessModal: React.FC<StartProcessModalProps> = ({
   isOpen,
   onOpenChange,
   onConfirm,
-  onOpenSettings
+  onOpenSettings,
+  ferramenta
 }) => {
   const { keys, loading: keysLoading } = useKeys();
-  const { prompts, loading: promptsLoading } = usePrompts();
+  const { prompts, loading: promptsLoading } = usePrompts(ferramenta);
   
   const [selectedKey, setSelectedKey] = useState<string>('');
   const [selectedPrompt, setSelectedPrompt] = useState<string>('');

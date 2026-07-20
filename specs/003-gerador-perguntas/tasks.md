@@ -18,12 +18,12 @@
 
 **Purpose**: Update database models, prompt configuration schemas, and REST endpoints to support tool-specific prompt segregation and in-memory migrations.
 
-- [ ] T001 [P] Add TipoFerramenta enum and ferramenta field to PromptConfig schemas in backend/src/models/schemas.py
-- [ ] T002 Update PromptStorageService in backend/src/services/prompt_storage.py to support in-memory migration of prompts and seed the default generator prompt
-- [ ] T003 [P] Add query parameter filtering to get_prompts endpoint in backend/src/api/routes/prompts.py
-- [ ] T004 [P] Add TipoFerramenta type and ferramenta field to PromptConfig interfaces in frontend/src/services/api.ts
-- [ ] T005 [P] Update ApiClient interface and listPrompts implementation to support tool filtering in frontend/src/services/api.ts
-- [ ] T006 [P] Add backend unit tests for prompt migrations and filtering in backend/tests/test_prompt_storage_migration.py
+- [x] T001 [P] Add TipoFerramenta enum and ferramenta field to PromptConfig schemas in backend/src/models/schemas.py
+- [x] T002 Update PromptStorageService in backend/src/services/prompt_storage.py to support in-memory migration of prompts and seed the default generator prompt
+- [x] T003 [P] Add query parameter filtering to get_prompts endpoint in backend/src/api/routes/prompts.py
+- [x] T004 [P] Add TipoFerramenta type and ferramenta field to PromptConfig interfaces in frontend/src/services/api.ts
+- [x] T005 [P] Update ApiClient interface and listPrompts implementation to support tool filtering in frontend/src/services/api.ts
+- [x] T006 [P] Add backend unit tests for prompt migrations and filtering in backend/tests/test_prompt_storage_migration.py
 
 **Checkpoint**: Shared models, storage, and API prompt filtering are verified by tests.
 
@@ -35,10 +35,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T007 [P] Create question generation logic and LLM prompt in backend/src/services/generator_client.py
-- [ ] T008 Create WebSocket generator endpoint and message queue handling in backend/src/api/websocket_generator.py
-- [ ] T009 [P] Register the new WebSocket router in backend/src/main.py
-- [ ] T010 [P] Add backend integration tests for the /api/generate WebSocket in backend/tests/test_websocket_generator.py
+- [x] T007 [P] Create question generation logic and LLM prompt in backend/src/services/generator_client.py
+- [x] T008 Create WebSocket generator endpoint and message queue handling in backend/src/api/websocket_generator.py
+- [x] T009 [P] Register the new WebSocket router in backend/src/main.py
+- [x] T010 [P] Add backend integration tests for the /api/generate WebSocket in backend/tests/test_websocket_generator.py
 
 **Checkpoint**: The WebSocket `/api/generate` is fully functional and can run Q&A generation from backend payloads.
 
@@ -52,12 +52,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Parameterize WebSocket connection client to support endpoint path arguments in frontend/src/services/websocket.ts
-- [ ] T012 [P] [US1] Create the GeneratorPanel scaffolding in frontend/src/components/GeneratorPanel.tsx
-- [ ] T013 [US1] Implement file dropzone and list display with token count details in frontend/src/components/GeneratorPanel.tsx
-- [ ] T014 [US1] Implement WebSocket processing queue hook/state (connect, start, logs stream) in frontend/src/components/GeneratorPanel.tsx
-- [ ] T015 [US1] Implement results table for generated pairs (question, answer, frequency, category, metadata) in frontend/src/components/GeneratorPanel.tsx
-- [ ] T016 [US1] Implement prompt dropdown and configuration trigger filtering for "gerador" prompts in frontend/src/components/GeneratorPanel.tsx
+- [x] T011 [US1] Parameterize WebSocket connection client to support endpoint path arguments in frontend/src/services/websocket.ts
+- [x] T012 [P] [US1] Create the GeneratorPanel scaffolding in frontend/src/components/GeneratorPanel.tsx
+- [x] T013 [US1] Implement file dropzone and list display with token count details in frontend/src/components/GeneratorPanel.tsx
+- [x] T014 [US1] Implement WebSocket processing queue hook/state (connect, start, logs stream) in frontend/src/components/GeneratorPanel.tsx
+- [x] T015 [US1] Implement results table for generated pairs (question, answer, frequency, category, metadata) in frontend/src/components/GeneratorPanel.tsx
+- [x] T016 [US1] Implement prompt dropdown and configuration trigger filtering for "gerador" prompts in frontend/src/components/GeneratorPanel.tsx
 
 **Checkpoint**: User Story 1 is fully functional. Users can generate Q&As from uploaded text files and view them on the screen in a table.
 
@@ -71,10 +71,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Refactor App.tsx main body layout into ExtractorPanel.tsx in frontend/src/components/ExtractorPanel.tsx
-- [ ] T018 [US2] Update App.tsx to use a clean tab/navigation bar at the top to toggle active panels
-- [ ] T019 [US2] Integrate ExtractorPanel and GeneratorPanel into the main tab system in frontend/src/App.tsx
-- [ ] T020 [P] [US2] Add animation and transitions for smooth panel switching in frontend/src/App.tsx and frontend/src/index.css
+- [x] T017 [US2] Refactor App.tsx main body layout into ExtractorPanel.tsx in frontend/src/components/ExtractorPanel.tsx
+- [x] T018 [US2] Update App.tsx to use a clean tab/navigation bar at the top to toggle active panels
+- [x] T019 [US2] Integrate ExtractorPanel and GeneratorPanel into the main tab system in frontend/src/App.tsx
+- [x] T020 [P] [US2] Add animation and transitions for smooth panel switching in frontend/src/App.tsx and frontend/src/index.css
 
 **Checkpoint**: Main navigation allows switching screens in <150ms without cross-tab state leakage.
 

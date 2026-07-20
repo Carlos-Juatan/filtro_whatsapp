@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { PromptConfig, PromptConfigCreate, apiClient } from "./api";
+import { PromptConfig, PromptConfigCreate, apiClient, TipoFerramenta } from "./api";
 
-export function usePrompts() {
+export function usePrompts(ferramenta?: TipoFerramenta) {
   const [prompts, setPrompts] = useState<PromptConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +11,7 @@ export function usePrompts() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient.listPrompts();
+      const data = await apiClient.listPrompts(ferramenta);
       setPrompts(data);
     } catch (err: any) {
       setError(err.message || "Falha ao carregar prompts");

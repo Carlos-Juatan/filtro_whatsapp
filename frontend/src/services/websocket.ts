@@ -61,7 +61,7 @@ export interface WebSocketClient {
    * Open the WebSocket connection and register event callbacks.
    * Calling connect() while already connected is a no-op.
    */
-  connect(callbacks: WebSocketCallbacks): void;
+  connect(callbacks: WebSocketCallbacks, endpoint?: string): void;
 
   /**
    * Send a message to the server (must be called after connect()).
@@ -81,11 +81,11 @@ export interface WebSocketClient {
 // URL resolver
 // ─────────────────────────────────────────────────────────────────────────────
 
-function resolveWebSocketUrl(): string {
+function resolveWebSocketUrl(endpoint: string = "/api/process"): string {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   // In dev the Vite proxy rewrites /api/* to localhost:8100.
   // We use the current host so it works transparently in both dev and prod.
-  return `${protocol}//${window.location.host}/api/process`;
+  return `${protocol}//${window.location.host}${endpoint}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -100,7 +100,7 @@ export class ProductionWebSocketClient implements WebSocketClient {
     return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
   }
 
-  connect(callbacks: WebSocketCallbacks): void {
+  connect(callbacks: WebSocketCallbacks, endpoint: string = "/api/process"): void {
     if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
       // Already connecting or connected — update callbacks only
       this.callbacks = callbacks;
@@ -108,7 +108,7 @@ export class ProductionWebSocketClient implements WebSocketClient {
     }
 
     this.callbacks = callbacks;
-    const url = resolveWebSocketUrl();
+    const url = resolveWebSocketUrl(endpoint);
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
@@ -188,7 +188,7 @@ export class MockWebSocketClient implements WebSocketClient {
     return this._connected;
   }
 
-  connect(callbacks: WebSocketCallbacks): void {
+  connect(callbacks: WebSocketCallbacks, _endpoint?: string): void {
     this._callbacks = callbacks;
     this._connected = true;
     // Simulate async open

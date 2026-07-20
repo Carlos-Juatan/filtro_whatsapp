@@ -168,6 +168,18 @@ def _register_routers() -> None:
     except Exception as exc:  # noqa: BLE001
         logger.error("Failed to register WebSocket router: %s", exc, exc_info=True)
 
+    # Generator WebSocket router (/api/generate)
+    try:
+        import importlib
+
+        ws_gen_module = importlib.import_module("src.api.websocket_generator")
+        app.include_router(ws_gen_module.router, tags=["Generator WebSocket"])
+        logger.info("Generator WebSocket router registered.")
+    except ModuleNotFoundError:
+        logger.warning("Generator WebSocket module 'src.api.websocket_generator' not found yet.")
+    except Exception as exc:  # noqa: BLE001
+        logger.error("Failed to register Generator WebSocket router: %s", exc, exc_info=True)
+
 
 _register_routers()
 

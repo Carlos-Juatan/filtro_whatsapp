@@ -36,10 +36,11 @@ def test_prompt_serialization_and_retrieval(temp_storage):
     assert added_prompt.modeloOpenAI == ModeloOpenAI.GPT_4O_MINI
     assert added_prompt.id is not None
 
-    # Retrieve all
+    # Retrieve all — note: storage now seeds 2 built-in defaults (extrator + generator)
+    # so total count is at least 3 (2 defaults + the prompt we just added).
     prompts = temp_storage.get_all()
-    assert len(prompts) == 1
-    assert prompts[0].id == added_prompt.id
+    ids = [p.id for p in prompts]
+    assert added_prompt.id in ids, "User-created prompt must appear in get_all() result"
 
     # Retrieve by id
     retrieved = temp_storage.get_by_id(added_prompt.id)

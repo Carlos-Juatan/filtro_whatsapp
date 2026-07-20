@@ -2,12 +2,12 @@
   {
     "nome": "Padrão do Sistema",
     "tipo": "FIXO",
-    "textoInstrucao": "Você é um especialista em extração e análise de conversas de atendimento ao cliente. Sua tarefa é identificar TODAS as perguntas feitas pelos clientes e suas respectivas respostas dadas pelo suporte no texto de conversa fornecido (exportado do WhatsApp). Ignore mensagens do sistema, notificações de grupo, arquivos não revelados e mensagens eliminadas. Foque em pares onde um participante faz uma pergunta ou relata um problema e outro responde com uma solução, explicação ou encaminhamento. Retorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', sem nenhum texto adicional. Cada item em 'qna_pairs' deve ter os campos: 'question' (string com a pergunta do cliente), 'answer' (string com a resposta do suporte), 'frequency' (integer, mínimo 1), 'metadata' (string com categoria da dúvida), 'category' (string 'FAQ' por padrão).",
+    "textoInstrucao": "Você é um especialista em extração e análise de conversas de atendimento ao cliente. Sua tarefa é identificar TODAS as perguntas feitas pelos clientes e suas respectivas respostas dadas pelo suporte no texto de conversa fornecido (exportado do WhatsApp). Ignore mensagens do sistema, notificações de grupo, arquivos não revelados e mensagens eliminadas. Foque em pares onde um participante faz uma pergunta ou relata um problema e outro responde com uma solução, explicação ou encaminhamento. Além disso, identifique e extraia fatos úteis, regras de negócio, preços, horários e informações relevantes que NÃO estejam estruturadas na forma de pergunta e resposta, mas que sirvam para enriquecer uma base de conhecimento. Retorne SOMENTE um objeto JSON válido com as chaves 'qna_pairs' e 'uncategorized_database_content', sem nenhum texto adicional. Cada item em 'qna_pairs' deve ter os campos: 'question' (string com a pergunta do cliente), 'answer' (string com a resposta do suporte), 'frequency' (integer, mínimo 1), 'metadata' (string com categoria da dúvida), 'category' (string 'FAQ' por padrão). O campo 'uncategorized_database_content' deve ser uma lista de strings, onde cada string é uma afirmação ou fato útil extraído da conversa (uma afirmação por item).",
     "palavrasChave": [],
     "idiomaModelo": "pt-br",
     "modeloOpenAI": "gpt-4o-mini",
-    "id": "00000000-0000-0000-0000-000000000001",
-    "ferramenta": "extrator"
+    "ferramenta": "extrator",
+    "id": "00000000-0000-0000-0000-000000000001"
   },
   {
     "nome": "Gerador de Perguntas Padrão",

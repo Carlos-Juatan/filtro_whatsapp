@@ -1,17 +1,25 @@
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
-from src.models.schemas import ErrorDetail, PromptConfig, PromptConfigCreate
+from src.models.schemas import ErrorDetail, PromptConfig, PromptConfigCreate, TipoFerramenta
 from src.services.prompt_storage import prompt_storage
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[PromptConfig])
-def get_prompts():
-    """Get all saved Prompt Configs."""
-    return prompt_storage.get_all()
+def get_prompts(
+    ferramenta: Optional[TipoFerramenta] = Query(
+        default=None,
+        description="Filter prompts by tool: 'extrator' or 'gerador'. Returns all if omitted.",
+    )
+):
+    """Get all saved Prompt Configs, optionally filtered by tool type."""
+    prompts = prompt_storage.get_all()
+    if ferramenta is not None:
+        prompts = [p for p in prompts if p.ferramenta == ferramenta]
+    return prompts
 
 
 @router.get("/default", response_model=dict, summary="Get default system prompt text")
