@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { exportToJson, exportToTxt, exportToUncategorizedTxt } from '../utils/export';
 import { ResultadoParPR } from '../services/api';
 
@@ -11,9 +11,10 @@ describe('Export Utils', () => {
   
   let originalBlob: typeof Blob;
   let mockBlobConstructor: ReturnType<typeof vi.fn>;
+  const originalCreateElement = document.createElement.bind(document);
   
   beforeEach(() => {
-    originalBlob = global.Blob;
+    originalBlob = globalThis.Blob;
     mockBlobConstructor = vi.fn().mockImplementation((content, options) => {
       return {
         _content: content,
@@ -25,7 +26,7 @@ describe('Export Utils', () => {
         text: async () => content.join('')
       } as any;
     });
-    global.Blob = mockBlobConstructor as any;
+    globalThis.Blob = mockBlobConstructor as any;
 
     mockCreateObjectURL = vi.fn().mockReturnValue('blob:http://localhost/mock-uuid');
     mockRevokeObjectURL = vi.fn();
@@ -34,8 +35,8 @@ describe('Export Utils', () => {
     mockRemoveChild = vi.fn();
 
     // Mock URL methods
-    global.URL.createObjectURL = mockCreateObjectURL;
-    global.URL.revokeObjectURL = mockRevokeObjectURL;
+    globalThis.URL.createObjectURL = mockCreateObjectURL as any;
+    globalThis.URL.revokeObjectURL = mockRevokeObjectURL as any;
 
     // Mock DOM elements and methods
     vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
@@ -46,15 +47,15 @@ describe('Export Utils', () => {
           click: mockClick,
         } as any;
       }
-      return document.createElement.getMockImplementation()!(tagName);
+      return originalCreateElement(tagName);
     });
 
-    vi.spyOn(document.body, 'appendChild').mockImplementation(mockAppendChild);
-    vi.spyOn(document.body, 'removeChild').mockImplementation(mockRemoveChild);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(mockAppendChild as any);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(mockRemoveChild as any);
   });
 
   afterEach(() => {
-    global.Blob = originalBlob;
+    globalThis.Blob = originalBlob;
     vi.restoreAllMocks();
   });
 

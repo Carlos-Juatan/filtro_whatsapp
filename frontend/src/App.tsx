@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ExtractorPanel } from './components/ExtractorPanel';
 import { GeneratorPanel } from './components/GeneratorPanel';
-import * as Tabs from '@radix-ui/react-tabs';
 import { Database, Lightbulb, Settings } from 'lucide-react';
 import { SettingsModal } from './components/SettingsModal';
 
