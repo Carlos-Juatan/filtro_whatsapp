@@ -1,6 +1,10 @@
 """
 Pydantic schemas for the Extrator e Filtro de P&R (Local) application.
 
+Extended for feature 003-gerador-perguntas:
+  - TipoFerramenta enum added to segregate prompts by tool.
+  - ferramenta field added to PromptConfigBase (default: EXTRATOR for backward compat.).
+
 Entities:
   - ChaveAPI          → Persisted in Docker volume JSON file
   - PromptConfig      → Persisted in Docker volume JSON file
@@ -15,6 +19,11 @@ from __future__ import annotations
 import uuid
 from enum import Enum
 from typing import Any, List, Literal, Optional, Union
+
+# Re-exported for convenience in other modules
+__all__ = [
+    "TipoFerramenta",
+]
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -34,6 +43,13 @@ class StatusArquivo(str, Enum):
 class TipoPrompt(str, Enum):
     FIXO = "FIXO"
     CUSTOMIZADO = "CUSTOMIZADO"
+
+
+class TipoFerramenta(str, Enum):
+    """Identifies which tool a PromptConfig applies to."""
+
+    EXTRATOR = "extrator"
+    GERADOR = "gerador"
 
 
 class TipoLog(str, Enum):
@@ -115,6 +131,10 @@ class PromptConfigBase(BaseModel):
     palavrasChave: List[str] = Field(default_factory=list, description="Optional keyword filters for extraction.")
     idiomaModelo: str = Field(default="pt-br", description="Output target language code (e.g. 'pt-br', 'en-us').")
     modeloOpenAI: ModeloOpenAI = Field(default=ModeloOpenAI.GPT_4O_MINI, description="Selected LLM model.")
+    ferramenta: TipoFerramenta = Field(
+        default=TipoFerramenta.EXTRATOR,
+        description="Tool this prompt applies to: 'extrator' or 'gerador'. Defaults to 'extrator' for backward compatibility.",
+    )
 
     @field_validator("textoInstrucao")
     @classmethod

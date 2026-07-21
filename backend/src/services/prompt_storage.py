@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
-from src.models.schemas import ModeloOpenAI, PromptConfig, PromptConfigCreate, TipoPrompt
+from src.models.schemas import ModeloOpenAI, PromptConfig, PromptConfigCreate, TipoFerramenta, TipoPrompt
 
 DATA_DIR = Path(os.getenv("DATA_DIR", "data"))
 PROMPTS_FILE = DATA_DIR / "prompts.json"
@@ -33,8 +33,36 @@ DEFAULT_SYSTEM_PROMPT_TEXT = (
     "afirmação ou fato útil extraído da conversa (uma afirmação por item)."
 )
 
-# Fixed UUID for the built-in default prompt — stable across restarts
+# ──────────────────────────────────────────────────────────────────────────────
+# Default system prompt text for the Question Generator (003-gerador-perguntas)
+# ──────────────────────────────────────────────────────────────────────────────
+
+DEFAULT_GENERATOR_PROMPT_TEXT = (
+    "Você é um especialista em geração de bases de conhecimento e perguntas de FAQ. "
+    "Sua tarefa é analisar o conteúdo declarativo, fatos, regras de negócio ou instruções "
+    "fornecidas e gerar uma pergunta pertinente para cada fato útil encontrado. "
+    "A afirmação original contendo o fato deve ser tratada como a resposta correta e associada "
+    "à pergunta gerada. "
+    "Regras de Geração: "
+    "1. Extraia afirmações factuais e claras e crie perguntas diretas para elas. "
+    "2. Cada item gerado deve ser mapeado em um par contendo 'question' (a pergunta formulada) e "
+    "'answer' (a afirmação/fato original correspondente). "
+    "3. Classifique cada par em uma categoria temática lógica (ex: 'Financeiro', 'Horários', 'Serviços') "
+    "e retorne no campo 'metadata'. "
+    "4. Defina o campo 'category' como 'FAQ' por padrão para todos os itens. "
+    "5. Ignore frases soltas ou sem sentido coerente (ex: 'ok', 'teste', 'olá'). "
+    "6. Retorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', sem nenhum texto adicional "
+    "ou markdown de bloco de código. "
+    "Estrutura JSON esperada: "
+    '{"qna_pairs": [{"question": "Pergunta formulada a partir do fato", "answer": "Fato ou afirmação declarativa original na íntegra", "frequency": 1, "metadata": "Categoria temática do fato", "category": "FAQ"}]}'
+)
+
+# Fixed UUIDs for built-in default prompts — stable across restarts
 _DEFAULT_PROMPT_ID = "00000000-0000-0000-0000-000000000001"
+_DEFAULT_GENERATOR_PROMPT_ID = "00000000-0000-0000-0000-000000000002"
+
+# Set of all protected system prompt IDs (cannot be deleted)
+_PROTECTED_PROMPT_IDS = {_DEFAULT_PROMPT_ID, _DEFAULT_GENERATOR_PROMPT_ID}
 
 
 class PromptStorageService:
@@ -46,11 +74,26 @@ class PromptStorageService:
         if not PROMPTS_FILE.exists():
             with open(PROMPTS_FILE, "w", encoding="utf-8") as f:
                 json.dump([], f)
-        self._ensure_default_prompt()
-
-    def _ensure_default_prompt(self):
-        """Guarantee the built-in 'Padrão do Sistema' prompt always exists."""
         prompts = self._read_raw()
+        prompts = self._migrate_ferramenta_field(prompts)
+        prompts = self._ensure_extrator_default(prompts)
+        prompts = self._ensure_generator_default(prompts)
+        with open(PROMPTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(prompts, f, indent=2, ensure_ascii=False)
+
+    def _migrate_ferramenta_field(self, prompts: list) -> list:
+        """In-memory migration: add ferramenta='extrator' to any prompt missing the field."""
+        changed = False
+        for p in prompts:
+            if "ferramenta" not in p:
+                p["ferramenta"] = TipoFerramenta.EXTRATOR.value
+                changed = True
+        if changed:
+            pass  # caller handles the write
+        return prompts
+
+    def _ensure_extrator_default(self, prompts: list) -> list:
+        """Guarantee the built-in 'Padrão do Sistema' (extrator) prompt always exists."""
         exists = any(p.get("id") == _DEFAULT_PROMPT_ID for p in prompts)
         if not exists:
             default_prompt = PromptConfig(
@@ -61,11 +104,27 @@ class PromptStorageService:
                 palavrasChave=[],
                 idiomaModelo="pt-br",
                 modeloOpenAI=ModeloOpenAI.GPT_4O_MINI,
+                ferramenta=TipoFerramenta.EXTRATOR,
             )
-            # Prepend so it always appears first
             prompts.insert(0, default_prompt.model_dump())
-            with open(PROMPTS_FILE, "w", encoding="utf-8") as f:
-                json.dump(prompts, f, indent=2, ensure_ascii=False)
+        return prompts
+
+    def _ensure_generator_default(self, prompts: list) -> list:
+        """Guarantee the built-in 'Gerador de Perguntas Padrão' prompt always exists."""
+        exists = any(p.get("id") == _DEFAULT_GENERATOR_PROMPT_ID for p in prompts)
+        if not exists:
+            generator_prompt = PromptConfig(
+                id=_DEFAULT_GENERATOR_PROMPT_ID,
+                nome="Gerador de Perguntas Padrão",
+                tipo=TipoPrompt.FIXO,
+                textoInstrucao=DEFAULT_GENERATOR_PROMPT_TEXT,
+                palavrasChave=[],
+                idiomaModelo="pt-br",
+                modeloOpenAI=ModeloOpenAI.GPT_4O_MINI,
+                ferramenta=TipoFerramenta.GERADOR,
+            )
+            prompts.append(generator_prompt.model_dump())
+        return prompts
 
     def _read_raw(self) -> list:
         """Read raw JSON list without Pydantic validation."""
@@ -120,9 +179,9 @@ class PromptStorageService:
         """Delete a prompt by ID. Returns True if deleted, False if not found.
 
         Raises:
-            ValueError: If attempting to delete the built-in default prompt.
+            ValueError: If attempting to delete any built-in system prompt.
         """
-        if prompt_id == _DEFAULT_PROMPT_ID:
+        if prompt_id in _PROTECTED_PROMPT_IDS:
             raise ValueError("O prompt padrão do sistema não pode ser excluído.")
 
         prompts = self._read_prompts()

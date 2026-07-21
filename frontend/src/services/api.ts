@@ -24,6 +24,9 @@ export type ModeloOpenAI = "gpt-4o-mini" | "gpt-4o";
 /** Prompt types: system default vs. user-defined. */
 export type TipoPrompt = "FIXO" | "CUSTOMIZADO";
 
+/** Tool identifier for prompt segregation. */
+export type TipoFerramenta = "extrator" | "gerador";
+
 /** File processing status machine states. */
 export type StatusArquivo = "PENDENTE" | "PROCESSANDO" | "CONCLUIDO" | "ERRO";
 
@@ -49,6 +52,8 @@ export interface PromptConfig {
   palavrasChave: string[];
   idiomaModelo: string;
   modeloOpenAI: ModeloOpenAI;
+  /** Tool this prompt applies to. Defaults to 'extrator' for backward compatibility. */
+  ferramenta: TipoFerramenta;
 }
 
 /** Request body for creating or updating a prompt config. */
@@ -190,7 +195,8 @@ export interface ApiClient {
   deleteKey(id: string): Promise<void>;
 
   // Prompt config operations
-  listPrompts(): Promise<PromptConfig[]>;
+  /** List prompts. Pass `ferramenta` to filter by tool ('extrator' or 'gerador'). */
+  listPrompts(ferramenta?: TipoFerramenta): Promise<PromptConfig[]>;
   getDefaultPromptText(): Promise<string>;
   savePrompt(payload: PromptConfigCreate): Promise<PromptConfig>;
   deletePrompt(id: string): Promise<void>;
@@ -225,8 +231,9 @@ export class ProductionApiClient implements ApiClient {
 
   // ── Prompts ───────────────────────────────────────────────────────────────
 
-  async listPrompts(): Promise<PromptConfig[]> {
-    const res: AxiosResponse<PromptConfig[]> = await this.http.get("/api/prompts");
+  async listPrompts(ferramenta?: TipoFerramenta): Promise<PromptConfig[]> {
+    const params = ferramenta ? { ferramenta } : {};
+    const res: AxiosResponse<PromptConfig[]> = await this.http.get("/api/prompts", { params });
     return res.data;
   }
 
@@ -261,6 +268,18 @@ export class MockApiClient implements ApiClient {
       palavrasChave: [],
       idiomaModelo: "pt-br",
       modeloOpenAI: "gpt-4o-mini",
+      ferramenta: "extrator",
+    },
+    {
+      id: "mock-prompt-fixo-002",
+      nome: "Gerador de Perguntas Padrão",
+      tipo: "FIXO",
+      textoInstrucao:
+        "Gere perguntas relevantes a partir das afirmações fornecidas.",
+      palavrasChave: [],
+      idiomaModelo: "pt-br",
+      modeloOpenAI: "gpt-4o-mini",
+      ferramenta: "gerador",
     },
   ];
 
@@ -291,7 +310,10 @@ export class MockApiClient implements ApiClient {
     this.keys.splice(idx, 1);
   }
 
-  async listPrompts(): Promise<PromptConfig[]> {
+  async listPrompts(ferramenta?: TipoFerramenta): Promise<PromptConfig[]> {
+    if (ferramenta) {
+      return this.prompts.filter((p) => p.ferramenta === ferramenta);
+    }
     return [...this.prompts];
   }
 

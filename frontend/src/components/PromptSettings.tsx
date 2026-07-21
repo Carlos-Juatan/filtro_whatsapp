@@ -26,6 +26,7 @@ export const PromptSettings: React.FC = () => {
         palavrasChave: palavrasChave.split(',').map(p => p.trim()).filter(p => p.length > 0),
         idiomaModelo,
         modeloOpenAI,
+        ferramenta: 'extrator'
       });
       setNome('');
       setTextoInstrucao('');
