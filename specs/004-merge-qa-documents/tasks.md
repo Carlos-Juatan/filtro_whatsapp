@@ -84,8 +84,8 @@
 
 **Purpose**: Overall UI refinement, micro-animations, error boundary handling, and test validation
 
-- [ ] T017 [P] Add Tailwind glassmorphism styles, hover micro-animations, and status badges to `frontend/src/components/MergerPanel.tsx`
-- [ ] T018 Run test suite (`pytest`) to ensure 100% pass rate across unit and integration tests
+- [x] T017 [P] Add Tailwind glassmorphism styles, hover micro-animations, and status badges to `frontend/src/components/MergerPanel.tsx`
+- [x] T018 Run test suite (`pytest`) to ensure 100% pass rate across unit and integration tests
 
 ---
 

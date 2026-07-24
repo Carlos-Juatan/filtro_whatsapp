@@ -64,7 +64,7 @@ export function MergerPanel() {
   };
 
   return (
-    <div className="bg-slate-900 rounded-xl shadow-lg border border-slate-800 p-6 flex flex-col gap-6 w-full max-w-4xl mx-auto min-h-[400px]">
+    <div className="bg-slate-900/60 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700/50 p-6 flex flex-col gap-6 w-full max-w-4xl mx-auto min-h-[400px]">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-slate-100 mb-2">Consolidador de P&R</h2>
         <p className="text-slate-400 text-sm">Mescle múltiplos arquivos em um único dataset sem duplicatas.</p>
@@ -73,7 +73,7 @@ export function MergerPanel() {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-slate-300">Formato de Entrada</label>
         <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer hover:text-white transition-colors">
+          <label className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer hover:text-white hover:scale-105 transition-all">
             <input
               type="radio"
               name="format"
@@ -84,7 +84,7 @@ export function MergerPanel() {
             />
             <FileJson className="w-4 h-4 text-indigo-400" /> JSON (.json)
           </label>
-          <label className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer hover:text-white transition-colors">
+          <label className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer hover:text-white hover:scale-105 transition-all">
             <input
               type="radio"
               name="format"
@@ -133,7 +133,7 @@ export function MergerPanel() {
       {pendingFiles.length > 0 && (
         <ul className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-700">
           {pendingFiles.map(f => (
-            <li key={f.name} className="flex items-center gap-3 rounded-lg border border-slate-700/50 bg-slate-800/30 px-3 py-2 text-sm animate-in fade-in slide-in-from-bottom-2">
+            <li key={f.name} className="flex items-center gap-3 rounded-lg border border-slate-700/50 bg-slate-800/30 px-3 py-2 text-sm animate-in fade-in slide-in-from-bottom-2 hover:translate-x-1 hover:bg-slate-800/50 transition-all">
               {inputFormat === "json" ? <FileJson className="h-4 w-4 shrink-0 text-slate-400" /> : <FileText className="h-4 w-4 shrink-0 text-slate-400" />}
               <span className="flex-1 truncate font-medium text-slate-300">{f.name}</span>
               {!isProcessing && (
@@ -149,7 +149,7 @@ export function MergerPanel() {
       {!isProcessing && pendingFiles.length > 0 && (
         <button
           onClick={handleProcess}
-          className="w-full rounded-xl bg-indigo-600 px-6 py-3 text-sm font-medium text-white hover:bg-indigo-500 transition-all active:scale-[0.99] shadow-lg shadow-indigo-900/20"
+          className="w-full rounded-xl bg-indigo-600 px-6 py-3 text-sm font-medium text-white hover:bg-indigo-500 hover:scale-[1.01] hover:-translate-y-0.5 transition-all active:scale-[0.99] shadow-lg shadow-indigo-900/20 hover:shadow-indigo-500/30"
         >
           Consolidar {pendingFiles.length} {pendingFiles.length === 1 ? "arquivo" : "arquivos"}
         </button>
@@ -176,10 +176,16 @@ export function MergerPanel() {
               <CheckCircle className="w-5 h-5 shrink-0" />
               <p className="font-medium">Consolidação concluída com sucesso!</p>
             </div>
-            <div className="pl-8 flex flex-col gap-1 text-slate-300">
-              <span>Arquivos processados: {result.total_files_processed}</span>
-              <span>P&R Extraídos (Total): {result.total_qna_extracted}</span>
-              <span>P&R Únicos (Mesclados): {result.total_qna_merged}</span>
+            <div className="pl-8 flex flex-wrap gap-2 mt-1">
+              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-inset ring-emerald-500/20 transition-all hover:bg-emerald-500/20 hover:scale-105">
+                Arquivos processados: {result.total_files_processed}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-inset ring-blue-500/20 transition-all hover:bg-blue-500/20 hover:scale-105">
+                Extraídos (Total): {result.total_qna_extracted}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-400 ring-1 ring-inset ring-purple-500/20 transition-all hover:bg-purple-500/20 hover:scale-105">
+                Únicos (Mesclados): {result.total_qna_merged}
+              </span>
             </div>
             
             <div className="pl-8 flex gap-3 mt-2">
@@ -187,7 +193,7 @@ export function MergerPanel() {
                 <a
                   href={`/api/merger/download/${result.json_output_filename}`}
                   download
-                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-colors border border-slate-700"
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-all hover:scale-105 hover:-translate-y-0.5 hover:shadow-md border border-slate-700"
                 >
                   <FileJson className="w-4 h-4 text-indigo-400" />
                   Baixar JSON
@@ -197,7 +203,7 @@ export function MergerPanel() {
                 <a
                   href={`/api/merger/download/${result.txt_output_filename}`}
                   download
-                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-colors border border-slate-700"
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-all hover:scale-105 hover:-translate-y-0.5 hover:shadow-md border border-slate-700"
                 >
                   <FileText className="w-4 h-4 text-indigo-400" />
                   Baixar TXT
