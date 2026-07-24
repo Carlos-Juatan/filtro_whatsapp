@@ -170,16 +170,52 @@ export function MergerPanel() {
       )}
       
       {result && (
-        <div className="rounded-lg border border-emerald-900/50 bg-emerald-950/20 p-4 text-emerald-400 text-sm flex flex-col gap-2 animate-in fade-in">
-          <div className="flex gap-3 items-center">
-            <CheckCircle className="w-5 h-5 shrink-0" />
-            <p className="font-medium">Consolidação concluída com sucesso!</p>
+        <div className="flex flex-col gap-4 animate-in fade-in">
+          <div className="rounded-lg border border-emerald-900/50 bg-emerald-950/20 p-4 text-emerald-400 text-sm flex flex-col gap-2">
+            <div className="flex gap-3 items-center">
+              <CheckCircle className="w-5 h-5 shrink-0" />
+              <p className="font-medium">Consolidação concluída com sucesso!</p>
+            </div>
+            <div className="pl-8 flex flex-col gap-1 text-slate-300">
+              <span>Arquivos processados: {result.total_files_processed}</span>
+              <span>P&R Extraídos (Total): {result.total_qna_extracted}</span>
+              <span>P&R Únicos (Mesclados): {result.total_qna_merged}</span>
+            </div>
+            
+            <div className="pl-8 flex gap-3 mt-2">
+              {result.json_output_filename && (
+                <a
+                  href={`/api/merger/download/${result.json_output_filename}`}
+                  download
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-colors border border-slate-700"
+                >
+                  <FileJson className="w-4 h-4 text-indigo-400" />
+                  Baixar JSON
+                </a>
+              )}
+              {result.txt_output_filename && (
+                <a
+                  href={`/api/merger/download/${result.txt_output_filename}`}
+                  download
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition-colors border border-slate-700"
+                >
+                  <FileText className="w-4 h-4 text-indigo-400" />
+                  Baixar TXT
+                </a>
+              )}
+            </div>
           </div>
-          <div className="pl-8 flex flex-col gap-1 text-slate-300">
-            <span>Arquivos processados: {result.total_files_processed}</span>
-            <span>P&R Extraídos (Total): {result.total_qna_extracted}</span>
-            <span>P&R Únicos (Mesclados): {result.total_qna_merged}</span>
-          </div>
+          
+          {result.warnings && result.warnings.length > 0 && (
+            <div className="rounded-lg border border-amber-900/50 bg-amber-950/20 p-4 text-amber-400 text-sm flex flex-col gap-2">
+              <p className="font-medium">Avisos ({result.warnings.length}):</p>
+              <ul className="list-disc pl-5 flex flex-col gap-1">
+                {result.warnings.map((w, idx) => (
+                  <li key={idx} className="text-amber-200/80">{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

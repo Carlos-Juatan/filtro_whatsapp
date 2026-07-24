@@ -70,11 +70,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T012 [P] [US3] Implement TXT and JSON file exporters in `backend/src/services/qna_exporter.py`
-- [ ] T013 [US3] Create FastAPI endpoint `/api/merger/merge` handling multi-file upload, parser invocation, merger service, export generation, and returning `MergeJobResult` in `backend/src/api/endpoints/merger.py`
-- [ ] T014 [US3] Register merger router in main FastAPI application in `backend/src/main.py`
-- [ ] T015 [US3] Connect frontend `MergerPanel.tsx` to `mergerService.ts` to trigger merge API, show log output, download links, and summary metrics in `frontend/src/components/MergerPanel.tsx`
-- [ ] T016 [US3] Add API integration tests for `/api/merger/merge` endpoint in `backend/tests/integration/test_merger_api.py`
+- [x] T012 [P] [US3] Implement TXT and JSON file exporters in `backend/src/services/qna_exporter.py`
+- [x] T013 [US3] Create FastAPI endpoint `/api/merger/merge` handling multi-file upload, parser invocation, merger service, export generation, and returning `MergeJobResult` in `backend/src/api/endpoints/merger.py`
+- [x] T014 [US3] Register merger router in main FastAPI application in `backend/src/main.py`
+- [x] T015 [US3] Connect frontend `MergerPanel.tsx` to `mergerService.ts` to trigger merge API, show log output, download links, and summary metrics in `frontend/src/components/MergerPanel.tsx`
+- [x] T016 [US3] Add API integration tests for `/api/merger/merge` endpoint in `backend/tests/integration/test_merger_api.py`
 
 **Checkpoint**: All 3 User Stories are integrated and working end-to-end.
 
