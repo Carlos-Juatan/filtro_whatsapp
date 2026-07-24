@@ -55,8 +55,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Implement deduplication, normalization, frequency summation, and answer selection service in `backend/src/services/qna_merger_service.py`
-- [ ] T011 [US2] Add unit tests for deduplication logic, frequency summation, and answer selection edge cases in `backend/tests/unit/test_qna_merger_service.py`
+- [x] T010 [US2] Implement deduplication, normalization, frequency summation, and answer selection service in `backend/src/services/qna_merger_service.py`
+- [x] T011 [US2] Add unit tests for deduplication logic, frequency summation, and answer selection edge cases in `backend/tests/unit/test_qna_merger_service.py`
 
 **Checkpoint**: User Story 2 is functional - parsed Q&A pairs are correctly deduplicated and merged.
 
