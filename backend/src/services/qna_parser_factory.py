@@ -48,3 +48,10 @@ class QnAParserFactory:
         if not parser:
             raise ValueError(f"No parser registered for format: {format}")
         return parser
+
+# Register default parsers
+from services.json_qna_parser import JSONQnAParser
+from services.txt_qna_parser import TXTQnAParser
+
+QnAParserFactory.register_parser(InputFormat.json, JSONQnAParser())
+QnAParserFactory.register_parser(InputFormat.txt, TXTQnAParser())

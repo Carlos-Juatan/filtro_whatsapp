@@ -37,11 +37,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Implement JSON Q&A parser adhering to `qna_pairs` schema in `backend/src/services/json_qna_parser.py`
-- [ ] T006 [P] [US1] Implement TXT Q&A parser adhering to block format (`[Metadata] (Frequência: N)`, `Q:`, `A:`) in `backend/src/services/txt_qna_parser.py`
-- [ ] T007 [US1] Register JSON and TXT parser implementations in factory in `backend/src/services/qna_parser_factory.py`
-- [ ] T008 [US1] Implement file selection UI, format selector (JSON/TXT), and file batch upload component using shadcn/ui in `frontend/src/components/MergerPanel.tsx`
-- [ ] T009 [US1] Add unit tests for JSON and TXT parsers including format validation, large batch handling, and malformed file edge cases in `backend/tests/unit/test_qna_parser.py`
+- [x] T005 [P] [US1] Implement JSON Q&A parser adhering to `qna_pairs` schema in `backend/src/services/json_qna_parser.py`
+- [x] T006 [P] [US1] Implement TXT Q&A parser adhering to block format (`[Metadata] (Frequência: N)`, `Q:`, `A:`) in `backend/src/services/txt_qna_parser.py`
+- [x] T007 [US1] Register JSON and TXT parser implementations in factory in `backend/src/services/qna_parser_factory.py`
+- [x] T008 [US1] Implement file selection UI, format selector (JSON/TXT), and file batch upload component using shadcn/ui in `frontend/src/components/MergerPanel.tsx`
+- [x] T009 [US1] Add unit tests for JSON and TXT parsers including format validation, large batch handling, and malformed file edge cases in `backend/tests/unit/test_qna_parser.py`
 
 **Checkpoint**: User Story 1 is fully functional - files in JSON or TXT format can be ingested and parsed reliably.
 
