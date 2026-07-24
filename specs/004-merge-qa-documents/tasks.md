@@ -24,8 +24,8 @@
 
 **Purpose**: Base abstractions, contracts, and core navigation prerequisites
 
-- [ ] T003 Create base Q&A parser abstract interface and factory in `backend/src/services/qna_parser_factory.py`
-- [ ] T004 Update UI navigation component using shadcn/ui elements to include the 3rd tool ("Consolidar P&R") in `frontend/src/components/Navigation.tsx`
+- [x] T003 Create base Q&A parser abstract interface and factory in `backend/src/services/qna_parser_factory.py`
+- [x] T004 Update UI navigation component using shadcn/ui elements to include the 3rd tool ("Consolidar P&R") in `frontend/src/components/Navigation.tsx`
 
 ---
 
