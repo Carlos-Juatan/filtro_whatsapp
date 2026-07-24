@@ -15,8 +15,8 @@
 
 **Purpose**: Project initialization and folder structure setup for feature 004
 
-- [ ] T001 Initialize data models for Q&A pair and merge request/response in `backend/src/models/merger.py`
-- [ ] T002 [P] Create frontend API service boilerplate in `frontend/src/services/mergerService.ts`
+- [x] T001 Initialize data models for Q&A pair and merge request/response in `backend/src/models/merger.py`
+- [x] T002 [P] Create frontend API service boilerplate in `frontend/src/services/mergerService.ts`
 
 ---
 
