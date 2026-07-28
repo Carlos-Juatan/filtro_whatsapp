@@ -18,5 +18,15 @@
     "modeloOpenAI": "gpt-4o-mini",
     "ferramenta": "gerador",
     "id": "00000000-0000-0000-0000-000000000002"
+  },
+  {
+    "nome": "Consolidador de P&R Padrão",
+    "tipo": "FIXO",
+    "textoInstrucao": "Você é um assistente especialista em consolidar e organizar bases de Perguntas e Respostas (P&R). Sua tarefa é analisar o grupo de P&R fornecido, remover perguntas e respostas duplicadas ou redundantes, combinar as frequências das perguntas idênticas/similares e gerar uma lista limpa, unificada e padronizada. \n\nInstruções:\n1. Agrupe perguntas com o mesmo sentido em uma única Pergunta Padronizada clara e direta.\n2. Combine as respostas correspondentes em uma única Resposta Consolidada abrangente e sem contradições.\n3. Some as frequências das perguntas duplicadas.\n4. Mantenha os metadados e categorias mais relevantes.\n5. Retorne a resposta ESTRITAMENTE em formato JSON com a chave 'qna_pairs' contendo o array de objetos:\n[{\"perguntaPadronizada\": \"string\", \"respostaConsolidada\": \"string\", \"frequencia\": integer, \"metadata\": \"string ou null\", \"category\": \"string ou null\"}]",
+    "palavrasChave": [],
+    "idiomaModelo": "pt-br",
+    "modeloOpenAI": "gpt-4o-mini",
+    "ferramenta": "consolidador",
+    "id": "00000000-0000-0000-0000-000000000003"
   }
 ]

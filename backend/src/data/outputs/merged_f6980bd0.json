@@ -1,0 +1,14 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "What is the price?",
+      "respostaConsolidada": "It's $100.",
+      "frequencia": 1
+    },
+    {
+      "perguntaPadronizada": "Qual é o preço?",
+      "respostaConsolidada": "R$ 100.",
+      "frequencia": 2
+    }
+  ]
+}

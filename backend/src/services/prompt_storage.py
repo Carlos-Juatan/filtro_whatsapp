@@ -57,12 +57,30 @@ DEFAULT_GENERATOR_PROMPT_TEXT = (
     '{"qna_pairs": [{"question": "Pergunta formulada a partir do fato", "answer": "Fato ou afirmação declarativa original na íntegra", "frequency": 1, "metadata": "Categoria temática do fato", "category": "FAQ"}]}'
 )
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Default system prompt text for the Q&A Document Consolidator (004-merge-qa-documents)
+# ──────────────────────────────────────────────────────────────────────────────
+
+DEFAULT_CONSOLIDADOR_PROMPT_TEXT = (
+    "Você é um assistente especialista em consolidar e organizar bases de Perguntas e Respostas (P&R). "
+    "Sua tarefa é analisar o grupo de P&R fornecido, remover perguntas e respostas duplicadas ou redundantes, "
+    "combinar as frequências das perguntas idênticas/similares e gerar uma lista limpa, unificada e padronizada. "
+    "\n\nInstruções:\n"
+    "1. Agrupe perguntas com o mesmo sentido em uma única Pergunta Padronizada clara e direta.\n"
+    "2. Combine as respostas correspondentes em uma única Resposta Consolidada abrangente e sem contradições.\n"
+    "3. Some as frequências das perguntas duplicadas.\n"
+    "4. Mantenha os metadados e categorias mais relevantes.\n"
+    "5. Retorne a resposta ESTRITAMENTE em formato JSON com a chave 'qna_pairs' contendo o array de objetos:\n"
+    '[{"perguntaPadronizada": "string", "respostaConsolidada": "string", "frequencia": integer, "metadata": "string ou null", "category": "string ou null"}]'
+)
+
 # Fixed UUIDs for built-in default prompts — stable across restarts
 _DEFAULT_PROMPT_ID = "00000000-0000-0000-0000-000000000001"
 _DEFAULT_GENERATOR_PROMPT_ID = "00000000-0000-0000-0000-000000000002"
+_DEFAULT_CONSOLIDADOR_PROMPT_ID = "00000000-0000-0000-0000-000000000003"
 
 # Set of all protected system prompt IDs (cannot be deleted)
-_PROTECTED_PROMPT_IDS = {_DEFAULT_PROMPT_ID, _DEFAULT_GENERATOR_PROMPT_ID}
+_PROTECTED_PROMPT_IDS = {_DEFAULT_PROMPT_ID, _DEFAULT_GENERATOR_PROMPT_ID, _DEFAULT_CONSOLIDADOR_PROMPT_ID}
 
 
 class PromptStorageService:
@@ -78,6 +96,7 @@ class PromptStorageService:
         prompts = self._migrate_ferramenta_field(prompts)
         prompts = self._ensure_extrator_default(prompts)
         prompts = self._ensure_generator_default(prompts)
+        prompts = self._ensure_consolidador_default(prompts)
         with open(PROMPTS_FILE, "w", encoding="utf-8") as f:
             json.dump(prompts, f, indent=2, ensure_ascii=False)
 
@@ -124,6 +143,23 @@ class PromptStorageService:
                 ferramenta=TipoFerramenta.GERADOR,
             )
             prompts.append(generator_prompt.model_dump())
+        return prompts
+
+    def _ensure_consolidador_default(self, prompts: list) -> list:
+        """Guarantee the built-in 'Consolidador de P&R Padrão' prompt always exists."""
+        exists = any(p.get("id") == _DEFAULT_CONSOLIDADOR_PROMPT_ID for p in prompts)
+        if not exists:
+            consolidador_prompt = PromptConfig(
+                id=_DEFAULT_CONSOLIDADOR_PROMPT_ID,
+                nome="Consolidador de P&R Padrão",
+                tipo=TipoPrompt.FIXO,
+                textoInstrucao=DEFAULT_CONSOLIDADOR_PROMPT_TEXT,
+                palavrasChave=[],
+                idiomaModelo="pt-br",
+                modeloOpenAI=ModeloOpenAI.GPT_4O_MINI,
+                ferramenta=TipoFerramenta.CONSOLIDADOR,
+            )
+            prompts.append(consolidador_prompt.model_dump())
         return prompts
 
     def _read_raw(self) -> list:

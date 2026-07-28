@@ -241,7 +241,7 @@ class TestPromptStorageIntegration:
         svc.add(PromptConfigCreate(nome="P2", tipo=TipoPrompt.CUSTOMIZADO, textoInstrucao="Instrução dois aqui."))
 
         prompts = svc.get_all()
-        assert len(prompts) == 4
+        assert len(prompts) == 5  # 3 system defaults (extrator, gerador, consolidador) + 2 added
 
 
 # ──────────────────────────────────────────────────────────────────────────────

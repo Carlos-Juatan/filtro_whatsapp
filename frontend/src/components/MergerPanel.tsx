@@ -1,7 +1,140 @@
-import React, { useState, useRef, useCallback } from "react";
-import { UploadCloud, FileText, FileJson, X, Loader2, CheckCircle, XCircle } from "lucide-react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import {
+  UploadCloud,
+  FileText,
+  FileJson,
+  X,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Sparkles,
+  AlertTriangle,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mergeService, type MergeJobResult } from "../services/mergerService";
+import { apiClient, type PromptConfig } from "../services/api";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Consolidation Status badge
+// ─────────────────────────────────────────────────────────────────────────────
+
+function AiBadge({ used }: { used: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset transition-all",
+        used
+          ? "bg-violet-500/10 text-violet-400 ring-violet-500/20 hover:bg-violet-500/20"
+          : "bg-amber-500/10 text-amber-400 ring-amber-500/20 hover:bg-amber-500/20",
+      )}
+    >
+      {used ? (
+        <>
+          <Sparkles className="w-3 h-3" />
+          IA Ativada
+        </>
+      ) : (
+        <>
+          <AlertTriangle className="w-3 h-3" />
+          Mesclagem Local
+        </>
+      )}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Prompt selector component
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface PromptSelectorProps {
+  prompts: PromptConfig[];
+  selectedId: string | null;
+  onChange: (id: string | null) => void;
+  disabled: boolean;
+}
+
+function PromptSelector({ prompts, selectedId, onChange, disabled }: PromptSelectorProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
+
+  const selected = prompts.find((p) => p.id === selectedId);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        disabled={disabled || prompts.length === 0}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm transition-all",
+          "bg-slate-800/60 border-slate-700 text-slate-200 hover:border-violet-500/50 hover:bg-slate-800",
+          "focus:outline-none focus:ring-2 focus:ring-violet-500/50",
+          (disabled || prompts.length === 0) && "opacity-50 cursor-not-allowed",
+        )}
+      >
+        <span className="flex items-center gap-2 truncate">
+          <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+          {selected ? selected.nome : prompts.length === 0 ? "Carregando prompts…" : "Prompt padrão (automático)"}
+        </span>
+        <ChevronDown
+          className={cn(
+            "w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        />
+      </button>
+
+      {open && prompts.length > 0 && (
+        <ul
+          className={cn(
+            "absolute z-50 mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 shadow-xl",
+            "max-h-52 overflow-y-auto py-1 animate-in fade-in slide-in-from-top-2",
+          )}
+        >
+          <li>
+            <button
+              type="button"
+              className="w-full px-3 py-2 text-left text-sm text-slate-400 hover:bg-slate-700/60 hover:text-slate-200 transition-colors"
+              onClick={() => { onChange(null); setOpen(false); }}
+            >
+              Padrão automático
+            </button>
+          </li>
+          {prompts.map((p) => (
+            <li key={p.id}>
+              <button
+                type="button"
+                className={cn(
+                  "w-full px-3 py-2 text-left text-sm transition-colors hover:bg-slate-700/60",
+                  p.id === selectedId ? "text-violet-300 bg-violet-500/10" : "text-slate-200",
+                )}
+                onClick={() => { onChange(p.id); setOpen(false); }}
+              >
+                <span className="block truncate">{p.nome}</span>
+                <span className="block text-xs text-slate-500 truncate">{p.ferramenta}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main component
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function MergerPanel() {
   const [inputFormat, setInputFormat] = useState<"json" | "txt">("json");
@@ -12,39 +145,66 @@ export function MergerPanel() {
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Prompt selection state (T022)
+  const [consolidadorPrompts, setConsolidadorPrompts] = useState<PromptConfig[]>([]);
+  const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
+
   const acceptString = inputFormat === "json" ? ".json" : ".txt";
 
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (!isProcessing) setDragActive(true);
-  }, [isProcessing]);
+  // Load CONSOLIDADOR prompts on mount
+  useEffect(() => {
+    apiClient
+      .listPrompts("consolidador")
+      .then((prompts) => setConsolidadorPrompts(prompts))
+      .catch(() => setConsolidadorPrompts([]));
+  }, []);
+
+  // Determine if result used AI (no AI warning in warnings list)
+  const aiUsed =
+    result !== null &&
+    !result.warnings.some((w) =>
+      w.includes("Consolidação via IA ignorada") || w.includes("Consolidação via IA falhou"),
+    );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      if (!isProcessing) setDragActive(true);
+    },
+    [isProcessing],
+  );
 
   const handleDragLeave = useCallback(() => setDragActive(false), []);
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (isProcessing) return;
-    const dropped = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith(acceptString));
-    if (dropped.length > 0) {
-      setPendingFiles(prev => {
-        const names = new Set(prev.map(f => f.name));
-        return [...prev, ...dropped.filter(f => !names.has(f.name))];
-      });
-    }
-  }, [isProcessing, acceptString]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+      if (isProcessing) return;
+      const dropped = Array.from(e.dataTransfer.files).filter((f) =>
+        f.name.toLowerCase().endsWith(acceptString),
+      );
+      if (dropped.length > 0) {
+        setPendingFiles((prev) => {
+          const names = new Set(prev.map((f) => f.name));
+          return [...prev, ...dropped.filter((f) => !names.has(f.name))];
+        });
+      }
+    },
+    [isProcessing, acceptString],
+  );
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
-    setPendingFiles(prev => {
-      const names = new Set(prev.map(f => f.name));
-      return [...prev, ...selected.filter(f => !names.has(f.name))];
+    setPendingFiles((prev) => {
+      const names = new Set(prev.map((f) => f.name));
+      return [...prev, ...selected.filter((f) => !names.has(f.name))];
     });
     if (inputRef.current) inputRef.current.value = "";
   }, []);
 
   const handleRemove = (name: string) => {
-    setPendingFiles(prev => prev.filter(f => f.name !== name));
+    setPendingFiles((prev) => prev.filter((f) => f.name !== name));
   };
 
   const handleProcess = async () => {
@@ -57,7 +217,7 @@ export function MergerPanel() {
       setResult(res);
       setPendingFiles([]);
     } catch (err: any) {
-      setError(err.message || "Erro ao processar arquivos. (API pode não estar pronta - Fase 5)");
+      setError(err.message || "Erro ao processar arquivos.");
     } finally {
       setIsProcessing(false);
     }
@@ -65,11 +225,13 @@ export function MergerPanel() {
 
   return (
     <div className="bg-slate-900/60 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700/50 p-6 flex flex-col gap-6 w-full max-w-4xl mx-auto min-h-[400px]">
+      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-slate-100 mb-2">Consolidador de P&R</h2>
         <p className="text-slate-400 text-sm">Mescle múltiplos arquivos em um único dataset sem duplicatas.</p>
       </div>
 
+      {/* Format selector */}
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-slate-300">Formato de Entrada</label>
         <div className="flex gap-6">
@@ -79,7 +241,12 @@ export function MergerPanel() {
               name="format"
               value="json"
               checked={inputFormat === "json"}
-              onChange={() => { setInputFormat("json"); setPendingFiles([]); setError(null); setResult(null); }}
+              onChange={() => {
+                setInputFormat("json");
+                setPendingFiles([]);
+                setError(null);
+                setResult(null);
+              }}
               className="w-4 h-4 accent-indigo-500 bg-slate-800 border-slate-700"
             />
             <FileJson className="w-4 h-4 text-indigo-400" /> JSON (.json)
@@ -90,7 +257,12 @@ export function MergerPanel() {
               name="format"
               value="txt"
               checked={inputFormat === "txt"}
-              onChange={() => { setInputFormat("txt"); setPendingFiles([]); setError(null); setResult(null); }}
+              onChange={() => {
+                setInputFormat("txt");
+                setPendingFiles([]);
+                setError(null);
+                setResult(null);
+              }}
               className="w-4 h-4 accent-indigo-500 bg-slate-800 border-slate-700"
             />
             <FileText className="w-4 h-4 text-indigo-400" /> TXT (.txt)
@@ -98,6 +270,24 @@ export function MergerPanel() {
         </div>
       </div>
 
+      {/* Prompt selection (T022) */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+          Prompt de Consolidação (IA)
+        </label>
+        <PromptSelector
+          prompts={consolidadorPrompts}
+          selectedId={selectedPromptId}
+          onChange={setSelectedPromptId}
+          disabled={isProcessing}
+        />
+        <p className="text-xs text-slate-500">
+          Selecione um prompt CONSOLIDADOR para refinar os dados via ChatGPT. Sem chave OpenAI configurada, a mesclagem algorítmica é usada automaticamente.
+        </p>
+      </div>
+
+      {/* Drop zone */}
       <div
         role="button"
         tabIndex={isProcessing ? -1 : 0}
@@ -110,14 +300,18 @@ export function MergerPanel() {
           isProcessing
             ? "cursor-not-allowed border-slate-800 bg-slate-900/50 opacity-50"
             : dragActive
-            ? "border-indigo-500 bg-indigo-950/30 scale-[1.01]"
-            : "border-slate-700 bg-slate-800/40 hover:border-indigo-500/50 hover:bg-slate-800/80"
+              ? "border-indigo-500 bg-indigo-950/30 scale-[1.01]"
+              : "border-slate-700 bg-slate-800/40 hover:border-indigo-500/50 hover:bg-slate-800/80",
         )}
       >
-        <UploadCloud className={cn("h-10 w-10 transition-all", dragActive ? "text-indigo-400 scale-110" : "text-slate-500")} />
+        <UploadCloud
+          className={cn("h-10 w-10 transition-all", dragActive ? "text-indigo-400 scale-110" : "text-slate-500")}
+        />
         <div className="space-y-1">
           <p className="text-sm font-medium text-slate-300">
-            {dragActive ? "Solte os arquivos aqui" : `Arraste arquivos ${acceptString} ou clique para selecionar`}
+            {dragActive
+              ? "Solte os arquivos aqui"
+              : `Arraste arquivos ${acceptString} ou clique para selecionar`}
           </p>
         </div>
         <input
@@ -130,14 +324,28 @@ export function MergerPanel() {
         />
       </div>
 
+      {/* Pending files list */}
       {pendingFiles.length > 0 && (
         <ul className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-700">
-          {pendingFiles.map(f => (
-            <li key={f.name} className="flex items-center gap-3 rounded-lg border border-slate-700/50 bg-slate-800/30 px-3 py-2 text-sm animate-in fade-in slide-in-from-bottom-2 hover:translate-x-1 hover:bg-slate-800/50 transition-all">
-              {inputFormat === "json" ? <FileJson className="h-4 w-4 shrink-0 text-slate-400" /> : <FileText className="h-4 w-4 shrink-0 text-slate-400" />}
+          {pendingFiles.map((f) => (
+            <li
+              key={f.name}
+              className="flex items-center gap-3 rounded-lg border border-slate-700/50 bg-slate-800/30 px-3 py-2 text-sm animate-in fade-in slide-in-from-bottom-2 hover:translate-x-1 hover:bg-slate-800/50 transition-all"
+            >
+              {inputFormat === "json" ? (
+                <FileJson className="h-4 w-4 shrink-0 text-slate-400" />
+              ) : (
+                <FileText className="h-4 w-4 shrink-0 text-slate-400" />
+              )}
               <span className="flex-1 truncate font-medium text-slate-300">{f.name}</span>
               {!isProcessing && (
-                <button onClick={(e) => { e.stopPropagation(); handleRemove(f.name); }} className="text-slate-500 hover:text-red-400 transition-colors p-1 rounded-md hover:bg-slate-700/50">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove(f.name);
+                  }}
+                  className="text-slate-500 hover:text-red-400 transition-colors p-1 rounded-md hover:bg-slate-700/50"
+                >
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -146,6 +354,7 @@ export function MergerPanel() {
         </ul>
       )}
 
+      {/* Process button */}
       {!isProcessing && pendingFiles.length > 0 && (
         <button
           onClick={handleProcess}
@@ -155,27 +364,35 @@ export function MergerPanel() {
         </button>
       )}
 
+      {/* Processing spinner */}
       {isProcessing && (
         <div className="flex flex-col items-center justify-center py-4 gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
-          <span className="text-sm text-slate-400 animate-pulse">Enviando arquivos...</span>
+          <span className="text-sm text-slate-400 animate-pulse">Consolidando arquivos…</span>
         </div>
       )}
 
+      {/* Error state */}
       {error && (
         <div className="rounded-lg border border-red-900/50 bg-red-950/20 p-4 text-red-400 text-sm flex gap-3 items-center animate-in fade-in">
           <XCircle className="w-5 h-5 shrink-0" />
           <p>{error}</p>
         </div>
       )}
-      
+
+      {/* Result card */}
       {result && (
         <div className="flex flex-col gap-4 animate-in fade-in">
           <div className="rounded-lg border border-emerald-900/50 bg-emerald-950/20 p-4 text-emerald-400 text-sm flex flex-col gap-2">
-            <div className="flex gap-3 items-center">
-              <CheckCircle className="w-5 h-5 shrink-0" />
-              <p className="font-medium">Consolidação concluída com sucesso!</p>
+            <div className="flex gap-3 items-center justify-between">
+              <div className="flex gap-3 items-center">
+                <CheckCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">Consolidação concluída com sucesso!</p>
+              </div>
+              {/* AI usage status badge (T022) */}
+              <AiBadge used={aiUsed} />
             </div>
+
             <div className="pl-8 flex flex-wrap gap-2 mt-1">
               <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-inset ring-emerald-500/20 transition-all hover:bg-emerald-500/20 hover:scale-105">
                 Arquivos processados: {result.total_files_processed}
@@ -187,7 +404,7 @@ export function MergerPanel() {
                 Únicos (Mesclados): {result.total_qna_merged}
               </span>
             </div>
-            
+
             <div className="pl-8 flex gap-3 mt-2">
               {result.json_output_filename && (
                 <a
@@ -211,13 +428,16 @@ export function MergerPanel() {
               )}
             </div>
           </div>
-          
+
+          {/* Warnings (including AI fallback notice) */}
           {result.warnings && result.warnings.length > 0 && (
             <div className="rounded-lg border border-amber-900/50 bg-amber-950/20 p-4 text-amber-400 text-sm flex flex-col gap-2">
               <p className="font-medium">Avisos ({result.warnings.length}):</p>
               <ul className="list-disc pl-5 flex flex-col gap-1">
                 {result.warnings.map((w, idx) => (
-                  <li key={idx} className="text-amber-200/80">{w}</li>
+                  <li key={idx} className="text-amber-200/80">
+                    {w}
+                  </li>
                 ))}
               </ul>
             </div>

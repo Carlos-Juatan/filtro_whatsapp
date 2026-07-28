@@ -97,13 +97,13 @@
 
 ### Implementation for Phase 7
 
-- [ ] T019 [P] [US2] Add `TipoFerramenta.CONSOLIDADOR` ("consolidador") to Enum in `backend/src/models/schemas.py` and `TipoFerramenta` type in `frontend/src/services/api.ts`
-- [ ] T020 [P] [US2] Register default `CONSOLIDADOR` system prompt text in `backend/src/services/prompt_storage.py` and add migration unit tests — **append** to `backend/tests/unit/test_prompt_storage_migration.py` (create file if absent under `unit/`)
-- [ ] T021 [US2] [FR-011] Integrate OpenAI API call with `TipoFerramenta.CONSOLIDADOR` prompt in `backend/src/services/qna_merger_service.py` with graceful fallback to local merge when no API key is configured; notify user via response field that AI consolidation was skipped
-- [ ] T022 [US3] Update prompt selection and status feedback using shadcn/ui components in `frontend/src/components/MergerPanel.tsx`
-- [ ] T023 [US2] Add unit tests for ChatGPT merger service integration and fallback logic — **append** to `backend/tests/unit/test_qna_merger_service.py` (same file as T011; do not overwrite existing tests)
-- [ ] T024 [US3] Update API integration tests for `/api/merger/consolidate` in `backend/tests/integration/test_merger_api.py`
-- [ ] T025 [P] [SC-001] Add parametric pytest scenario in `backend/tests/integration/test_merger_api.py` asserting zero duplicate `perguntaPadronizada` values in the JSON output after full consolidation run (SC-001 verification)
+- [X] T019 [P] [US2] Add `TipoFerramenta.CONSOLIDADOR` ("consolidador") to Enum in `backend/src/models/schemas.py` and `TipoFerramenta` type in `frontend/src/services/api.ts`
+- [X] T020 [P] [US2] Register default `CONSOLIDADOR` system prompt text in `backend/src/services/prompt_storage.py` and add migration unit tests — **append** to `backend/tests/unit/test_prompt_storage_migration.py` (create file if absent under `unit/`)
+- [X] T021 [US2] [FR-011] Integrate OpenAI API call with `TipoFerramenta.CONSOLIDADOR` prompt in `backend/src/services/qna_merger_service.py` with graceful fallback to local merge when no API key is configured; notify user via response field that AI consolidation was skipped
+- [X] T022 [US3] Update prompt selection and status feedback using shadcn/ui components in `frontend/src/components/MergerPanel.tsx`
+- [X] T023 [US2] Add unit tests for ChatGPT merger service integration and fallback logic — **append** to `backend/tests/unit/test_qna_merger_service.py` (same file as T011; do not overwrite existing tests)
+- [X] T024 [US3] Update API integration tests for `/api/merger/consolidate` in `backend/tests/integration/test_merger_api.py`
+- [X] T025 [P] [SC-001] Add parametric pytest scenario in `backend/tests/integration/test_merger_api.py` asserting zero duplicate `perguntaPadronizada` values in the JSON output after full consolidation run (SC-001 verification)
 
 ---
 
