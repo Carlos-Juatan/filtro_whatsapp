@@ -1,6 +1,6 @@
 import re
 from typing import List, Dict, Optional
-from models.merger import QnAPair
+from src.models.merger import QnAPair
 
 class QnAMergerService:
     @staticmethod

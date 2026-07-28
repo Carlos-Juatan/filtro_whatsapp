@@ -1,49 +1,39 @@
-# Data Model: Consolidated Question & Answer Document Merger
+# Data Model Specification: Consolidated Question & Answer Document Merger
 
-## Entities
+**Feature Branch**: `004-merge-qa-documents`  
 
-### 1. QnAPair
-Represents a single question and answer item extracted from or compiled for a document.
+## Entities & Enums
 
-| Field | Type | Description | Constraints / Validation |
-|-------|------|-------------|--------------------------|
-| `perguntaPadronizada` | String | The standard question text | Non-empty |
-| `respostaConsolidada` | String | The answer text | Non-empty |
-| `frequencia` | Integer | Occurrence frequency count | Must be >= 1 |
-| `metadata` | String (Optional) | Document/category tags or metadata string | Optional |
-| `category` | String (Optional) | Categorization string | Optional |
+### 1. `InputFormat` (Enum)
+Defines supported input file formats for batch parsing.
+- Values:
+  - `json`: Structured JSON file with `qna_pairs` array.
+  - `txt`: Standard text file formatted with `[Metadata] (Frequência: n)` headers, `Q:` and `A:` blocks.
 
-### 2. MergeJobRequest
-Input parameters for triggering a document merge operation.
+### 2. `TipoFerramenta` (Enum Extension)
+Segregates prompt templates by tool type in `PromptStorageService` and `schemas.py`.
+- Values:
+  - `extrator`: Prompts for text chunk extraction tool.
+  - `gerador`: Prompts for Q&A pair generator tool.
+  - `consolidador`: Prompts for Q&A document merger tool.
 
-| Field | Type | Description | Constraints / Validation |
-|-------|------|-------------|--------------------------|
-| `format` | Enum (`json`, `txt`) | Input format of files being submitted | Required |
-| `files` | List of UploadFile | Array of file payloads | At least 1 file required |
+### 3. `QnAPair` (Model)
+Represents a single Question & Answer pair extracted or consolidated across files.
+- Fields:
+  - `perguntaPadronizada` (string, required): Standardized question text.
+  - `respostaConsolidada` (string, required): Consolidated answer text.
+  - `frequencia` (integer, required, default=1): Number of occurrences/occurrences count across source files.
+  - `metadata` (string | null, optional): Comma-separated metadata tags (e.g. source file names or topics).
+  - `category` (string | null, optional): Category classification tag.
 
-### 3. MergeJobResult
-Output result returned to the client upon processing completion.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | Boolean | Overall operation success flag |
-| `total_files_processed` | Integer | Count of valid files successfully parsed |
-| `total_qna_extracted` | Integer | Raw count of Q&A pairs extracted before deduplication |
-| `total_qna_merged` | Integer | Final count of unique Q&A pairs after merging |
-| `json_output_url` | String | Download/file URL for generated `.json` output |
-| `txt_output_url` | String | Download/file URL for generated `.txt` output |
-| `warnings` | List of String | Warnings for skipped or malformed files |
-| `qna_pairs` | List of QnAPair | The merged Q&A dataset |
-
-## State Transitions & Flow
-
-```mermaid
-stateDiagram-v2
-    [*] --> Ingesting: User uploads N files + format mode
-    Ingesting --> Parsing: Iterate files via QnAParserFactory
-    Parsing --> Deduplicating: Collect raw QnAPairs list
-    Parsing --> Ingesting: File error -> Log warning & skip file
-    Deduplicating --> Formatting: Group by normalized key, sum frequencies, pick longest answer
-    Formatting --> Exporting: Generate TXT & JSON file artifacts
-    Exporting --> [*]: Return MergeJobResult with output paths & status
-```
+### 4. `MergeJobResult` (Model)
+Response structure returned by `POST /api/merger/consolidate`.
+- Fields:
+  - `success` (boolean): `true` if at least one file was parsed and consolidated.
+  - `total_files_processed` (integer): Count of input files successfully read.
+  - `total_qna_extracted` (integer): Total Q&A pairs extracted before deduplication.
+  - `total_qna_merged` (integer): Count of unique Q&A pairs after pre-grouping & ChatGPT consolidation.
+  - `json_output_filename` (string | null): File basename of the generated JSON output file in server output directory.
+  - `txt_output_filename` (string | null): File basename of the generated TXT output file in server output directory.
+  - `warnings` (List[string]): List of non-fatal warnings (e.g. skipped unparseable files, fallback to local merge when API key is missing).
+  - `qna_pairs` (List[QnAPair]): Array of the final consolidated Q&A pair objects.

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import IO, Any, Dict, List
-from models.merger import QnAPair, InputFormat
+from src.models.merger import QnAPair, InputFormat
 
 class QnAParser(ABC):
     @abstractmethod
@@ -50,8 +50,8 @@ class QnAParserFactory:
         return parser
 
 # Register default parsers
-from services.json_qna_parser import JSONQnAParser
-from services.txt_qna_parser import TXTQnAParser
+from src.services.json_qna_parser import JSONQnAParser
+from src.services.txt_qna_parser import TXTQnAParser
 
 QnAParserFactory.register_parser(InputFormat.json, JSONQnAParser())
 QnAParserFactory.register_parser(InputFormat.txt, TXTQnAParser())

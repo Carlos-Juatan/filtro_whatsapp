@@ -1,33 +1,33 @@
 # Implementation Plan: Consolidated Question & Answer Document Merger
 
-**Branch**: `004-merge-qa-documents` | **Date**: 2026-07-24 | **Spec**: [spec.md](file:///mnt/D_DADOS/02_Projetos_Ativos/Vet_Manager/Projects/filtro_whatsapp/specs/004-merge-qa-documents/spec.md)
+**Branch**: `004-merge-qa-documents` | **Date**: 2026-07-28 | **Spec**: [`specs/004-merge-qa-documents/spec.md`](file:///mnt/D_DADOS/02_Projetos_Ativos/Vet_Manager/Projects/filtro_whatsapp/specs/004-merge-qa-documents/spec.md)  
 **Input**: Feature specification from `/specs/004-merge-qa-documents/spec.md`
 
 ## Summary
 
-The goal of this feature is to create a 3rd dedicated tool within the web application interface ("Consolidar P&R") to merge Q&A pairs from multiple uploaded documents (JSON or TXT). The system parses documents in the specified format, normalizes and deduplicates Q&A items, sums their frequency (`frequencia`), selects the longest/most complete answer when duplicates occur, and generates both `.txt` and `.json` output files in the standard project schema.
+The Q&A Document Merger feature ("Ferramenta de Juntar") enables users to upload multiple JSON or TXT documents, parse Q&A pairs using modular factory parsers, perform algorithmic pre-grouping, send batch entries to ChatGPT (OpenAI API) using a standard configurable consolidation prompt (`TipoFerramenta.CONSOLIDADOR`), and concurrently export deduplicated JSON and TXT files for user download.
 
 ## Technical Context
 
-**Language/Version**: Python 3.10+ (Backend FastAPI), TypeScript / React 18+ (Frontend Vite)  
-**Primary Dependencies**: FastAPI, Pydantic, Tailwind CSS, Lucide React, Pytest  
-**Storage**: Local temporary filesystem storage for output generation  
-**Testing**: pytest (backend unit and endpoint tests)  
-**Target Platform**: Docker single container (FastAPI + React static build) / Localhost  
-**Project Type**: Full-stack web application (FastAPI backend + React frontend)  
-**Performance Goals**: Batch processing of up to 50 files completed in under 1 minute  
-**Constraints**: Single Docker container, Local-First, dual export format (.txt & .json), Factory Pattern for parsers/services  
-**Scale/Scope**: Multi-document ingestion up to tens of files, deduplication in memory  
+**Language/Version**: Python 3.12 (Backend), TypeScript / React 18 (Frontend)  
+**Primary Dependencies**: FastAPI, Pydantic, Vite, Tailwind CSS, Lucide React, OpenAI API  
+**Storage**: Local filesystem (`data/outputs/` for exports, `prompts.json` for prompt storage)  
+**Testing**: pytest (backend unit/integration tests)  
+**Target Platform**: Linux single-container Docker / Localhost  
+**Project Type**: Web Application (FastAPI backend + React SPA frontend)  
+**Performance Goals**: Process up to 50 files in < 1 minute  
+**Constraints**: Offline fallback for deduplication when OpenAI API key is missing  
+**Scale/Scope**: Single-user local utility tool  
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **Principle I: Local-First e Usuário Único**: PASS. The consolidation tool runs fully on localhost without cloud or DB dependencies.
-- **Principle II: Processamento Transparente de Arquivos**: PASS. Uploaded files will be listed in UI, execution logs stream in real-time, and results/counts are displayed.
-- **Principle III: Estética Premium e Micro-animações**: PASS. UI will use React/TypeScript/Tailwind with smooth hover transitions, card components, and status badges consistent with Extractor and Generator tools.
-- **Principle IV: Formatos de Exportação Duplos**: PASS. The backend will simultaneously generate `.json` (`qna_pairs` format) and `.txt` (`[Metadata] (Frequência: N)` block format).
-- **Principle V: Mecanismo de Extração Modular**: PASS. Merging & parsing logic will use modular services/factories in `backend/src/services/` and `frontend/src/services/`.
+- **I. Local-First e Usuário Único**: PASS. Runs on localhost:8100 single container. No external database or cloud auth.
+- **II. Processamento Transparente de Arquivos**: PASS. UI displays total uploaded files, progress, extracted vs merged counts, warnings log, and download links.
+- **III. Estética Premium e Micro-animações**: PASS. Responsive UI with glassmorphism, micro-animations, loading states, and dark mode compatibility.
+- **IV. Formatos de Exportação Duplos**: PASS. Outputs both structured `.json` and formatted `.txt` concurrently for every consolidation run.
+- **V. Mecanismo de Extração Modular**: PASS. Uses `QnAParserFactory` for file parsing, decoupled `QnAMergerService` for consolidation logic, and `QnAExporter` for formatting.
 
 ## Project Structure
 
@@ -36,50 +36,53 @@ The goal of this feature is to create a 3rd dedicated tool within the web applic
 ```text
 specs/004-merge-qa-documents/
 ├── plan.md              # This file
-├── research.md          # Phase 0 output
-├── data-model.md        # Phase 1 output
-├── quickstart.md        # Phase 1 output
-├── contracts/           # Phase 1 output
-│   └── merge_api.json   # OpenAPI contract for merge endpoint
-└── tasks.md             # Phase 2 output
+├── research.md          # Architecture decisions for OpenAI integration & prompt management
+├── data-model.md        # QnAPair, MergeJobResult, TipoFerramenta schemas
+├── quickstart.md        # Test suite and dev server execution commands
+├── contracts/           # API contract OpenAPI schema (merge_api.json)
+└── tasks.md             # Implementation task breakdown
 ```
 
-### Source Code Layout
+### Source Code (repository root)
 
 ```text
 backend/
 ├── src/
 │   ├── api/
-│   │   └── endpoints/
-│   │       └── merger.py         # FastApi router for file merge operation
+│   │   ├── endpoints/
+│   │   │   └── merger.py         # FastAPI router for consolidation & download endpoints
+│   │   └── routes/
+│   │       ├── keys.py
+│   │       └── prompts.py
 │   ├── models/
-│   │   └── merger.py          # Data models for Q&A pair and merge request/response
+│   │   ├── merger.py             # QnAPair, InputFormat, MergeJobResult models
+│   │   └── schemas.py            # TipoFerramenta enum with CONSOLIDADOR
 │   └── services/
-│       ├── qna_parser_factory.py # Factory for JSON and TXT Q&A parsers
-│       ├── json_qna_parser.py    # JSON QnA Parser implementation
-│       ├── txt_qna_parser.py     # TXT QnA Parser implementation
-│       └── qna_merger_service.py # Deduplication, frequency summing & answer selection logic
+│       ├── qna_parser_factory.py # Factory pattern for format parsers
+│       ├── json_qna_parser.py    # JSON parser implementation
+│       ├── txt_qna_parser.py     # TXT parser implementation
+│       ├── qna_merger_service.py # Pre-grouping & ChatGPT consolidation service
+│       ├── qna_exporter.py       # Dual output generator (JSON and TXT)
+│       └── prompt_storage.py     # Storage & default prompts for CONSOLIDADOR
 └── tests/
-    ├── unit/
-    │   └── test_qna_merger.py   # Unit tests for parser and merger service
-    └── integration/
-        └── test_merger_api.py   # API endpoint integration tests
+    ├── integration/
+    │   └── test_merger_api.py   # API integration tests
+    └── unit/
+        ├── test_qna_parser.py   # Parser unit tests
+        └── test_qna_merger_service.py # Merger service unit tests
 
 frontend/
 ├── src/
 │   ├── components/
-│   │   ├── MergerPanel.tsx      # Main panel for tool 3 ("Consolidar P&R")
-│   │   └── Navigation.tsx       # Tab switcher updated with tool 3 option
+│   │   └── MergerPanel.tsx      # Main UI component for document merger
 │   └── services/
-│       └── mergerService.ts     # Frontend API client for consolidation endpoint
+│       ├── api.ts               # API client interfaces & TipoFerramenta type
+│       ├── mergerService.ts     # Frontend HTTP client for consolidation API
+│       └── prompts.ts           # Prompt management client
 ```
 
-**Structure Decision**: Web application layout (backend/ and frontend/) following existing patterns in the codebase.
+**Structure Decision**: Web application layout separating FastAPI backend (`backend/src`) and React TypeScript frontend (`frontend/src`).
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| None | N/A | N/A |
+> No violations found in Constitution Check.

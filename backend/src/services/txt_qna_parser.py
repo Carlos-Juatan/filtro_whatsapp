@@ -1,7 +1,7 @@
 import re
 from typing import IO, Any, List
-from models.merger import QnAPair
-from services.qna_parser_factory import QnAParser
+from src.models.merger import QnAPair
+from src.services.qna_parser_factory import QnAParser
 
 class TXTQnAParser(QnAParser):
     def parse(self, file: IO[Any]) -> List[QnAPair]:

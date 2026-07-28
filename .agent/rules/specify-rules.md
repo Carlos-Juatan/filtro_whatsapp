@@ -1,6 +1,6 @@
 # filtro_whatsapp Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-07-24
+Auto-generated from all feature plans. Last updated: 2026-07-28
 
 ## Active Technologies
 - Python 3.11/3.12, TypeScript 5.2.2, Node 20 + FastAPI (0.111.0), React (18.3.1), Tailwind CSS, Lucide React, OpenAI (1.30.1), Pydantic (2.7.1) (002-txt-output-uncategorized)
@@ -30,9 +30,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+ (Backend), TypeScript 5+, Node.js 18+ (Frontend): Follow standard conventions
 
 ## Recent Changes
+- 004-merge-qa-documents: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 004-merge-qa-documents: Added Python 3.10+ (Backend FastAPI), TypeScript / React 18+ (Frontend Vite) + FastAPI, Pydantic, Tailwind CSS, Lucide React, Pytest
 - 003-gerador-perguntas: Added Python 3.10+ (Backend), TypeScript / React 18+ (Frontend) + FastAPI, Pydantic, tiktoken, openai, Tailwind CSS, Lucide React, shadcn/ui
-- 002-txt-output-uncategorized: Added Python 3.11/3.12, TypeScript 5.2.2, Node 20 + FastAPI (0.111.0), React (18.3.1), Tailwind CSS, Lucide React, OpenAI (1.30.1), Pydantic (2.7.1)
 
 
 <!-- MANUAL ADDITIONS START -->

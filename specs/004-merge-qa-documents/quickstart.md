@@ -1,31 +1,38 @@
-# Quickstart: Consolidated Question & Answer Document Merger
+# Quickstart Guide: Testing Q&A Document Merger Tool
 
-## Overview
-This document provides instructions for using and testing the **Consolidar P&R** tool feature.
-
-## User Workflow
-
-1. Open the application interface in your web browser.
-2. Select the **Consolidar P&R** tab in the main top navigation panel.
-3. Choose your input format mode: **JSON** or **TXT**.
-4. Drag and drop or browse to select multiple `.json` or `.txt` Q&A documents.
-5. Click **Iniciar Consolidação** to execute deduplication and merging.
-6. View the execution status, logs, and merged Q&A results on screen.
-7. Click the **Baixar JSON** or **Baixar TXT** buttons to download consolidated output files.
+**Feature Branch**: `004-merge-qa-documents`  
 
 ## Running Tests
 
-### Backend Unit & Integration Tests
-
-Run backend tests using pytest:
+Run the full backend unit and integration test suite:
 
 ```bash
-cd backend
-pytest tests/unit/test_qna_merger.py tests/integration/test_merger_api.py -v
+backend/venv/bin/pytest backend/tests/ -v
 ```
 
-### Manual Testing with Sample Files
+Run specific merger unit tests and API integration tests:
 
-1. Prepare two sample TXT files or JSON files with overlapping questions.
-2. Upload via the interface.
-3. Confirm that duplicate questions have their `frequencia` counts summed and that both `.txt` and `.json` files are produced.
+```bash
+backend/venv/bin/pytest backend/tests/unit/test_qna_merger_service.py backend/tests/integration/test_merger_api.py -v
+```
+
+## Running the Application Locally
+
+1. Start the FastAPI backend server (port 8100):
+```bash
+cd backend
+venv/bin/python -m uvicorn src.main:app --host 0.0.0.0 --port 8100 --reload
+```
+
+2. Start the Vite React frontend dev server (port 5100):
+```bash
+cd frontend
+npm run dev
+```
+
+3. Open your browser to `http://localhost:5100` (or `http://localhost:8100`), navigate to **Consolidar P&R**, select `.json` or `.txt` input files, and click **Consolidar Arquivos**.
+
+4. Verify that:
+   - Duplicate questions/answers across selected files are merged.
+   - Summaries show extracted vs merged P&R count.
+   - Download links for both `.json` and `.txt` are generated.

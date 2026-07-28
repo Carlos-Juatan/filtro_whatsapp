@@ -1,6 +1,6 @@
 import json
 from typing import List
-from models.merger import QnAPair
+from src.models.merger import QnAPair
 
 class QnAExporter:
     @staticmethod

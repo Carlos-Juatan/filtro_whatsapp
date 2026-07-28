@@ -1,0 +1,10 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Q1?",
+      "respostaConsolidada": "A1",
+      "frequencia": 1,
+      "metadata": "meta"
+    }
+  ]
+}

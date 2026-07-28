@@ -56,7 +56,7 @@
 ### Implementation for User Story 2
 
 - [x] T010 [US2] Implement deduplication, normalization, frequency summation, and answer selection service in `backend/src/services/qna_merger_service.py`
-- [x] T011 [US2] Add unit tests for deduplication logic, frequency summation, and answer selection edge cases in `backend/tests/unit/test_qna_merger_service.py`
+- [x] T011 [US2] Add unit tests for deduplication logic, frequency summation, and answer selection edge cases — **append** to `backend/tests/unit/test_qna_merger_service.py`
 
 **Checkpoint**: User Story 2 is functional - parsed Q&A pairs are correctly deduplicated and merged.
 
@@ -71,21 +71,39 @@
 ### Implementation for User Story 3
 
 - [x] T012 [P] [US3] Implement TXT and JSON file exporters in `backend/src/services/qna_exporter.py`
-- [x] T013 [US3] Create FastAPI endpoint `/api/merger/merge` handling multi-file upload, parser invocation, merger service, export generation, and returning `MergeJobResult` in `backend/src/api/endpoints/merger.py`
+- [x] T013 [US3] Create FastAPI endpoint `/api/merger/consolidate` handling multi-file upload, parser invocation, merger service, export generation, and returning `MergeJobResult` in `backend/src/api/endpoints/merger.py`
 - [x] T014 [US3] Register merger router in main FastAPI application in `backend/src/main.py`
-- [x] T015 [US3] Connect frontend `MergerPanel.tsx` to `mergerService.ts` to trigger merge API, show log output, download links, and summary metrics in `frontend/src/components/MergerPanel.tsx`
-- [x] T016 [US3] Add API integration tests for `/api/merger/merge` endpoint in `backend/tests/integration/test_merger_api.py`
+- [x] T015 [US3] Connect frontend `MergerPanel.tsx` to `mergerService.ts` using shadcn/ui interactive components to trigger merge API, show log output, download links, and summary metrics in `frontend/src/components/MergerPanel.tsx`
+- [x] T016 [US3] Add API integration tests for `/api/merger/consolidate` endpoint including assertion that output contains zero duplicate Q&A entries (SC-001 coverage) in `backend/tests/integration/test_merger_api.py`
 
 **Checkpoint**: All 3 User Stories are integrated and working end-to-end.
 
 ---
 
-## Phase 6: Polish & Cross-Cutting Concerns
+## Phase 6: Polish & Router Import Fix
 
-**Purpose**: Overall UI refinement, micro-animations, error boundary handling, and test validation
+**Purpose**: Fix 405 Method Not Allowed error via package imports fix and verify test suite pass rate
 
 - [x] T017 [P] Add Tailwind glassmorphism styles, hover micro-animations, and status badges to `frontend/src/components/MergerPanel.tsx`
-- [x] T018 Run test suite (`pytest`) to ensure 100% pass rate across unit and integration tests
+- [x] T018 Fix backend import paths with `src.` prefix across merger router and services to resolve 405 Method Not Allowed error in `backend/src/api/endpoints/merger.py`
+
+---
+
+## Phase 7: ChatGPT Prompt Integration (`TipoFerramenta.CONSOLIDADOR`) (Priority: P1)
+
+**Goal**: Integrate ChatGPT (OpenAI API) with standard prompt configuration for Q&A consolidation and deduplication.
+
+**Independent Test**: Trigger consolidation with an active OpenAI key. Verify pre-grouped batches are refined via ChatGPT using the default `CONSOLIDADOR` prompt, and fallback to local merging occurs if no API key is set.
+
+### Implementation for Phase 7
+
+- [ ] T019 [P] [US2] Add `TipoFerramenta.CONSOLIDADOR` ("consolidador") to Enum in `backend/src/models/schemas.py` and `TipoFerramenta` type in `frontend/src/services/api.ts`
+- [ ] T020 [P] [US2] Register default `CONSOLIDADOR` system prompt text in `backend/src/services/prompt_storage.py` and add migration unit tests — **append** to `backend/tests/unit/test_prompt_storage_migration.py` (create file if absent under `unit/`)
+- [ ] T021 [US2] [FR-011] Integrate OpenAI API call with `TipoFerramenta.CONSOLIDADOR` prompt in `backend/src/services/qna_merger_service.py` with graceful fallback to local merge when no API key is configured; notify user via response field that AI consolidation was skipped
+- [ ] T022 [US3] Update prompt selection and status feedback using shadcn/ui components in `frontend/src/components/MergerPanel.tsx`
+- [ ] T023 [US2] Add unit tests for ChatGPT merger service integration and fallback logic — **append** to `backend/tests/unit/test_qna_merger_service.py` (same file as T011; do not overwrite existing tests)
+- [ ] T024 [US3] Update API integration tests for `/api/merger/consolidate` in `backend/tests/integration/test_merger_api.py`
+- [ ] T025 [P] [SC-001] Add parametric pytest scenario in `backend/tests/integration/test_merger_api.py` asserting zero duplicate `perguntaPadronizada` values in the JSON output after full consolidation run (SC-001 verification)
 
 ---
 
@@ -93,27 +111,24 @@
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: Can start immediately.
-- **Foundational (Phase 2)**: Depends on Phase 1 completion - BLOCKS all User Stories.
-- **User Story 1 (Phase 3)**: Depends on Phase 2.
-- **User Story 2 (Phase 4)**: Depends on US1 (ingestion/parsers).
-- **User Story 3 (Phase 5)**: Depends on US2 (merged dataset) and US1.
-- **Polish (Phase 6)**: Depends on Phase 5.
+- **Setup (Phase 1)**: Completed.
+- **Foundational (Phase 2)**: Completed.
+- **User Story 1 (Phase 3)**: Completed.
+- **User Story 2 (Phase 4)**: Completed.
+- **User Story 3 (Phase 5)**: Completed.
+- **Polish & Router Fix (Phase 6)**: Completed.
+- **ChatGPT Prompt Integration (Phase 7)**: Depends on Phase 5 & 6. Includes T025 (SC-001 verification).
 
-### Parallel Opportunities
+### Parallel Opportunities in Phase 7
 
-- **T001 & T002**: Setup data models (backend) and API service (frontend) in parallel.
-- **T005 & T006**: Implement JSON parser and TXT parser in parallel.
-- **T012**: Implement exporters while finalizing merger service.
-- **T017**: Polish UI while tests run.
+- **T019 & T020**: Extend Enum `TipoFerramenta` in models and register default prompt in storage service in parallel.
 
 ---
 
 ## Implementation Strategy
 
-### MVP First (User Story 1 - 3 Sequence)
-
-1. Complete Phase 1 & Phase 2.
-2. Build US1 (Parsers) -> US2 (Merger) -> US3 (Endpoint & Export).
-3. Validate end-to-end flow with sample JSON/TXT files.
-4. Execute Polish & test verification.
+1. Execute T019 and T020 (Enum addition & default prompt registration).
+2. Execute T021 (Backend ChatGPT consolidation service logic & fallback — also satisfies FR-011).
+3. Execute T022 (Frontend prompt selection / UI feedback using shadcn/ui).
+4. Execute T023 and T024 (Unit & integration testing — T023 appends to existing test file).
+5. Execute T025 (SC-001 zero-duplicate parametric verification test).

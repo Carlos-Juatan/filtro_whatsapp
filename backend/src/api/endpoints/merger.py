@@ -4,10 +4,10 @@ import os
 from typing import List
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
-from models.merger import MergeJobResult, InputFormat, QnAPair
-from services.qna_parser_factory import QnAParserFactory
-from services.qna_merger_service import QnAMergerService
-from services.qna_exporter import QnAExporter
+from src.models.merger import MergeJobResult, InputFormat, QnAPair
+from src.services.qna_parser_factory import QnAParserFactory
+from src.services.qna_merger_service import QnAMergerService
+from src.services.qna_exporter import QnAExporter
 
 router = APIRouter()
 

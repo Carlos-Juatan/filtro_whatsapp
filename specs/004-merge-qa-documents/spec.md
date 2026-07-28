@@ -2,7 +2,7 @@
 
 **Feature Branch**: `004-merge-qa-documents`  
 **Created**: 2026-07-24  
-**Status**: Draft  
+**Status**: In Progress  
 **Input**: User description: "Vamos criar uma nova ferramenta separada das outras agora para juntar as perguntas e respostas de vários documentos em um conjunto, eu quero poder escolher se os documentos enviados serão em json ou em txt e enviar vários documentos para juntar em uma saída de um arquivo txt e um arquivo json com as perguntas e respostas juntas, além disso, as perguntas e respostas que estiverem repetidas serão mescladas."
 
 ## User Scenarios & Testing *(mandatory)*
@@ -33,8 +33,9 @@ As a user, I want duplicate questions and answers across documents to be automat
 
 **Acceptance Scenarios**:
 
-1. **Given** multiple Q&A entries with identical questions across different files, **When** deduplication runs, **Then** identical entries are merged into a single Q&A pair without repetition.
-2. **Given** Q&A entries with identical questions but slight whitespace/formatting differences, **When** deduplication runs, **Then** normalized matching identifies them as duplicates and consolidates them appropriately.
+1. **Given** multiple Q&A entries with identical questions across different files, **When** deduplication runs, **Then** identical entries are merged into a single Q&A pair without repetition, and their `frequencia` values are summed.
+2. **Given** Q&A entries with identical questions but slight whitespace/formatting differences, **When** deduplication runs, **Then** normalized matching (case-insensitive, whitespace-stripped) identifies them as duplicates and retains the longest/most complete answer string, summing their frequency counts.
+3. **Given** an active OpenAI API key is configured, **When** consolidation runs, **Then** the pre-grouped Q&A batch is submitted to the ChatGPT API using the `TipoFerramenta.CONSOLIDADOR` prompt to perform final AI-driven deduplication, refinement, and formatting before output generation.
 
 ---
 
@@ -55,9 +56,9 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 
 ### Edge Cases
 
-- What happens when an input file contains incomplete Q&A pairs (e.g., a question without a corresponding answer)?
-- How does the system handle very large text files or hundreds of files selected simultaneously?
-- What happens if the selected input format (e.g., JSON) does not match the actual file contents (e.g., plain text disguised as `.json`)?
+- **Incomplete Q&A pairs** (e.g., a question without a corresponding answer): The incomplete pair is skipped during parsing and a warning is added to the processing log identifying the file name and the orphaned question text. Processing continues for all remaining valid pairs in the batch.
+- **Very large batches (>50 files or extremely large individual files)**: Out of scope for Phase 7. SC-003 applies only to batches of up to 50 standard-sized files. Behavior with larger batches is undefined and may time out; users should split batches manually.
+- **Format mismatch** (e.g., a plain-text file submitted as JSON): Treated as a malformed file per FR-010 — the parser raises a parse error, the file is skipped with a descriptive warning in the log, and processing continues for the remaining files.
 
 ## Clarifications
 
@@ -66,6 +67,9 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 - Q: How should duplicates and frequencies be merged when matching questions are found? → A: Merge matching questions by summing their `frequencia` values and retaining the most detailed (longest/most complete) answer string.
 - Q: How should the tool be integrated into the user interface? → A: Integrate as the 3rd tool option within the existing application's multi-tool Navigation / Config panel alongside the existing tools.
 - Q: How should malformed files in a batch be handled during processing? → A: Skip the malformed file with a warning notification to the user, and continue processing all remaining valid files in the batch.
+
+### Session 2026-07-28
+- Q: Como o ChatGPT (OpenAI API) deve ser integrado no fluxo da Ferramenta de Juntar? → A: Usar pré-agrupamento algorítmico local em Python e enviar o lote para o ChatGPT via Prompt Padrão configurado (`TipoFerramenta.CONSOLIDADOR`) para deduplicar, refinar e formatar as respostas e perguntas finais.
 
 ## Requirements *(mandatory)*
 
@@ -76,11 +80,12 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 - **FR-003**: The system MUST accept multiple input files in a single batch operation.
 - **FR-004**: The system MUST parse JSON files matching the project format with a `qna_pairs` array containing `perguntaPadronizada`, `respostaConsolidada`, `frequencia`, `metadata`, and `category`.
 - **FR-005**: The system MUST parse TXT files structured with `[<metadata>] (Frequência: <n>)`, `Q: <question>`, and `A: <answer>` sections delimited by `----------------------------------------`.
-- **FR-006**: The system MUST identify repeated questions across ingested documents, merge them into single entries by summing their `frequencia` values, and select the most detailed answer when slight answer differences exist.
+- **FR-006**: The system MUST perform algorithmic pre-grouping of questions and submit the batch to the ChatGPT API using a default configurable prompt (`TipoFerramenta.CONSOLIDADOR`) to deduplicate, refine, sum frequencies, and format consolidated Q&A pairs into final outputs.
 - **FR-007**: The system MUST automatically generate two output files for every completed consolidation run: one `.txt` file and one `.json` file.
 - **FR-008**: The JSON output MUST follow the `qna_pairs` schema structure (`perguntaPadronizada`, `respostaConsolidada`, `frequencia`, `metadata`, `category`).
 - **FR-009**: The TXT output MUST format questions and answers using the standard `[<metadata>] (Frequência: <n>)\nQ: ...\nA: ...\n----------------------------------------` block format.
 - **FR-010**: The system MUST gracefully handle malformed or unparseable files by logging a warning, skipping the invalid file, and processing all remaining valid files in the batch.
+- **FR-011**: The system MUST provide a local-only deduplication fallback when no OpenAI API key is configured — algorithmic pre-grouping and frequency summation MUST complete successfully without any external API call, and the user MUST be notified that AI consolidation was skipped.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -93,10 +98,12 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 
 - **SC-001**: 100% of identical duplicate Q&A pairs across input documents are merged, resulting in zero exact duplicate entries in the final outputs while combining their frequency counts.
 - **SC-002**: Every consolidation run successfully creates both valid `.json` and readable `.txt` export files conforming strictly to the project schema.
-- **SC-003**: Users can complete input selection, format choice, and consolidation in under 1 minute for standard file batches (up to 50 files).
+- **SC-003**: Users can complete input selection, format choice, and consolidation in under 1 minute for standard file batches (up to 50 files). This target applies to the local algorithmic processing phase only; total wall-clock time when using the ChatGPT API depends on external API latency and is best-effort.
 
 ## Assumptions
 
 - The tool is standalone and does not overwrite existing app features.
 - TXT input files use the standard project format (`[Metadata] (Frequência: X)\nQ: ...\nA: ...`).
 - Duplicate detection matches questions using case-insensitive and whitespace-normalized string comparisons.
+- Algorithmic pre-grouping uses the normalized `perguntaPadronizada` field as the grouping key before submitting the batch to the ChatGPT API.
+- SC-003's 1-minute SLA covers only the local processing pipeline (parsing + algorithmic merge + file export). API-bound consolidation time is excluded.
