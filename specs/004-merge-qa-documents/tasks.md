@@ -107,6 +107,32 @@
 
 ---
 
+## Phase 8: Tool Improvements — TXT Format, Logging & Chunked Processing (Priority: P1)
+
+**Goal**: Correct TXT output separator format, add detailed real-time processing logs to the UI (following the pattern of existing tools), and replace the monolithic Q&A merging loop with a chunked batch strategy to handle large documents without hanging the LLM.
+
+**Independent Test**: Run a consolidation with 300+ Q&A pairs and verify: (a) the `.txt` output uses `----------------------------------------` after every `A:` line including the last; (b) the UI log displays one event per stage in near-real-time; (c) the process completes without timeout or LLM context overflow.
+
+### Implementation for Phase 8
+
+- [ ] T026 [FR-009] [SC-002] Fix TXT exporter to always append a `----------------------------------------` separator line after every `A:` block, including the final block of the file — update `backend/src/services/qna_exporter.py`
+- [ ] T027 [P] [FR-012] [SC-004] Define a `MergerLogEvent` schema (event type, message, timestamp, optional metadata) and expose a streaming/SSE or WebSocket log endpoint for real-time progress emission — update `backend/src/models/merger.py` and create `backend/src/api/endpoints/merger_log.py`
+- [ ] T028 [FR-012] [SC-004] Instrument the consolidation pipeline (parser, merger service, exporter) to emit `MergerLogEvent` entries at each stage transition (file parse start/end, dedup start/end, chunk progress, export start/end, warnings) — update `backend/src/services/qna_merger_service.py` and `backend/src/services/qna_exporter.py`
+- [ ] T029 [FR-012] [SC-004] Connect `MergerPanel.tsx` to the log stream endpoint and render a real-time scrollable log panel with stage labels, timestamps, and warning highlights — update `frontend/src/components/MergerPanel.tsx`
+- [ ] T030 [P] [FR-013] [FR-014] [SC-005] Implement configurable chunked batch processing engine in `backend/src/services/qna_chunk_processor.py`:
+  - Split the main (accumulated) Q&A document into chunks of `CHUNK_SIZE` pairs (default: 30).
+  - Split incoming new pairs into batches of `BATCH_SIZE` (default: 30).
+  - For each batch: iterate over all chunks sequentially; merge duplicates inline (by normalized `perguntaPadronizada`); append unmatched pairs to the main document after all chunks are processed.
+  - Repeat for subsequent batches using the updated main document as the new reference.
+  - `CHUNK_SIZE` and `BATCH_SIZE` are read from environment/config (FR-014).
+- [ ] T031 [FR-013] [FR-014] Replace the current monolithic merge loop in `backend/src/services/qna_merger_service.py` with calls to the new `QnaChunkProcessor` from T030; ensure the AI consolidation step (T021) also uses chunk-aware batching when calling the ChatGPT API.
+- [ ] T032 [P] Add unit tests for the `QnaChunkProcessor` covering: small batches (<30 pairs, no chunking needed), large batches (300+ pairs across multiple chunks), duplicate merging within and across chunk boundaries, and configurable `CHUNK_SIZE`/`BATCH_SIZE` — create `backend/tests/unit/test_qna_chunk_processor.py`
+- [ ] T033 Update API integration tests to validate Phase 8 improvements: assert TXT separator present on last block (SC-002), assert log events emitted (SC-004), assert 300-pair consolidation completes without error (SC-005) — **append** to `backend/tests/integration/test_merger_api.py`
+
+**Checkpoint**: TXT output is correctly formatted, UI shows real-time logs, and large-document consolidation no longer hangs.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -117,11 +143,17 @@
 - **User Story 2 (Phase 4)**: Completed.
 - **User Story 3 (Phase 5)**: Completed.
 - **Polish & Router Fix (Phase 6)**: Completed.
-- **ChatGPT Prompt Integration (Phase 7)**: Depends on Phase 5 & 6. Includes T025 (SC-001 verification).
+- **ChatGPT Prompt Integration (Phase 7)**: Completed. Includes T025 (SC-001 verification).
+- **Tool Improvements (Phase 8)**: Depends on Phase 7. T027 and T030 can run in parallel; T028 depends on T027; T031 depends on T030; T029 depends on T027/T028; T032 depends on T030; T033 depends on T026–T031.
 
 ### Parallel Opportunities in Phase 7
 
 - **T019 & T020**: Extend Enum `TipoFerramenta` in models and register default prompt in storage service in parallel.
+
+### Parallel Opportunities in Phase 8
+
+- **T026**: Can run immediately in parallel with T027 and T030 (independent files).
+- **T027 & T030**: Can run in parallel (independent service/model work).
 
 ---
 
@@ -132,3 +164,8 @@
 3. Execute T022 (Frontend prompt selection / UI feedback using shadcn/ui).
 4. Execute T023 and T024 (Unit & integration testing — T023 appends to existing test file).
 5. Execute T025 (SC-001 zero-duplicate parametric verification test).
+6. Execute T026 (TXT separator fix) in parallel with T027 (log event schema + endpoint) and T030 (chunk processor engine).
+7. Execute T028 (pipeline instrumentation) after T027; execute T031 (merger service integration) after T030.
+8. Execute T029 (frontend log panel) after T028.
+9. Execute T032 (chunk processor unit tests) after T030.
+10. Execute T033 (integration test updates) after T026–T031 are complete.

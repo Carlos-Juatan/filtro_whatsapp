@@ -71,6 +71,11 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 ### Session 2026-07-28
 - Q: Como o ChatGPT (OpenAI API) deve ser integrado no fluxo da Ferramenta de Juntar? → A: Usar pré-agrupamento algorítmico local em Python e enviar o lote para o ChatGPT via Prompt Padrão configurado (`TipoFerramenta.CONSOLIDADOR`) para deduplicar, refinar e formatar as respostas e perguntas finais.
 
+### Session 2026-07-29
+- Q: Qual é o separador exato entre cada bloco Q&A no arquivo `.txt` de saída? → A: Cada bloco é separado por uma linha de 40 traços (`----------------------------------------`) após o par `A: ...`, conforme exemplo: `[Categoria] (Frequência: 1)\nQ: pergunta?\nA: resposta.\n----------------------------------------`.
+- Q: Como deve ser exibido o progresso do processamento na interface? → A: Assim como nas demais ferramentas do projeto, deve ser exibido um log detalhado em tempo real mostrando a etapa atual do processamento (ex: "Parseando arquivo X", "Mesclando pares duplicados", "Exportando saída").
+- Q: Como o sistema de junção deve escalar para documentos principais com muitos pares Q&A sem travar a LLM? → A: O sistema deve dividir o documento principal em chunks e as novas perguntas em lotes. Cada lote é avaliado sequencialmente contra cada chunk do documento principal; pares duplicados são mesclados inline. Ao final, os pares restantes do lote (novos) são adicionados ao final do documento principal. O próximo lote de perguntas repete o processo no documento principal já atualizado.
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -83,9 +88,12 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 - **FR-006**: The system MUST perform algorithmic pre-grouping of questions and submit the batch to the ChatGPT API using a default configurable prompt (`TipoFerramenta.CONSOLIDADOR`) to deduplicate, refine, sum frequencies, and format consolidated Q&A pairs into final outputs.
 - **FR-007**: The system MUST automatically generate two output files for every completed consolidation run: one `.txt` file and one `.json` file.
 - **FR-008**: The JSON output MUST follow the `qna_pairs` schema structure (`perguntaPadronizada`, `respostaConsolidada`, `frequencia`, `metadata`, `category`).
-- **FR-009**: The TXT output MUST format questions and answers using the standard `[<metadata>] (Frequência: <n>)\nQ: ...\nA: ...\n----------------------------------------` block format.
+- **FR-009**: The TXT output MUST format each Q&A block using `[<metadata>] (Frequência: <n>)\nQ: <question>\nA: <answer>\n----------------------------------------`, where the 40-dash separator line appears after every `A:` line, including the last block in the file.
 - **FR-010**: The system MUST gracefully handle malformed or unparseable files by logging a warning, skipping the invalid file, and processing all remaining valid files in the batch.
 - **FR-011**: The system MUST provide a local-only deduplication fallback when no OpenAI API key is configured — algorithmic pre-grouping and frequency summation MUST complete successfully without any external API call, and the user MUST be notified that AI consolidation was skipped.
+- **FR-012**: The system MUST emit a detailed real-time processing log to the UI during each processing stage, following the same log pattern as the other tools in the application. Logged events MUST include at minimum: file parsing start/end per file, deduplication start/end, chunk processing progress (current chunk / total chunks), export start/end, and any warnings or skipped-file notifications.
+- **FR-013**: The system MUST implement chunked batch processing for large document sets: the main (accumulated) document is split into fixed-size chunks of Q&A pairs; new incoming questions are split into batches. Each batch is evaluated sequentially against every chunk; duplicate matches are merged inline into the chunk. At the end of all chunk evaluations, any remaining (unmatched) pairs from the batch are appended to the main document. The updated main document is then used as the reference for the next batch. This strategy prevents LLM context overflow and ensures the process does not hang on large inputs.
+- **FR-014**: The minimum chunk size for FR-013 MUST be configurable (default: 30 Q&A pairs per chunk). Batches of incoming questions MUST also be configurable (default: 30 pairs per batch). These defaults are chosen to stay within safe LLM context limits.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -97,8 +105,10 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 ### Measurable Outcomes
 
 - **SC-001**: 100% of identical duplicate Q&A pairs across input documents are merged, resulting in zero exact duplicate entries in the final outputs while combining their frequency counts.
-- **SC-002**: Every consolidation run successfully creates both valid `.json` and readable `.txt` export files conforming strictly to the project schema.
+- **SC-002**: Every consolidation run successfully creates both valid `.json` and readable `.txt` export files conforming strictly to the project schema. Each block in the `.txt` file ends with a `----------------------------------------` separator line.
 - **SC-003**: Users can complete input selection, format choice, and consolidation in under 1 minute for standard file batches (up to 50 files). This target applies to the local algorithmic processing phase only; total wall-clock time when using the ChatGPT API depends on external API latency and is best-effort.
+- **SC-004**: Processing log events are emitted to the UI within 500 ms of each stage transition, giving the user continuous visual feedback throughout the entire consolidation pipeline.
+- **SC-005**: The chunked processing strategy (FR-013) MUST successfully handle a main document with 300+ Q&A pairs without hanging, timeout, or LLM context overflow. Each chunk evaluation MUST complete independently and deterministically.
 
 ## Assumptions
 
@@ -107,3 +117,5 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 - Duplicate detection matches questions using case-insensitive and whitespace-normalized string comparisons.
 - Algorithmic pre-grouping uses the normalized `perguntaPadronizada` field as the grouping key before submitting the batch to the ChatGPT API.
 - SC-003's 1-minute SLA covers only the local processing pipeline (parsing + algorithmic merge + file export). API-bound consolidation time is excluded.
+- The chunked processing strategy (FR-013/FR-014) applies to both local algorithmic deduplication and AI-assisted consolidation phases.
+- Chunk size defaults (30 pairs/chunk, 30 pairs/batch) may be tuned by the operator at deployment time without requiring a code change (e.g., via environment variable or config file).
