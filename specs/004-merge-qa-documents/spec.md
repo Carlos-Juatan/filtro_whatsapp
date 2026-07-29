@@ -57,7 +57,7 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 ### Edge Cases
 
 - **Incomplete Q&A pairs** (e.g., a question without a corresponding answer): The incomplete pair is skipped during parsing and a warning is added to the processing log identifying the file name and the orphaned question text. Processing continues for all remaining valid pairs in the batch.
-- **Very large batches (>50 files or extremely large individual files)**: Out of scope for Phase 7. SC-003 applies only to batches of up to 50 standard-sized files. Behavior with larger batches is undefined and may time out; users should split batches manually.
+- **Very large batches (>50 files or extremely large individual files)**: SC-003's <1 min SLA applies to standard input file batches (up to 50 standard-sized files). For large documents (300+ Q&A pairs), the chunked batch processing strategy (FR-013/SC-005) ensures reliable execution without timeouts or LLM context overflow.
 - **Format mismatch** (e.g., a plain-text file submitted as JSON): Treated as a malformed file per FR-010 — the parser raises a parse error, the file is skipped with a descriptive warning in the log, and processing continues for the remaining files.
 
 ## Clarifications
@@ -114,7 +114,7 @@ As a user, I want the tool to output the consolidated Q&A dataset simultaneously
 
 - The tool is standalone and does not overwrite existing app features.
 - TXT input files use the standard project format (`[Metadata] (Frequência: X)\nQ: ...\nA: ...`).
-- Duplicate detection matches questions using case-insensitive and whitespace-normalized string comparisons.
+- Duplicate detection matches questions using case-insensitive and whitespace-normalized string comparisons (with standard whitespace stripping and lowercasing).
 - Algorithmic pre-grouping uses the normalized `perguntaPadronizada` field as the grouping key before submitting the batch to the ChatGPT API.
 - SC-003's 1-minute SLA covers only the local processing pipeline (parsing + algorithmic merge + file export). API-bound consolidation time is excluded.
 - The chunked processing strategy (FR-013/FR-014) applies to both local algorithmic deduplication and AI-assisted consolidation phases.
