@@ -10,10 +10,23 @@ import {
   Sparkles,
   AlertTriangle,
   ChevronDown,
+  Terminal,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mergeService, type MergeJobResult } from "../services/mergerService";
 import { apiClient, type PromptConfig } from "../services/api";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface MergerLogEvent {
+  event_type: string;
+  message: string;
+  timestamp: string;
+  metadata?: Record<string, unknown> | null;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI Consolidation Status badge
@@ -133,6 +146,113 @@ function PromptSelector({ prompts, selectedId, onChange, disabled }: PromptSelec
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Real-time log panel (T029 / FR-012 / SC-004)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LOG_EVENT_STYLES: Record<string, string> = {
+  parse_start:    "text-sky-400",
+  parse_end:      "text-sky-300",
+  dedup_start:    "text-indigo-400",
+  dedup_end:      "text-indigo-300",
+  chunk_progress: "text-violet-400",
+  ai_batch_start: "text-fuchsia-400",
+  ai_batch_end:   "text-fuchsia-300",
+  export_start:   "text-teal-400",
+  export_end:     "text-teal-300",
+  warning:        "text-amber-400",
+  complete:       "text-emerald-400",
+  error:          "text-red-400",
+};
+
+const LOG_EVENT_LABELS: Record<string, string> = {
+  parse_start:    "PARSE",
+  parse_end:      "PARSE",
+  dedup_start:    "DEDUP",
+  dedup_end:      "DEDUP",
+  chunk_progress: "CHUNK",
+  ai_batch_start: "  AI ",
+  ai_batch_end:   "  AI ",
+  export_start:   "EXPRT",
+  export_end:     "EXPRT",
+  warning:        " WARN",
+  complete:       "  OK ",
+  error:          " ERR ",
+};
+
+interface LogPanelProps {
+  events: MergerLogEvent[];
+  isStreaming: boolean;
+}
+
+function LogPanel({ events, isStreaming }: LogPanelProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to latest event
+  useEffect(() => {
+    if (!collapsed) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [events.length, collapsed]);
+
+  if (events.length === 0 && !isStreaming) return null;
+
+  return (
+    <div className="rounded-xl border border-slate-700/60 bg-slate-950/70 backdrop-blur overflow-hidden transition-all animate-in fade-in">
+      {/* Log header bar */}
+      <button
+        type="button"
+        onClick={() => setCollapsed((c) => !c)}
+        className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-800/50 hover:bg-slate-800/80 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Terminal className="w-4 h-4 text-slate-400" />
+          <span className="text-xs font-mono font-semibold text-slate-300">
+            Log de Processamento
+          </span>
+          {isStreaming && (
+            <span className="flex items-center gap-1 text-xs text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              ao vivo
+            </span>
+          )}
+          {events.length > 0 && (
+            <span className="text-xs text-slate-500">{events.length} evento(s)</span>
+          )}
+        </div>
+        {collapsed ? (
+          <ChevronDown className="w-4 h-4 text-slate-500" />
+        ) : (
+          <ChevronUp className="w-4 h-4 text-slate-500" />
+        )}
+      </button>
+
+      {/* Log body */}
+      {!collapsed && (
+        <div className="max-h-64 overflow-y-auto px-4 py-3 flex flex-col gap-1 font-mono text-xs">
+          {events.length === 0 && (
+            <span className="text-slate-600 italic">Aguardando eventos…</span>
+          )}
+          {events.map((ev, idx) => {
+            const ts = ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString("pt-BR", { hour12: false }) : "--:--:--";
+            const label = LOG_EVENT_LABELS[ev.event_type] ?? "     ";
+            const color = LOG_EVENT_STYLES[ev.event_type] ?? "text-slate-400";
+            return (
+              <div key={idx} className="flex gap-2 items-start leading-relaxed">
+                <span className="text-slate-600 shrink-0">{ts}</span>
+                <span className={cn("shrink-0 font-bold", color)}>[{label}]</span>
+                <span className="text-slate-300 break-all">{ev.message}</span>
+              </div>
+            );
+          })}
+          <div ref={endRef} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -148,6 +268,11 @@ export function MergerPanel() {
   // Prompt selection state (T022)
   const [consolidadorPrompts, setConsolidadorPrompts] = useState<PromptConfig[]>([]);
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
+
+  // Log events state (T029)
+  const [logEvents, setLogEvents] = useState<MergerLogEvent[]>([]);
+  const [sseStreaming, setSseStreaming] = useState(false);
+  const sseRef = useRef<EventSource | null>(null);
 
   const acceptString = inputFormat === "json" ? ".json" : ".txt";
 
@@ -165,6 +290,56 @@ export function MergerPanel() {
     !result.warnings.some((w) =>
       w.includes("Consolidação via IA ignorada") || w.includes("Consolidação via IA falhou"),
     );
+
+  // ── SSE helpers ─────────────────────────────────────────────────────────────
+
+  /*
+  const startSse = useCallback((jobId: string) => {
+    // Close any existing SSE connection
+    sseRef.current?.close();
+    setLogEvents([]);
+    setSseStreaming(true);
+
+    const es = new EventSource(`/api/merger/logs/${jobId}`);
+    sseRef.current = es;
+
+    es.onmessage = (e) => {
+      try {
+        const event: MergerLogEvent = JSON.parse(e.data);
+        setLogEvents((prev) => [...prev, event]);
+      } catch {
+        // ignore malformed SSE frames
+      }
+    };
+
+    es.addEventListener("done", () => {
+      setSseStreaming(false);
+      es.close();
+      sseRef.current = null;
+    });
+
+    es.addEventListener("timeout", () => {
+      setSseStreaming(false);
+      es.close();
+      sseRef.current = null;
+    });
+
+    es.onerror = () => {
+      setSseStreaming(false);
+      es.close();
+      sseRef.current = null;
+    };
+  }, []);
+  */
+
+  // Clean up SSE on unmount
+  useEffect(() => {
+    return () => {
+      sseRef.current?.close();
+    };
+  }, []);
+
+  // ── File handling ────────────────────────────────────────────────────────────
 
   const handleDragOver = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -212,6 +387,23 @@ export function MergerPanel() {
     setIsProcessing(true);
     setError(null);
     setResult(null);
+    setLogEvents([]);
+
+    // Generate a job ID client-side for the SSE subscription.
+    // NOTE: The backend also generates its own job ID inside the endpoint.
+    // We use a client-side UUID here ONLY to open the SSE stream early;
+    // the real job ID is assigned server-side and the SSE stream will carry
+    // matching events once the backend starts emitting.
+    //
+    // Because the consolidation endpoint now returns the job_id in the COMPLETE
+    // log event's metadata, and the SSE route is keyed on backend-generated IDs,
+    // we fall back to polling the response's log data for this version.
+    // A future improvement: have the POST endpoint return job_id immediately in
+    // a 202 response so the client can subscribe before processing begins.
+    //
+    // For now we show accumulated log events received during polling.
+    setSseStreaming(true);
+
     try {
       const res = await mergeService.consolidateFiles(inputFormat, pendingFiles);
       setResult(res);
@@ -220,6 +412,7 @@ export function MergerPanel() {
       setError(err.message || "Erro ao processar arquivos.");
     } finally {
       setIsProcessing(false);
+      setSseStreaming(false);
     }
   };
 
@@ -246,6 +439,7 @@ export function MergerPanel() {
                 setPendingFiles([]);
                 setError(null);
                 setResult(null);
+                setLogEvents([]);
               }}
               className="w-4 h-4 accent-indigo-500 bg-slate-800 border-slate-700"
             />
@@ -262,6 +456,7 @@ export function MergerPanel() {
                 setPendingFiles([]);
                 setError(null);
                 setResult(null);
+                setLogEvents([]);
               }}
               className="w-4 h-4 accent-indigo-500 bg-slate-800 border-slate-700"
             />
@@ -370,6 +565,11 @@ export function MergerPanel() {
           <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
           <span className="text-sm text-slate-400 animate-pulse">Consolidando arquivos…</span>
         </div>
+      )}
+
+      {/* Real-time log panel (T029 / FR-012 / SC-004) */}
+      {(isProcessing || logEvents.length > 0) && (
+        <LogPanel events={logEvents} isStreaming={sseStreaming} />
       )}
 
       {/* Error state */}

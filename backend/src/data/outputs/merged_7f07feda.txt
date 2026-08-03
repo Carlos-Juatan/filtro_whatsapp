@@ -1,0 +1,12 @@
+(Frequência: 1)
+Q: Pergunta Alpha?
+A: Resposta Alpha.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta Beta?
+A: Resposta Beta.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta Gamma?
+A: Resposta Gamma.
+----------------------------------------

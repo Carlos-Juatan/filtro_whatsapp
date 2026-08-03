@@ -1,0 +1,14 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "O serviço funciona?",
+      "respostaConsolidada": "Funciona perfeitamente.",
+      "frequencia": 4
+    },
+    {
+      "perguntaPadronizada": "Qual o horário?",
+      "respostaConsolidada": "Das 8h às 18h.",
+      "frequencia": 5
+    }
+  ]
+}

@@ -1,0 +1,1200 @@
+(Frequência: 1)
+Q: Pergunta número 0?
+A: Resposta detalhada para a pergunta número 0.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 1?
+A: Resposta detalhada para a pergunta número 1.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 2?
+A: Resposta detalhada para a pergunta número 2.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 3?
+A: Resposta detalhada para a pergunta número 3.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 4?
+A: Resposta detalhada para a pergunta número 4.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 5?
+A: Resposta detalhada para a pergunta número 5.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 6?
+A: Resposta detalhada para a pergunta número 6.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 7?
+A: Resposta detalhada para a pergunta número 7.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 8?
+A: Resposta detalhada para a pergunta número 8.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 9?
+A: Resposta detalhada para a pergunta número 9.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 10?
+A: Resposta detalhada para a pergunta número 10.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 11?
+A: Resposta detalhada para a pergunta número 11.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 12?
+A: Resposta detalhada para a pergunta número 12.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 13?
+A: Resposta detalhada para a pergunta número 13.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 14?
+A: Resposta detalhada para a pergunta número 14.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 15?
+A: Resposta detalhada para a pergunta número 15.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 16?
+A: Resposta detalhada para a pergunta número 16.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 17?
+A: Resposta detalhada para a pergunta número 17.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 18?
+A: Resposta detalhada para a pergunta número 18.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 19?
+A: Resposta detalhada para a pergunta número 19.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 20?
+A: Resposta detalhada para a pergunta número 20.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 21?
+A: Resposta detalhada para a pergunta número 21.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 22?
+A: Resposta detalhada para a pergunta número 22.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 23?
+A: Resposta detalhada para a pergunta número 23.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 24?
+A: Resposta detalhada para a pergunta número 24.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 25?
+A: Resposta detalhada para a pergunta número 25.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 26?
+A: Resposta detalhada para a pergunta número 26.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 27?
+A: Resposta detalhada para a pergunta número 27.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 28?
+A: Resposta detalhada para a pergunta número 28.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 29?
+A: Resposta detalhada para a pergunta número 29.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 30?
+A: Resposta detalhada para a pergunta número 30.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 31?
+A: Resposta detalhada para a pergunta número 31.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 32?
+A: Resposta detalhada para a pergunta número 32.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 33?
+A: Resposta detalhada para a pergunta número 33.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 34?
+A: Resposta detalhada para a pergunta número 34.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 35?
+A: Resposta detalhada para a pergunta número 35.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 36?
+A: Resposta detalhada para a pergunta número 36.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 37?
+A: Resposta detalhada para a pergunta número 37.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 38?
+A: Resposta detalhada para a pergunta número 38.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 39?
+A: Resposta detalhada para a pergunta número 39.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 40?
+A: Resposta detalhada para a pergunta número 40.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 41?
+A: Resposta detalhada para a pergunta número 41.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 42?
+A: Resposta detalhada para a pergunta número 42.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 43?
+A: Resposta detalhada para a pergunta número 43.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 44?
+A: Resposta detalhada para a pergunta número 44.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 45?
+A: Resposta detalhada para a pergunta número 45.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 46?
+A: Resposta detalhada para a pergunta número 46.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 47?
+A: Resposta detalhada para a pergunta número 47.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 48?
+A: Resposta detalhada para a pergunta número 48.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 49?
+A: Resposta detalhada para a pergunta número 49.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 50?
+A: Resposta detalhada para a pergunta número 50.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 51?
+A: Resposta detalhada para a pergunta número 51.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 52?
+A: Resposta detalhada para a pergunta número 52.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 53?
+A: Resposta detalhada para a pergunta número 53.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 54?
+A: Resposta detalhada para a pergunta número 54.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 55?
+A: Resposta detalhada para a pergunta número 55.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 56?
+A: Resposta detalhada para a pergunta número 56.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 57?
+A: Resposta detalhada para a pergunta número 57.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 58?
+A: Resposta detalhada para a pergunta número 58.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 59?
+A: Resposta detalhada para a pergunta número 59.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 60?
+A: Resposta detalhada para a pergunta número 60.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 61?
+A: Resposta detalhada para a pergunta número 61.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 62?
+A: Resposta detalhada para a pergunta número 62.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 63?
+A: Resposta detalhada para a pergunta número 63.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 64?
+A: Resposta detalhada para a pergunta número 64.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 65?
+A: Resposta detalhada para a pergunta número 65.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 66?
+A: Resposta detalhada para a pergunta número 66.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 67?
+A: Resposta detalhada para a pergunta número 67.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 68?
+A: Resposta detalhada para a pergunta número 68.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 69?
+A: Resposta detalhada para a pergunta número 69.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 70?
+A: Resposta detalhada para a pergunta número 70.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 71?
+A: Resposta detalhada para a pergunta número 71.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 72?
+A: Resposta detalhada para a pergunta número 72.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 73?
+A: Resposta detalhada para a pergunta número 73.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 74?
+A: Resposta detalhada para a pergunta número 74.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 75?
+A: Resposta detalhada para a pergunta número 75.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 76?
+A: Resposta detalhada para a pergunta número 76.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 77?
+A: Resposta detalhada para a pergunta número 77.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 78?
+A: Resposta detalhada para a pergunta número 78.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 79?
+A: Resposta detalhada para a pergunta número 79.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 80?
+A: Resposta detalhada para a pergunta número 80.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 81?
+A: Resposta detalhada para a pergunta número 81.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 82?
+A: Resposta detalhada para a pergunta número 82.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 83?
+A: Resposta detalhada para a pergunta número 83.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 84?
+A: Resposta detalhada para a pergunta número 84.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 85?
+A: Resposta detalhada para a pergunta número 85.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 86?
+A: Resposta detalhada para a pergunta número 86.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 87?
+A: Resposta detalhada para a pergunta número 87.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 88?
+A: Resposta detalhada para a pergunta número 88.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 89?
+A: Resposta detalhada para a pergunta número 89.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 90?
+A: Resposta detalhada para a pergunta número 90.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 91?
+A: Resposta detalhada para a pergunta número 91.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 92?
+A: Resposta detalhada para a pergunta número 92.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 93?
+A: Resposta detalhada para a pergunta número 93.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 94?
+A: Resposta detalhada para a pergunta número 94.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 95?
+A: Resposta detalhada para a pergunta número 95.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 96?
+A: Resposta detalhada para a pergunta número 96.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 97?
+A: Resposta detalhada para a pergunta número 97.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 98?
+A: Resposta detalhada para a pergunta número 98.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 99?
+A: Resposta detalhada para a pergunta número 99.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 100?
+A: Resposta detalhada para a pergunta número 100.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 101?
+A: Resposta detalhada para a pergunta número 101.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 102?
+A: Resposta detalhada para a pergunta número 102.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 103?
+A: Resposta detalhada para a pergunta número 103.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 104?
+A: Resposta detalhada para a pergunta número 104.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 105?
+A: Resposta detalhada para a pergunta número 105.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 106?
+A: Resposta detalhada para a pergunta número 106.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 107?
+A: Resposta detalhada para a pergunta número 107.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 108?
+A: Resposta detalhada para a pergunta número 108.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 109?
+A: Resposta detalhada para a pergunta número 109.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 110?
+A: Resposta detalhada para a pergunta número 110.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 111?
+A: Resposta detalhada para a pergunta número 111.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 112?
+A: Resposta detalhada para a pergunta número 112.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 113?
+A: Resposta detalhada para a pergunta número 113.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 114?
+A: Resposta detalhada para a pergunta número 114.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 115?
+A: Resposta detalhada para a pergunta número 115.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 116?
+A: Resposta detalhada para a pergunta número 116.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 117?
+A: Resposta detalhada para a pergunta número 117.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 118?
+A: Resposta detalhada para a pergunta número 118.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 119?
+A: Resposta detalhada para a pergunta número 119.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 120?
+A: Resposta detalhada para a pergunta número 120.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 121?
+A: Resposta detalhada para a pergunta número 121.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 122?
+A: Resposta detalhada para a pergunta número 122.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 123?
+A: Resposta detalhada para a pergunta número 123.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 124?
+A: Resposta detalhada para a pergunta número 124.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 125?
+A: Resposta detalhada para a pergunta número 125.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 126?
+A: Resposta detalhada para a pergunta número 126.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 127?
+A: Resposta detalhada para a pergunta número 127.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 128?
+A: Resposta detalhada para a pergunta número 128.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 129?
+A: Resposta detalhada para a pergunta número 129.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 130?
+A: Resposta detalhada para a pergunta número 130.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 131?
+A: Resposta detalhada para a pergunta número 131.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 132?
+A: Resposta detalhada para a pergunta número 132.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 133?
+A: Resposta detalhada para a pergunta número 133.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 134?
+A: Resposta detalhada para a pergunta número 134.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 135?
+A: Resposta detalhada para a pergunta número 135.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 136?
+A: Resposta detalhada para a pergunta número 136.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 137?
+A: Resposta detalhada para a pergunta número 137.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 138?
+A: Resposta detalhada para a pergunta número 138.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 139?
+A: Resposta detalhada para a pergunta número 139.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 140?
+A: Resposta detalhada para a pergunta número 140.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 141?
+A: Resposta detalhada para a pergunta número 141.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 142?
+A: Resposta detalhada para a pergunta número 142.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 143?
+A: Resposta detalhada para a pergunta número 143.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 144?
+A: Resposta detalhada para a pergunta número 144.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 145?
+A: Resposta detalhada para a pergunta número 145.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 146?
+A: Resposta detalhada para a pergunta número 146.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 147?
+A: Resposta detalhada para a pergunta número 147.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 148?
+A: Resposta detalhada para a pergunta número 148.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 149?
+A: Resposta detalhada para a pergunta número 149.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 150?
+A: Resposta detalhada para a pergunta número 150.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 151?
+A: Resposta detalhada para a pergunta número 151.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 152?
+A: Resposta detalhada para a pergunta número 152.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 153?
+A: Resposta detalhada para a pergunta número 153.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 154?
+A: Resposta detalhada para a pergunta número 154.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 155?
+A: Resposta detalhada para a pergunta número 155.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 156?
+A: Resposta detalhada para a pergunta número 156.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 157?
+A: Resposta detalhada para a pergunta número 157.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 158?
+A: Resposta detalhada para a pergunta número 158.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 159?
+A: Resposta detalhada para a pergunta número 159.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 160?
+A: Resposta detalhada para a pergunta número 160.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 161?
+A: Resposta detalhada para a pergunta número 161.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 162?
+A: Resposta detalhada para a pergunta número 162.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 163?
+A: Resposta detalhada para a pergunta número 163.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 164?
+A: Resposta detalhada para a pergunta número 164.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 165?
+A: Resposta detalhada para a pergunta número 165.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 166?
+A: Resposta detalhada para a pergunta número 166.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 167?
+A: Resposta detalhada para a pergunta número 167.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 168?
+A: Resposta detalhada para a pergunta número 168.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 169?
+A: Resposta detalhada para a pergunta número 169.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 170?
+A: Resposta detalhada para a pergunta número 170.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 171?
+A: Resposta detalhada para a pergunta número 171.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 172?
+A: Resposta detalhada para a pergunta número 172.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 173?
+A: Resposta detalhada para a pergunta número 173.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 174?
+A: Resposta detalhada para a pergunta número 174.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 175?
+A: Resposta detalhada para a pergunta número 175.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 176?
+A: Resposta detalhada para a pergunta número 176.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 177?
+A: Resposta detalhada para a pergunta número 177.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 178?
+A: Resposta detalhada para a pergunta número 178.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 179?
+A: Resposta detalhada para a pergunta número 179.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 180?
+A: Resposta detalhada para a pergunta número 180.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 181?
+A: Resposta detalhada para a pergunta número 181.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 182?
+A: Resposta detalhada para a pergunta número 182.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 183?
+A: Resposta detalhada para a pergunta número 183.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 184?
+A: Resposta detalhada para a pergunta número 184.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 185?
+A: Resposta detalhada para a pergunta número 185.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 186?
+A: Resposta detalhada para a pergunta número 186.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 187?
+A: Resposta detalhada para a pergunta número 187.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 188?
+A: Resposta detalhada para a pergunta número 188.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 189?
+A: Resposta detalhada para a pergunta número 189.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 190?
+A: Resposta detalhada para a pergunta número 190.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 191?
+A: Resposta detalhada para a pergunta número 191.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 192?
+A: Resposta detalhada para a pergunta número 192.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 193?
+A: Resposta detalhada para a pergunta número 193.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 194?
+A: Resposta detalhada para a pergunta número 194.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 195?
+A: Resposta detalhada para a pergunta número 195.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 196?
+A: Resposta detalhada para a pergunta número 196.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 197?
+A: Resposta detalhada para a pergunta número 197.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 198?
+A: Resposta detalhada para a pergunta número 198.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 199?
+A: Resposta detalhada para a pergunta número 199.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 200?
+A: Resposta detalhada para a pergunta número 200.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 201?
+A: Resposta detalhada para a pergunta número 201.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 202?
+A: Resposta detalhada para a pergunta número 202.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 203?
+A: Resposta detalhada para a pergunta número 203.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 204?
+A: Resposta detalhada para a pergunta número 204.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 205?
+A: Resposta detalhada para a pergunta número 205.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 206?
+A: Resposta detalhada para a pergunta número 206.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 207?
+A: Resposta detalhada para a pergunta número 207.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 208?
+A: Resposta detalhada para a pergunta número 208.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 209?
+A: Resposta detalhada para a pergunta número 209.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 210?
+A: Resposta detalhada para a pergunta número 210.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 211?
+A: Resposta detalhada para a pergunta número 211.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 212?
+A: Resposta detalhada para a pergunta número 212.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 213?
+A: Resposta detalhada para a pergunta número 213.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 214?
+A: Resposta detalhada para a pergunta número 214.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 215?
+A: Resposta detalhada para a pergunta número 215.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 216?
+A: Resposta detalhada para a pergunta número 216.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 217?
+A: Resposta detalhada para a pergunta número 217.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 218?
+A: Resposta detalhada para a pergunta número 218.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 219?
+A: Resposta detalhada para a pergunta número 219.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 220?
+A: Resposta detalhada para a pergunta número 220.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 221?
+A: Resposta detalhada para a pergunta número 221.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 222?
+A: Resposta detalhada para a pergunta número 222.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 223?
+A: Resposta detalhada para a pergunta número 223.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 224?
+A: Resposta detalhada para a pergunta número 224.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 225?
+A: Resposta detalhada para a pergunta número 225.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 226?
+A: Resposta detalhada para a pergunta número 226.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 227?
+A: Resposta detalhada para a pergunta número 227.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 228?
+A: Resposta detalhada para a pergunta número 228.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 229?
+A: Resposta detalhada para a pergunta número 229.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 230?
+A: Resposta detalhada para a pergunta número 230.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 231?
+A: Resposta detalhada para a pergunta número 231.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 232?
+A: Resposta detalhada para a pergunta número 232.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 233?
+A: Resposta detalhada para a pergunta número 233.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 234?
+A: Resposta detalhada para a pergunta número 234.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 235?
+A: Resposta detalhada para a pergunta número 235.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 236?
+A: Resposta detalhada para a pergunta número 236.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 237?
+A: Resposta detalhada para a pergunta número 237.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 238?
+A: Resposta detalhada para a pergunta número 238.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 239?
+A: Resposta detalhada para a pergunta número 239.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 240?
+A: Resposta detalhada para a pergunta número 240.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 241?
+A: Resposta detalhada para a pergunta número 241.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 242?
+A: Resposta detalhada para a pergunta número 242.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 243?
+A: Resposta detalhada para a pergunta número 243.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 244?
+A: Resposta detalhada para a pergunta número 244.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 245?
+A: Resposta detalhada para a pergunta número 245.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 246?
+A: Resposta detalhada para a pergunta número 246.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 247?
+A: Resposta detalhada para a pergunta número 247.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 248?
+A: Resposta detalhada para a pergunta número 248.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 249?
+A: Resposta detalhada para a pergunta número 249.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 250?
+A: Resposta detalhada para a pergunta número 250.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 251?
+A: Resposta detalhada para a pergunta número 251.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 252?
+A: Resposta detalhada para a pergunta número 252.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 253?
+A: Resposta detalhada para a pergunta número 253.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 254?
+A: Resposta detalhada para a pergunta número 254.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 255?
+A: Resposta detalhada para a pergunta número 255.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 256?
+A: Resposta detalhada para a pergunta número 256.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 257?
+A: Resposta detalhada para a pergunta número 257.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 258?
+A: Resposta detalhada para a pergunta número 258.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 259?
+A: Resposta detalhada para a pergunta número 259.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 260?
+A: Resposta detalhada para a pergunta número 260.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 261?
+A: Resposta detalhada para a pergunta número 261.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 262?
+A: Resposta detalhada para a pergunta número 262.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 263?
+A: Resposta detalhada para a pergunta número 263.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 264?
+A: Resposta detalhada para a pergunta número 264.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 265?
+A: Resposta detalhada para a pergunta número 265.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 266?
+A: Resposta detalhada para a pergunta número 266.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 267?
+A: Resposta detalhada para a pergunta número 267.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 268?
+A: Resposta detalhada para a pergunta número 268.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 269?
+A: Resposta detalhada para a pergunta número 269.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 270?
+A: Resposta detalhada para a pergunta número 270.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 271?
+A: Resposta detalhada para a pergunta número 271.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 272?
+A: Resposta detalhada para a pergunta número 272.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 273?
+A: Resposta detalhada para a pergunta número 273.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 274?
+A: Resposta detalhada para a pergunta número 274.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 275?
+A: Resposta detalhada para a pergunta número 275.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 276?
+A: Resposta detalhada para a pergunta número 276.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 277?
+A: Resposta detalhada para a pergunta número 277.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 278?
+A: Resposta detalhada para a pergunta número 278.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 279?
+A: Resposta detalhada para a pergunta número 279.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 280?
+A: Resposta detalhada para a pergunta número 280.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 281?
+A: Resposta detalhada para a pergunta número 281.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 282?
+A: Resposta detalhada para a pergunta número 282.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 283?
+A: Resposta detalhada para a pergunta número 283.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 284?
+A: Resposta detalhada para a pergunta número 284.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 285?
+A: Resposta detalhada para a pergunta número 285.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 286?
+A: Resposta detalhada para a pergunta número 286.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 287?
+A: Resposta detalhada para a pergunta número 287.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 288?
+A: Resposta detalhada para a pergunta número 288.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 289?
+A: Resposta detalhada para a pergunta número 289.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 290?
+A: Resposta detalhada para a pergunta número 290.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 291?
+A: Resposta detalhada para a pergunta número 291.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 292?
+A: Resposta detalhada para a pergunta número 292.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 293?
+A: Resposta detalhada para a pergunta número 293.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 294?
+A: Resposta detalhada para a pergunta número 294.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 295?
+A: Resposta detalhada para a pergunta número 295.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 296?
+A: Resposta detalhada para a pergunta número 296.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 297?
+A: Resposta detalhada para a pergunta número 297.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 298?
+A: Resposta detalhada para a pergunta número 298.
+----------------------------------------
+(Frequência: 1)
+Q: Pergunta número 299?
+A: Resposta detalhada para a pergunta número 299.
+----------------------------------------

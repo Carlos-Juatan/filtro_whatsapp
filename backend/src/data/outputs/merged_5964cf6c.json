@@ -1,0 +1,14 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Q Alpha?",
+      "respostaConsolidada": "Answer Alpha.",
+      "frequencia": 1
+    },
+    {
+      "perguntaPadronizada": "Q Beta?",
+      "respostaConsolidada": "Answer Beta.",
+      "frequencia": 2
+    }
+  ]
+}

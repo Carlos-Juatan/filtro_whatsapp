@@ -1,0 +1,8 @@
+(Frequência: 4)
+Q: Qual é o preço?
+A: O preço é R$ 100,00.
+----------------------------------------
+(Frequência: 2)
+Q: Como faço para cancelar?
+A: Cancele pelo app.
+----------------------------------------

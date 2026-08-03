@@ -1,0 +1,20 @@
+(Frequência: 1)
+Q: Pergunta 0?
+A: Resposta 0.
+----------------------------------------
+(Frequência: 2)
+Q: Pergunta 1?
+A: Resposta 1.
+----------------------------------------
+(Frequência: 3)
+Q: Pergunta 2?
+A: Resposta 2.
+----------------------------------------
+(Frequência: 4)
+Q: Pergunta 3?
+A: Resposta 3.
+----------------------------------------
+(Frequência: 5)
+Q: Pergunta 4?
+A: Resposta 4.
+----------------------------------------

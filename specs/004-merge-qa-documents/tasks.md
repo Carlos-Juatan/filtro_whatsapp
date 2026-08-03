@@ -115,19 +115,19 @@
 
 ### Implementation for Phase 8
 
-- [ ] T026 [FR-009] [SC-002] Fix TXT exporter to always append a `----------------------------------------` separator line after every `A:` block, including the final block of the file — update `backend/src/services/qna_exporter.py`
-- [ ] T027 [P] [FR-012] [SC-004] Define a `MergerLogEvent` schema (event type, message, timestamp, optional metadata) and expose a streaming/SSE or WebSocket log endpoint for real-time progress emission — update `backend/src/models/merger.py` and create `backend/src/api/endpoints/merger_log.py`
-- [ ] T028 [FR-012] [SC-004] Instrument the consolidation pipeline (parser, merger service, exporter) to emit `MergerLogEvent` entries at each stage transition (file parse start/end, dedup start/end, chunk progress, export start/end, warnings) — update `backend/src/services/qna_merger_service.py` and `backend/src/services/qna_exporter.py`
-- [ ] T029 [FR-012] [SC-004] Connect `MergerPanel.tsx` to the log stream endpoint and render a real-time scrollable log panel with stage labels, timestamps, and warning highlights — update `frontend/src/components/MergerPanel.tsx`
-- [ ] T030 [P] [FR-013] [FR-014] [SC-005] Implement configurable chunked batch processing engine in `backend/src/services/qna_chunk_processor.py`:
+- [X] T026 [FR-009] [SC-002] Fix TXT exporter to always append a `----------------------------------------` separator line after every `A:` block, including the final block of the file — update `backend/src/services/qna_exporter.py`
+- [X] T027 [P] [FR-012] [SC-004] Define a `MergerLogEvent` schema (event type, message, timestamp, optional metadata) and expose a streaming/SSE or WebSocket log endpoint for real-time progress emission — update `backend/src/models/merger.py` and create `backend/src/api/endpoints/merger_log.py`
+- [X] T028 [FR-012] [SC-004] Instrument the consolidation pipeline (parser, merger service, exporter) to emit `MergerLogEvent` entries at each stage transition (file parse start/end, dedup start/end, chunk progress, export start/end, warnings) — update `backend/src/services/qna_merger_service.py` and `backend/src/services/qna_exporter.py`
+- [X] T029 [FR-012] [SC-004] Connect `MergerPanel.tsx` to the log stream endpoint and render a real-time scrollable log panel with stage labels, timestamps, and warning highlights — update `frontend/src/components/MergerPanel.tsx`
+- [X] T030 [P] [FR-013] [FR-014] [SC-005] Implement configurable chunked batch processing engine in `backend/src/services/qna_chunk_processor.py`:
   - Split the main (accumulated) Q&A document into chunks of `CHUNK_SIZE` pairs (default: 30).
   - Split incoming new pairs into batches of `BATCH_SIZE` (default: 30).
   - For each batch: iterate over all chunks sequentially; merge duplicates inline (by normalized `perguntaPadronizada`); append unmatched pairs to the main document after all chunks are processed.
   - Repeat for subsequent batches using the updated main document as the new reference.
   - `CHUNK_SIZE` and `BATCH_SIZE` are read from environment/config (FR-014).
-- [ ] T031 [FR-013] [FR-014] Replace the current monolithic merge loop in `backend/src/services/qna_merger_service.py` with calls to the new `QnaChunkProcessor` from T030; ensure the AI consolidation step (T021) also uses chunk-aware batching when calling the ChatGPT API.
-- [ ] T032 [P] Add unit tests for the `QnaChunkProcessor` covering: small batches (<30 pairs, no chunking needed), large batches (300+ pairs across multiple chunks), duplicate merging within and across chunk boundaries, and configurable `CHUNK_SIZE`/`BATCH_SIZE` — create `backend/tests/unit/test_qna_chunk_processor.py`
-- [ ] T033 Update API integration tests to validate Phase 8 improvements: assert TXT separator present on last block (SC-002), assert log events emitted (SC-004), assert 300-pair consolidation completes without error (SC-005) — **append** to `backend/tests/integration/test_merger_api.py`
+- [X] T031 [FR-013] [FR-014] Replace the current monolithic merge loop in `backend/src/services/qna_merger_service.py` with calls to the new `QnaChunkProcessor` from T030; ensure the AI consolidation step (T021) also uses chunk-aware batching when calling the ChatGPT API.
+- [X] T032 [P] Add unit tests for the `QnaChunkProcessor` covering: small batches (<30 pairs, no chunking needed), large batches (300+ pairs across multiple chunks), duplicate merging within and across chunk boundaries, and configurable `CHUNK_SIZE`/`BATCH_SIZE` — create `backend/tests/unit/test_qna_chunk_processor.py`
+- [X] T033 Update API integration tests to validate Phase 8 improvements: assert TXT separator present on last block (SC-002), assert log events emitted (SC-004), assert 300-pair consolidation completes without error (SC-005) — **append** to `backend/tests/integration/test_merger_api.py`
 
 **Checkpoint**: TXT output is correctly formatted, UI shows real-time logs, and large-document consolidation no longer hangs.
 

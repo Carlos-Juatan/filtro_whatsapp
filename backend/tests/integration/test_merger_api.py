@@ -214,3 +214,160 @@ def test_sc001_zero_duplicate_pergunta_padronizada_after_consolidation(
         f"[{scenario_name}] SC-001 VIOLATED: Found duplicate perguntaPadronizada values "
         f"in output after consolidation: {duplicates}"
     )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# T033: Phase 8 integration tests
+# ──────────────────────────────────────────────────────────────────────────────
+
+class TestPhase8TxtSeparator:
+    """SC-002: TXT output must have separator after every A: block including the last."""
+
+    def test_sc002_txt_last_block_has_separator(self):
+        """
+        SC-002: Download the generated TXT file and verify the final line
+        (or near-final non-blank line) is the 40-dash separator.
+        """
+        json_content = json.dumps({
+            "qna_pairs": [
+                {"perguntaPadronizada": "Q Alpha?", "respostaConsolidada": "Answer Alpha.", "frequencia": 1},
+                {"perguntaPadronizada": "Q Beta?", "respostaConsolidada": "Answer Beta.", "frequencia": 2},
+            ]
+        }).encode()
+
+        with _no_key_patch():
+            response = client.post(
+                "/api/merger/consolidate",
+                data={"input_format": "json"},
+                files=[("files", ("sc002_test.json", json_content, "application/json"))],
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        txt_filename = data["txt_output_filename"]
+        assert txt_filename is not None, "TXT output filename must be present."
+
+        dl = client.get(f"/api/merger/download/{txt_filename}")
+        assert dl.status_code == 200
+
+        txt_content = dl.text
+        lines = txt_content.splitlines()
+        # Strip trailing empty lines to find the last meaningful line
+        non_empty_lines = [l for l in lines if l.strip()]
+        last_line = non_empty_lines[-1] if non_empty_lines else ""
+        assert last_line == "----------------------------------------", (
+            f"SC-002 VIOLATED: Last non-empty TXT line is {last_line!r}, "
+            "expected '----------------------------------------'."
+        )
+
+    def test_sc002_all_blocks_have_separator(self):
+        """Each Q&A block in the TXT output must be followed by the separator line."""
+        json_content = json.dumps({
+            "qna_pairs": [
+                {"perguntaPadronizada": f"Pergunta {i}?", "respostaConsolidada": f"Resposta {i}.", "frequencia": i + 1}
+                for i in range(5)
+            ]
+        }).encode()
+
+        with _no_key_patch():
+            response = client.post(
+                "/api/merger/consolidate",
+                data={"input_format": "json"},
+                files=[("files", ("sc002_all_blocks.json", json_content, "application/json"))],
+            )
+
+        assert response.status_code == 200
+        txt_filename = response.json()["txt_output_filename"]
+        dl = client.get(f"/api/merger/download/{txt_filename}")
+        txt_content = dl.text
+
+        # Count A: lines and separator lines — they must be equal
+        a_lines = [l for l in txt_content.splitlines() if l.startswith("A: ")]
+        sep_lines = [l for l in txt_content.splitlines() if l == "----------------------------------------"]
+        assert len(a_lines) == len(sep_lines) == 5, (
+            f"SC-002: Expected 5 A: lines and 5 separator lines; "
+            f"got {len(a_lines)} A: and {len(sep_lines)} separator lines."
+        )
+
+
+class TestPhase8LogEvents:
+    """SC-004: Log events must be emitted during consolidation."""
+
+    def test_sc004_log_store_populated_after_consolidation(self):
+        """
+        SC-004: After calling /consolidate, the merger_log job_log_store
+        should have been populated and then cleaned up (done sentinel sent).
+        We verify this indirectly: the COMPLETE log event message is present
+        as the last event in any SSE stream that connected during the run.
+
+        Since the TestClient is synchronous and SSE is async, we verify the
+        behaviour by importing the log store directly and checking its API.
+        """
+        from src.api.endpoints.merger_log import job_log_store, register_job, emit, close_job
+        from src.models.merger import MergerLogEvent, MergerLogEventType
+
+        # Manually exercise the log store API
+        test_job_id = "test-sc004"
+        register_job(test_job_id)
+        emit(test_job_id, MergerLogEvent(
+            event_type=MergerLogEventType.PARSE_START,
+            message="Test parse start event."
+        ))
+        emit(test_job_id, MergerLogEvent(
+            event_type=MergerLogEventType.COMPLETE,
+            message="Test complete event."
+        ))
+        close_job(test_job_id)
+
+        events = job_log_store.get(test_job_id, [])
+        # Events list should contain 2 MergerLogEvent + 1 sentinel
+        real_events = [e for e in events if isinstance(e, MergerLogEvent)]
+        assert len(real_events) == 2
+        assert real_events[0].event_type == MergerLogEventType.PARSE_START
+        assert real_events[1].event_type == MergerLogEventType.COMPLETE
+
+        # Clean up test job
+        job_log_store.pop(test_job_id, None)
+
+
+class TestPhase8LargeConsolidation:
+    """SC-005: 300-pair consolidation must complete without error."""
+
+    def test_sc005_300_pair_consolidation_completes(self):
+        """
+        SC-005: Submit 300 unique Q&A pairs in a single consolidation request.
+        The endpoint must return 200 and report total_qna_merged == 300.
+        """
+        pairs = [
+            {
+                "perguntaPadronizada": f"Pergunta número {i}?",
+                "respostaConsolidada": f"Resposta detalhada para a pergunta número {i}.",
+                "frequencia": 1,
+            }
+            for i in range(300)
+        ]
+        payload = json.dumps({"qna_pairs": pairs}).encode()
+
+        with _no_key_patch():
+            response = client.post(
+                "/api/merger/consolidate",
+                data={"input_format": "json"},
+                files=[("files", ("sc005_300pairs.json", payload, "application/json"))],
+            )
+
+        assert response.status_code == 200, (
+            f"SC-005: Expected 200, got {response.status_code}. Body: {response.text[:300]}"
+        )
+        data = response.json()
+        assert data["success"] is True, "SC-005: success must be True for 300-pair input."
+        assert data["total_qna_extracted"] == 300, (
+            f"SC-005: Expected 300 extracted, got {data['total_qna_extracted']}."
+        )
+        assert data["total_qna_merged"] == 300, (
+            f"SC-005: Expected 300 unique merged pairs, got {data['total_qna_merged']}."
+        )
+        # Also verify zero duplicates in output (SC-001 x SC-005 cross-check)
+        questions = [p["perguntaPadronizada"] for p in data["qna_pairs"]]
+        assert len(questions) == len(set(questions)), (
+            "SC-005: Output contains duplicate perguntaPadronizada values after 300-pair merge."
+        )

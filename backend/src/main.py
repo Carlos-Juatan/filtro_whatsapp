@@ -140,6 +140,7 @@ def _register_routers() -> None:
         ("src.api.routes.keys", "/api/keys", ["API Keys"]),
         ("src.api.routes.prompts", "/api/prompts", ["Prompts"]),
         ("src.api.endpoints.merger", "/api/merger", ["Merger"]),
+        ("src.api.endpoints.merger_log", "/api/merger", ["Merger Logs"]),
     ]
 
     for module_path, prefix, tags in router_specs:
