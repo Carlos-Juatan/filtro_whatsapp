@@ -1,0 +1,7 @@
+(Frequência: 1)
+Q: What is the price?
+A: It's $100.
+
+(Frequência: 2)
+Q: Qual é o preço?
+A: R$ 100.

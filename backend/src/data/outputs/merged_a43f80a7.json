@@ -1,0 +1,9 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Como funciona?",
+      "respostaConsolidada": "Funciona de outro jeito.",
+      "frequencia": 3
+    }
+  ]
+}

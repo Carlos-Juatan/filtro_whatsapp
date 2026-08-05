@@ -1,0 +1,29 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Pergunta 0?",
+      "respostaConsolidada": "Resposta 0.",
+      "frequencia": 1
+    },
+    {
+      "perguntaPadronizada": "Pergunta 1?",
+      "respostaConsolidada": "Resposta 1.",
+      "frequencia": 2
+    },
+    {
+      "perguntaPadronizada": "Pergunta 2?",
+      "respostaConsolidada": "Resposta 2.",
+      "frequencia": 3
+    },
+    {
+      "perguntaPadronizada": "Pergunta 3?",
+      "respostaConsolidada": "Resposta 3.",
+      "frequencia": 4
+    },
+    {
+      "perguntaPadronizada": "Pergunta 4?",
+      "respostaConsolidada": "Resposta 4.",
+      "frequencia": 5
+    }
+  ]
+}

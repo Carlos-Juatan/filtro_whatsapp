@@ -50,6 +50,7 @@ class TipoFerramenta(str, Enum):
 
     EXTRATOR = "extrator"
     GERADOR = "gerador"
+    CONSOLIDADOR = "consolidador"
 
 
 class TipoLog(str, Enum):
@@ -133,7 +134,7 @@ class PromptConfigBase(BaseModel):
     modeloOpenAI: ModeloOpenAI = Field(default=ModeloOpenAI.GPT_4O_MINI, description="Selected LLM model.")
     ferramenta: TipoFerramenta = Field(
         default=TipoFerramenta.EXTRATOR,
-        description="Tool this prompt applies to: 'extrator' or 'gerador'. Defaults to 'extrator' for backward compatibility.",
+        description="Tool this prompt applies to: 'extrator', 'gerador', or 'consolidador'. Defaults to 'extrator' for backward compatibility.",
     )
 
     @field_validator("textoInstrucao")

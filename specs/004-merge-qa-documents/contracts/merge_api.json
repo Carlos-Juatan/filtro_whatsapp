@@ -1,0 +1,92 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "QnA Document Merger API",
+    "version": "1.0.0",
+    "description": "API contract for uploading and consolidating multiple Q&A files into deduplicated TXT and JSON exports."
+  },
+  "paths": {
+    "/api/merger/consolidate": {
+      "post": {
+        "summary": "Consolidate multiple Q&A files",
+        "operationId": "consolidateQnADocuments",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "input_format": {
+                    "type": "string",
+                    "enum": ["json", "txt"],
+                    "description": "Format of input files being uploaded"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "List of JSON or TXT documents containing Q&A pairs"
+                  }
+                },
+                "required": ["input_format", "files"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Consolidation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeJobResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input format or missing files"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QnAPair": {
+        "type": "object",
+        "properties": {
+          "perguntaPadronizada": { "type": "string" },
+          "respostaConsolidada": { "type": "string" },
+          "frequencia": { "type": "integer", "minimum": 1 },
+          "metadata": { "type": "string" },
+          "category": { "type": "string" }
+        },
+        "required": ["perguntaPadronizada", "respostaConsolidada", "frequencia"]
+      },
+      "MergeJobResult": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "total_files_processed": { "type": "integer" },
+          "total_qna_extracted": { "type": "integer" },
+          "total_qna_merged": { "type": "integer" },
+          "json_output_filename": { "type": "string" },
+          "txt_output_filename": { "type": "string" },
+          "warnings": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "qna_pairs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/QnAPair" }
+          }
+        },
+        "required": ["success", "total_files_processed", "total_qna_extracted", "total_qna_merged", "qna_pairs"]
+      }
+    }
+  }
+}

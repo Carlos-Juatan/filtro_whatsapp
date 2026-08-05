@@ -1,0 +1,7 @@
+(Frequência: 4)
+Q: O serviço funciona?
+A: Funciona perfeitamente.
+
+(Frequência: 5)
+Q: Qual o horário?
+A: Das 8h às 18h.

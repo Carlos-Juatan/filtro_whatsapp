@@ -26,7 +26,7 @@ import tiktoken
 # ──────────────────────────────────────────────────────────────────────────────
 
 ENCODING_NAME: str = "cl100k_base"
-MAX_TOKENS: int = 8_000  # generous buffer; standard model windows are 128 k
+MAX_TOKENS: int = 5_000  # capped to leave room for the JSON response output
 
 
 # ──────────────────────────────────────────────────────────────────────────────

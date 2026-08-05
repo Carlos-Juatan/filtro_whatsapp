@@ -1,0 +1,14 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Qual é o preço?",
+      "respostaConsolidada": "O preço é R$ 100,00.",
+      "frequencia": 4
+    },
+    {
+      "perguntaPadronizada": "Como faço para cancelar?",
+      "respostaConsolidada": "Cancele pelo app.",
+      "frequencia": 2
+    }
+  ]
+}

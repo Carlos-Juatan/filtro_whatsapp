@@ -1,0 +1,9 @@
+{
+  "qna_pairs": [
+    {
+      "perguntaPadronizada": "Pergunta A?",
+      "respostaConsolidada": "Resposta A.",
+      "frequencia": 1
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+(Frequência: 1)
+Q: Q Alpha?
+A: Answer Alpha.
+----------------------------------------
+(Frequência: 2)
+Q: Q Beta?
+A: Answer Beta.
+----------------------------------------

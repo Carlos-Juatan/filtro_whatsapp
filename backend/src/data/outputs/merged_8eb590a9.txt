@@ -1,0 +1,3 @@
+(Frequência: 1)
+Q: Pergunta A?
+A: Resposta A.

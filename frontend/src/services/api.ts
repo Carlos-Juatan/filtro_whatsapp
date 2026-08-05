@@ -25,7 +25,7 @@ export type ModeloOpenAI = "gpt-4o-mini" | "gpt-4o";
 export type TipoPrompt = "FIXO" | "CUSTOMIZADO";
 
 /** Tool identifier for prompt segregation. */
-export type TipoFerramenta = "extrator" | "gerador";
+export type TipoFerramenta = "extrator" | "gerador" | "consolidador";
 
 /** File processing status machine states. */
 export type StatusArquivo = "PENDENTE" | "PROCESSANDO" | "CONCLUIDO" | "ERRO";
