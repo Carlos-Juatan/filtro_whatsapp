@@ -98,6 +98,9 @@ def tmp_data_dir(monkeypatch: pytest.MonkeyPatch) -> Generator[Path, None, None]
         monkeypatch.setattr(ks_mod, "KEYS_FILE", tmp / "keys.json")
         monkeypatch.setattr(ps_mod, "DATA_DIR", tmp)
         monkeypatch.setattr(ps_mod, "PROMPTS_FILE", tmp / "prompts.json")
+        
+        ks_mod.key_storage._ensure_data_dir()
+        ps_mod.prompt_storage._ensure_data_dir()
 
         yield tmp
 
@@ -241,7 +244,7 @@ class TestPromptStorageIntegration:
         svc.add(PromptConfigCreate(nome="P2", tipo=TipoPrompt.CUSTOMIZADO, textoInstrucao="Instrução dois aqui."))
 
         prompts = svc.get_all()
-        assert len(prompts) == 2
+        assert len(prompts) == 5
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -268,36 +271,36 @@ class TestHealthEndpoint:
 
 class TestKeysHTTPEndpoints:
     def test_get_keys_empty(self, client: TestClient):
-        response = client.get("/api/keys/")
+        response = client.get("/api/keys")
         assert response.status_code == 200
         assert response.json() == []
 
     def test_post_and_get_key(self, client: TestClient):
         payload = {"nomeIdentificacao": "HTTP Key", "chave": "sk-http-test"}
-        post_resp = client.post("/api/keys/", json=payload)
+        post_resp = client.post("/api/keys", json=payload)
         assert post_resp.status_code == 201
         created = post_resp.json()
         assert created["nomeIdentificacao"] == "HTTP Key"
         assert "id" in created
 
-        get_resp = client.get("/api/keys/")
+        get_resp = client.get("/api/keys")
         assert get_resp.status_code == 200
         assert len(get_resp.json()) == 1
 
     def test_post_duplicate_name_returns_400(self, client: TestClient):
         payload = {"nomeIdentificacao": "Dup", "chave": "sk-dup"}
-        client.post("/api/keys/", json=payload)
-        resp = client.post("/api/keys/", json=payload)
+        client.post("/api/keys", json=payload)
+        resp = client.post("/api/keys", json=payload)
         assert resp.status_code == 400
 
     def test_delete_key(self, client: TestClient):
         created = client.post(
-            "/api/keys/", json={"nomeIdentificacao": "To Delete", "chave": "sk-del"}
+            "/api/keys", json={"nomeIdentificacao": "To Delete", "chave": "sk-del"}
         ).json()
         del_resp = client.delete(f"/api/keys/{created['id']}")
         assert del_resp.status_code == 204
 
-        keys = client.get("/api/keys/").json()
+        keys = client.get("/api/keys").json()
         assert len(keys) == 0
 
     def test_delete_nonexistent_returns_404(self, client: TestClient):
@@ -306,10 +309,10 @@ class TestKeysHTTPEndpoints:
 
 
 class TestPromptsHTTPEndpoints:
-    def test_get_prompts_empty(self, client: TestClient):
-        response = client.get("/api/prompts/")
+    def test_get_prompts_defaults(self, client: TestClient):
+        response = client.get("/api/prompts")
         assert response.status_code == 200
-        assert response.json() == []
+        assert len(response.json()) == 3
 
     def test_post_and_get_prompt(self, client: TestClient):
         payload = {
@@ -318,13 +321,13 @@ class TestPromptsHTTPEndpoints:
             "textoInstrucao": "Extraia perguntas e respostas do texto fornecido.",
             "idiomaModelo": "pt-br",
         }
-        post_resp = client.post("/api/prompts/", json=payload)
+        post_resp = client.post("/api/prompts", json=payload)
         assert post_resp.status_code == 201
         created = post_resp.json()
         assert created["nome"] == "Extrator Padrão"
 
-        get_resp = client.get("/api/prompts/")
-        assert len(get_resp.json()) == 1
+        get_resp = client.get("/api/prompts")
+        assert len(get_resp.json()) == 4
 
 
 # ──────────────────────────────────────────────────────────────────────────────

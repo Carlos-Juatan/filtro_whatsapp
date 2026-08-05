@@ -4,17 +4,20 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { X, Key, MessageSquare } from 'lucide-react';
 import { KeySettings } from './KeySettings';
 import { PromptSettings } from './PromptSettings';
+import { TipoFerramenta } from '../services/api';
 
 export interface SettingsModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   defaultTab?: string;
+  activeTool?: TipoFerramenta;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onOpenChange,
-  defaultTab = 'keys'
+  defaultTab = 'keys',
+  activeTool = 'extrator'
 }) => {
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
@@ -56,7 +59,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </Tabs.Content>
 
             <Tabs.Content value="prompts" className="outline-none flex-1">
-              <PromptSettings />
+              <PromptSettings initialTool={activeTool} />
             </Tabs.Content>
           </Tabs.Root>
         </Dialog.Content>

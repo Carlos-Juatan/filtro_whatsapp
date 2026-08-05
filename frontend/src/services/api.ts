@@ -25,7 +25,7 @@ export type ModeloOpenAI = "gpt-4o-mini" | "gpt-4o";
 export type TipoPrompt = "FIXO" | "CUSTOMIZADO";
 
 /** Tool identifier for prompt segregation. */
-export type TipoFerramenta = "extrator" | "gerador";
+export type TipoFerramenta = "extrator" | "gerador" | "consolidador";
 
 /** File processing status machine states. */
 export type StatusArquivo = "PENDENTE" | "PROCESSANDO" | "CONCLUIDO" | "ERRO";
@@ -195,9 +195,10 @@ export interface ApiClient {
   deleteKey(id: string): Promise<void>;
 
   // Prompt config operations
-  /** List prompts. Pass `ferramenta` to filter by tool ('extrator' or 'gerador'). */
+  /** List prompts. Pass `ferramenta` to filter by tool. */
   listPrompts(ferramenta?: TipoFerramenta): Promise<PromptConfig[]>;
-  getDefaultPromptText(): Promise<string>;
+  /** Get the default prompt text for the specified tool. Defaults to 'extrator'. */
+  getDefaultPromptText(ferramenta?: TipoFerramenta): Promise<string>;
   savePrompt(payload: PromptConfigCreate): Promise<PromptConfig>;
   deletePrompt(id: string): Promise<void>;
 }
@@ -237,8 +238,9 @@ export class ProductionApiClient implements ApiClient {
     return res.data;
   }
 
-  async getDefaultPromptText(): Promise<string> {
-    const res: AxiosResponse<{ textoInstrucao: string }> = await this.http.get("/api/prompts/default");
+  async getDefaultPromptText(ferramenta?: TipoFerramenta): Promise<string> {
+    const params = ferramenta ? { ferramenta } : {};
+    const res: AxiosResponse<{ textoInstrucao: string }> = await this.http.get("/api/prompts/default", { params });
     return res.data.textoInstrucao;
   }
 
@@ -317,7 +319,19 @@ export class MockApiClient implements ApiClient {
     return [...this.prompts];
   }
 
-  async getDefaultPromptText(): Promise<string> {
+  async getDefaultPromptText(ferramenta?: TipoFerramenta): Promise<string> {
+    if (ferramenta === "gerador") {
+      return (
+        "Você é um especialista em geração de bases de conhecimento e perguntas de FAQ. " +
+        "Sua tarefa é analisar o conteúdo declarativo e gerar perguntas pertinentes."
+      );
+    }
+    if (ferramenta === "consolidador") {
+      return (
+        "Você é um especialista em consolidação e deduplicação de bases de conhecimento de P&R. " +
+        "Sua tarefa é consolidar pares de perguntas e respostas em um conjunto único e coerente."
+      );
+    }
     return (
       "Você é um especialista em extração e análise de conversas de atendimento ao cliente. " +
       "Sua tarefa é identificar TODAS as perguntas feitas pelos clientes e suas respectivas respostas " +

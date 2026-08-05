@@ -46,6 +46,21 @@ Como usuário do sistema, quero garantir que prompts criados ou modificados para
 
 ---
 
+### User Story 3 - Acesso à Ferramenta de Consolidação na Interface (Priority: P1)
+
+Como usuário do sistema, quero ter um botão de acesso no cabeçalho (header) e na navegação mobile para a ferramenta "Consolidador", para que eu possa acessar sua interface, visualizar seu painel e configurar seus prompts isolados.
+
+**Why this priority**: Sem esse acesso na interface, é impossível atingir a separação e o isolamento de prompts para a Ferramenta 3, pois ela se torna inacessível para o usuário final.
+
+**Independent Test**: Pode ser testado visualizando o cabeçalho superior e a barra mobile para verificar se a opção "Consolidador" está visível e, ao clicar, abre o painel correto.
+
+**Acceptance Scenarios**:
+
+1. **Given** que o usuário está na tela inicial, **When** ele visualiza o cabeçalho (ou barra mobile), **Then** ele deve ver três botões de navegação: "Extrator", "Gerador" e "Consolidador".
+2. **Given** que o usuário clica em "Consolidador", **When** a ação é concluída, **Then** a interface deve renderizar o painel específico da ferramenta de Consolidação (ConsolidatorPanel).
+
+---
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements

@@ -9,7 +9,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { Activity, Database } from 'lucide-react';
 
 interface ExtractorPanelProps {
-  onOpenSettings: (tab: string) => void;
+  onOpenSettings: (tab: string, ferramenta?: "extrator" | "gerador" | "consolidador") => void;
 }
 
 export function ExtractorPanel({ onOpenSettings }: ExtractorPanelProps) {

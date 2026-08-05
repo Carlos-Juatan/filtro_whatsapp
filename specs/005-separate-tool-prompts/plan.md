@@ -62,7 +62,9 @@ backend/
 
 frontend/
 ├── src/
+│   ├── App.tsx                    # Adição de aba e roteamento do Consolidador no header
 │   ├── components/
+│   │   ├── ConsolidatorPanel.tsx  # Nova interface dedicada à ferramenta Consolidador
 │   │   ├── PromptSettings.tsx     # Tool-scoped prompt list & duplication UI
 │   │   └── StartProcessModal.tsx  # Tool-scoped prompt dropdown selection
 │   └── services/

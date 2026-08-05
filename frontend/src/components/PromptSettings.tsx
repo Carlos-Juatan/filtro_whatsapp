@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { usePrompts } from '../services/prompts';
-import { ModeloOpenAI } from '../services/api';
+import { ModeloOpenAI, TipoFerramenta } from '../services/api';
 
-const DEFAULT_PROMPT_ID = '00000000-0000-0000-0000-000000000001';
+// Fixed UUIDs for the 3 built-in system default prompts (cannot be deleted)
+const DEFAULT_PROMPT_IDS: Record<TipoFerramenta, string> = {
+  extrator: '00000000-0000-0000-0000-000000000001',
+  gerador: '00000000-0000-0000-0000-000000000002',
+  consolidador: '00000000-0000-0000-0000-000000000003',
+};
 
-export const PromptSettings: React.FC = () => {
-  const { prompts, loading, error, addPrompt, deletePrompt, fetchDefaultPromptText } = usePrompts();
+const TOOL_LABELS: Record<TipoFerramenta, string> = {
+  extrator: 'Extrator',
+  gerador: 'Gerador',
+  consolidador: 'Consolidador',
+};
+
+const TOOL_LIST: TipoFerramenta[] = ['extrator', 'gerador', 'consolidador'];
+
+export const PromptSettings: React.FC<{ initialTool?: TipoFerramenta }> = ({ initialTool = 'extrator' }) => {
+  const [activeTool, setActiveTool] = useState<TipoFerramenta>(initialTool);
+  const { prompts, loading, error, addPrompt, deletePrompt, fetchDefaultPromptText } = usePrompts(activeTool);
   const [nome, setNome] = useState('');
   const [textoInstrucao, setTextoInstrucao] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
@@ -14,6 +28,24 @@ export const PromptSettings: React.FC = () => {
   const [modeloOpenAI, setModeloOpenAI] = useState<ModeloOpenAI>('gpt-4o-mini');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const activeDefaultId = DEFAULT_PROMPT_IDS[activeTool];
+
+  useEffect(() => {
+    if (initialTool) {
+      setActiveTool(initialTool);
+    }
+  }, [initialTool]);
+
+  const handleToolChange = (tool: TipoFerramenta) => {
+    setActiveTool(tool);
+    // Reset form state when switching tools
+    setNome('');
+    setTextoInstrucao('');
+    setPalavrasChave('');
+    setExpandedId(null);
+    setDeleteConfirmId(null);
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +58,7 @@ export const PromptSettings: React.FC = () => {
         palavrasChave: palavrasChave.split(',').map(p => p.trim()).filter(p => p.length > 0),
         idiomaModelo,
         modeloOpenAI,
-        ferramenta: 'extrator'
+        ferramenta: activeTool,
       });
       setNome('');
       setTextoInstrucao('');
@@ -38,8 +70,11 @@ export const PromptSettings: React.FC = () => {
 
   const handleDuplicateDefault = async () => {
     const text = await fetchDefaultPromptText();
+    // Find the default prompt name for this tool and build "<Nome Padrão> (Cópia)"
+    const defaultPrompt = prompts.find((p) => p.id === activeDefaultId);
+    const baseName = defaultPrompt?.nome ?? TOOL_LABELS[activeTool] + ' Padrão';
     setTextoInstrucao(text);
-    setNome('Cópia do Padrão');
+    setNome(`${baseName} (Cópia)`);
     document.getElementById('prompt-nome-input')?.focus();
   };
 
@@ -62,8 +97,27 @@ export const PromptSettings: React.FC = () => {
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold text-gray-800">Configurações de Prompt</h2>
         <p className="text-sm text-gray-500">
-          O prompt padrão já está disponível. Crie versões customizadas para diferentes contextos.
+          Cada ferramenta possui sua lista isolada de prompts. Selecione a ferramenta para gerenciar seus prompts.
         </p>
+      </div>
+
+      {/* Tool Selector Tabs */}
+      <div className="flex border-b border-gray-200">
+        {TOOL_LIST.map((tool) => (
+          <button
+            key={tool}
+            type="button"
+            id={`prompt-settings-tab-${tool}`}
+            onClick={() => handleToolChange(tool)}
+            className={`px-5 py-2.5 text-sm font-medium transition-colors border-b-2 ${
+              activeTool === tool
+                ? 'text-blue-600 border-blue-600'
+                : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            {TOOL_LABELS[tool]}
+          </button>
+        ))}
       </div>
 
       {error && (
@@ -72,14 +126,14 @@ export const PromptSettings: React.FC = () => {
         </div>
       )}
 
-      {/* Prompt list */}
+      {/* Prompt list scoped to activeTool */}
       <div className="flex flex-col border border-gray-200 rounded-lg overflow-hidden">
         {prompts.length === 0 && loading ? (
           <div className="p-6 text-center text-gray-400 text-sm">Carregando…</div>
         ) : (
           <ul className="divide-y divide-gray-200">
             {prompts.map((p) => {
-              const isDefault = p.id === DEFAULT_PROMPT_ID;
+              const isDefault = p.id === activeDefaultId;
               const isExpanded = expandedId === p.id;
               const isConfirming = deleteConfirmId === p.id;
 
@@ -112,7 +166,7 @@ export const PromptSettings: React.FC = () => {
                       {isDefault && (
                         <button
                           type="button"
-                          title="Duplicar como customizado"
+                          title={`Duplicar "${p.nome}" como customizado`}
                           onClick={handleDuplicateDefault}
                           className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition"
                         >
@@ -175,14 +229,16 @@ export const PromptSettings: React.FC = () => {
         )}
       </div>
 
-      {/* Create new prompt form */}
+      {/* Create new prompt form — scoped to activeTool */}
       <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-base font-semibold text-gray-700 mb-4">Criar Prompt Customizado</h3>
+        <h3 className="text-base font-semibold text-gray-700 mb-4">
+          Criar Prompt Customizado — {TOOL_LABELS[activeTool]}
+        </h3>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-start gap-2">
           <Copy size={14} className="text-blue-500 mt-0.5 shrink-0" />
           <p className="text-xs text-blue-700">
-            Clique no ícone <strong>Duplicar</strong> do "Padrão do Sistema" acima para pré-preencher o formulário com o texto padrão e depois personalizá-lo.
+            Clique no ícone <strong>Duplicar</strong> do prompt padrão acima para pré-preencher o formulário com o texto padrão do {TOOL_LABELS[activeTool]} e depois personalizá-lo.
           </p>
         </div>
 
@@ -194,7 +250,7 @@ export const PromptSettings: React.FC = () => {
                 id="prompt-nome-input"
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                placeholder="Ex: Extrator Inglês Detalhado"
+                placeholder={`Ex: ${TOOL_LABELS[activeTool]} Inglês Detalhado`}
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 disabled={loading}
@@ -241,7 +297,7 @@ export const PromptSettings: React.FC = () => {
             <label className="text-xs font-medium text-gray-700">Texto de Instrução (Min. 10 caracteres)</label>
             <textarea
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-y min-h-[120px] font-mono text-sm"
-              placeholder="Instruções para o LLM extrair as perguntas e respostas..."
+              placeholder={`Instruções para o LLM do ${TOOL_LABELS[activeTool]}...`}
               value={textoInstrucao}
               onChange={(e) => setTextoInstrucao(e.target.value)}
               disabled={loading}

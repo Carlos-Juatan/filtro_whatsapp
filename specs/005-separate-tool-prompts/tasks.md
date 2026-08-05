@@ -20,16 +20,16 @@ graph TD
 
 ## Phase 1: Setup & Foundational Schemas
 
-- [ ] T001 [P] Update `TipoFerramenta` enum to include `CONSOLIDADOR = "consolidador"` in `backend/src/models/schemas.py`
-- [ ] T002 [P] Update `TipoFerramenta` TypeScript type in `frontend/src/services/api.ts` to include `"consolidador"`
+- [X] T001 [P] Update `TipoFerramenta` enum to include `CONSOLIDADOR = "consolidador"` in `backend/src/models/schemas.py`
+- [X] T002 [P] Update `TipoFerramenta` TypeScript type in `frontend/src/services/api.ts` to include `"consolidador"`
 
 ---
 
 ## Phase 2: Backend Storage & API Filtering
 
-- [ ] T003 Update system prompt constants and initialization logic in `backend/src/services/prompt_storage.py` using factory pattern / dependency injection structure to ensure built-in default prompts exist for `EXTRATOR`, `GERADOR`, and `CONSOLIDADOR`
-- [ ] T004 Update `GET /api/prompts/default` endpoint in `backend/src/api/routes/prompts.py` to accept optional `ferramenta` query parameter and return default prompt text per tool
-- [ ] T005 [P] Add backend unit tests in `backend/tests/test_prompts.py` for default prompt retrieval per tool, tool association persistence (FR-006), and deletion protection
+- [X] T003 Update system prompt constants and initialization logic in `backend/src/services/prompt_storage.py` using factory pattern / dependency injection structure to ensure built-in default prompts exist for `EXTRATOR`, `GERADOR`, and `CONSOLIDADOR`
+- [X] T004 Update `GET /api/prompts/default` endpoint in `backend/src/api/routes/prompts.py` to accept optional `ferramenta` query parameter and return default prompt text per tool
+- [X] T005 [P] Add backend unit tests in `backend/tests/test_prompts.py` for default prompt retrieval per tool, tool association persistence (FR-006), and deletion protection
 
 ---
 
@@ -39,9 +39,9 @@ graph TD
 
 **Independent Test**: Acessar o gerenciador de prompts, alternar a ferramenta ativa, clicar em "Duplicar/Editar" no prompt padrão e verificar se a cópia `<Nome Padrão> (Cópia)` é criada exclusivamente na lista daquela ferramenta.
 
-- [ ] T006 [US1] Update `usePrompts` hook in `frontend/src/services/prompts.ts` to pass `ferramenta` parameter to `fetchDefaultPromptText` and maintain reactive tool state
-- [ ] T007 [US1] Update `PromptSettings.tsx` in `frontend/src/components/PromptSettings.tsx` to include a tool selector tab/filter, scoped prompt listing, and automatic `<Nome Padrão> (Cópia)` pre-fill naming on default duplication
-- [ ] T008 [US1] Add frontend tests in `frontend/tests/prompts.test.tsx` for tool-scoped prompt loading, creation with tool binding, and default duplication naming
+- [X] T006 [US1] Update `usePrompts` hook in `frontend/src/services/prompts.ts` to pass `ferramenta` parameter to `fetchDefaultPromptText` and maintain reactive tool state
+- [X] T007 [US1] Update `PromptSettings.tsx` in `frontend/src/components/PromptSettings.tsx` to include a tool selector tab/filter, scoped prompt listing, and automatic `<Nome Padrão> (Cópia)` pre-fill naming on default duplication
+- [X] T008 [US1] Add frontend tests in `frontend/tests/prompts.test.tsx` for tool-scoped prompt loading, creation with tool binding, and default duplication naming
 
 ---
 
@@ -51,15 +51,17 @@ graph TD
 
 **Independent Test**: Selecionar prompts no `StartProcessModal` de cada ferramenta e verificar que apenas prompts vinculados à ferramenta atual são exibidos, e ao excluir um prompt customizado selecionado a seleção reverte para o prompt padrão correspondente.
 
-- [ ] T009 [US2] Update `StartProcessModal.tsx` in `frontend/src/components/StartProcessModal.tsx` to enforce tool filtering on prompt selection dropdown and auto-revert to the tool's default prompt if the current custom selection is deleted
-- [ ] T010 [US2] Update `ExtractorPanel.tsx` and `GeneratorPanel.tsx` in `frontend/src/components/` to pass explicit `ferramenta` prop ("extrator" / "gerador") to modal and settings context
+- [X] T009 [US2] Update `StartProcessModal.tsx` in `frontend/src/components/StartProcessModal.tsx` to enforce tool filtering on prompt selection dropdown and auto-revert to the tool's default prompt if the current custom selection is deleted
+- [X] T010 [US2] Update `ExtractorPanel.tsx` and `GeneratorPanel.tsx` in `frontend/src/components/` to pass explicit `ferramenta` prop ("extrator" / "gerador") to modal and settings context
+- [X] T010a [US3] Create `ConsolidatorPanel.tsx` in `frontend/src/components/` (using existing panel components as a model) and pass explicit `ferramenta="consolidador"` prop.
+- [X] T010b [US3] Update `App.tsx` in `frontend/src/App.tsx` to add the Consolidador tool to the header and mobile navigation tabs, and render the `ConsolidatorPanel` when active.
 
 ---
 
 ## Phase 5: Polish & Test Suite Validation
 
-- [ ] T011 Run and fix all backend unit tests via `backend/tests/test_prompts.py`
-- [ ] T012 Run and fix all frontend test suites via `npm test -- --run` in `frontend/`
+- [X] T011 Execute full `pytest` suite for backend and `vitest` suite for frontend, verifying 100% pass rate.
+- [X] T012 Run and fix all frontend test suites via `npm test -- --run` in `frontend/`
 
 ---
 

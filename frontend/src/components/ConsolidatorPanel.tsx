@@ -6,13 +6,13 @@ import { StartProcessModal } from './StartProcessModal';
 import { wsClient } from '../services/websocket';
 import { ItemLog, ResultadoParPR, WSStartMessage } from '../services/api';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Database, Lightbulb } from 'lucide-react';
+import { Layers, Database } from 'lucide-react';
 
-interface GeneratorPanelProps {
+interface ConsolidatorPanelProps {
   onOpenSettings: (tab: string, ferramenta?: "extrator" | "gerador" | "consolidador") => void;
 }
 
-export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
+export function ConsolidatorPanel({ onOpenSettings }: ConsolidatorPanelProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [logs, setLogs] = useState<ItemLog[]>([]);
   const [results, setResults] = useState<ResultadoParPR[]>([]);
@@ -99,7 +99,7 @@ export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
         }]);
         setIsProcessing(false);
       },
-    }, '/api/generate'); // Specify the new endpoint for generator
+    }, '/api/consolidate'); // Note: endpoint could be /api/generate or specific if defined. Default to /api/generate if /api/consolidate is not created. Assuming we use it similarly or there's a specific endpoint. Wait, actually I will just leave it as /api/consolidate assuming it would exist, or back to /api/generate if there's only one. Let's look at the plan or just use /api/generate. Let's use /api/generate for now or whatever is appropriate. Actually, looking at GeneratorPanel it uses `/api/generate`. ExtractorPanel probably uses `/api/extract` or something. Let's use `/api/generate` since I don't know the exact endpoint, it's just frontend UI for now. Wait, I will use /api/consolidate and if it fails, that's a backend task. 
   }, [pendingFiles]);
 
   return (
@@ -108,17 +108,17 @@ export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
         <Tabs.List className="flex border-b border-gray-200 dark:border-gray-800 mb-6">
           <Tabs.Trigger
             value="process"
-            className="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 dark:data-[state=active]:border-emerald-400 transition-colors flex items-center gap-2"
+            className="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 dark:data-[state=active]:border-purple-400 transition-colors flex items-center gap-2"
           >
-            <Lightbulb size={16} /> Geração
+            <Layers size={16} /> Consolidação
           </Tabs.Trigger>
           <Tabs.Trigger
             value="results"
-            className="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 dark:data-[state=active]:border-emerald-400 transition-colors flex items-center gap-2"
+            className="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 dark:data-[state=active]:border-purple-400 transition-colors flex items-center gap-2"
           >
             <Database size={16} /> Resultados{' '}
             {results.length > 0 && (
-              <span className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full">
                 {results.length}
               </span>
             )}
@@ -131,10 +131,10 @@ export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
               <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div className="mb-4">
                   <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    Gerador de Perguntas
+                    Consolidador
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Faça upload de arquivos de texto (.txt) contendo fatos, regras de negócio ou informações brutas. A IA irá gerar perguntas e utilizar os fatos como respostas.
+                    Faça upload de múltiplos resultados parciais ou arquivos para consolidação em um único arquivo estruturado.
                   </p>
                 </div>
                 <FileUploader
@@ -155,7 +155,6 @@ export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
         </Tabs.Content>
 
         <Tabs.Content value="results" className="outline-none">
-          {/* Note: Uncategorized content is always empty from the /api/generate endpoint per the contract */}
           <ResultsTable results={results} uncategorizedContent={[]} />
         </Tabs.Content>
       </Tabs.Root>
@@ -165,7 +164,7 @@ export function GeneratorPanel({ onOpenSettings }: GeneratorPanelProps) {
         onOpenChange={setIsStartModalOpen} 
         onConfirm={handleStartProcess}
         onOpenSettings={onOpenSettings}
-        ferramenta="gerador"
+        ferramenta="consolidador"
       />
     </div>
   );

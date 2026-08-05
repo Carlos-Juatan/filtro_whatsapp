@@ -12,7 +12,7 @@ router = APIRouter()
 def get_prompts(
     ferramenta: Optional[TipoFerramenta] = Query(
         default=None,
-        description="Filter prompts by tool: 'extrator' or 'gerador'. Returns all if omitted.",
+        description="Filter prompts by tool: 'extrator', 'gerador', or 'consolidador'. Returns all if omitted.",
     )
 ):
     """Get all saved Prompt Configs, optionally filtered by tool type."""
@@ -23,9 +23,15 @@ def get_prompts(
 
 
 @router.get("/default", response_model=dict, summary="Get default system prompt text")
-def get_default_prompt():
-    """Return the built-in default system prompt text so the UI can pre-fill a custom copy."""
-    return {"textoInstrucao": prompt_storage.get_default_prompt_text()}
+def get_default_prompt(
+    ferramenta: Optional[TipoFerramenta] = Query(
+        default=None,
+        description="Tool whose default prompt text should be returned ('extrator', 'gerador', or 'consolidador'). Defaults to 'extrator'.",
+    )
+):
+    """Return the built-in default system prompt text for the specified tool so the UI can pre-fill a custom copy."""
+    return {"textoInstrucao": prompt_storage.get_default_prompt_text(ferramenta)}
+
 
 
 @router.post(
