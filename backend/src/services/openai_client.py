@@ -24,6 +24,12 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
+try:
+    import json_repair  # type: ignore[import-untyped]
+    _HAS_JSON_REPAIR = True
+except ImportError:  # pragma: no cover
+    _HAS_JSON_REPAIR = False
+
 from openai import AsyncOpenAI, RateLimitError
 
 from src.models.schemas import ModeloOpenAI, PromptConfig, ResultadoParPR
@@ -112,6 +118,10 @@ def _parse_qna_response(raw_content: str) -> tuple[list[ResultadoParPR], list[st
     The model is instructed to return pure JSON, but we defensively strip any
     markdown code fences before attempting to parse.
 
+    When the JSON is truncated (e.g. the model hit its output token limit),
+    ``json_repair`` is used as a fallback to recover whatever pairs were already
+    fully generated before the cut-off.
+
     Args:
         raw_content: Raw string returned by the model.
 
@@ -119,7 +129,7 @@ def _parse_qna_response(raw_content: str) -> tuple[list[ResultadoParPR], list[st
         A tuple (pairs, uncategorized) — both may be empty lists.
 
     Raises:
-        ValueError: If the JSON cannot be parsed.
+        ValueError: If the JSON cannot be parsed even after repair.
     """
     # Strip optional markdown code fences: ```json ... ``` or ``` ... ```
     content = raw_content.strip()
@@ -130,8 +140,30 @@ def _parse_qna_response(raw_content: str) -> tuple[list[ResultadoParPR], list[st
 
     try:
         data: Any = json.loads(content)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Model returned invalid JSON: {exc}") from exc
+    except json.JSONDecodeError as primary_exc:
+        # ── Fallback: attempt repair for truncated/malformed JSON ─────────────
+        if _HAS_JSON_REPAIR:
+            try:
+                repaired = json_repair.repair_json(content, return_objects=True)
+                if isinstance(repaired, (dict, list)):
+                    data = repaired
+                    logger.warning(
+                        "JSON was malformed (likely truncated by token limit). "
+                        "Repaired successfully. Original error: %s",
+                        primary_exc,
+                    )
+                else:
+                    raise ValueError(
+                        f"Model returned invalid JSON (repair produced unexpected type "
+                        f"{type(repaired).__name__}): {primary_exc}"
+                    ) from primary_exc
+            except Exception as repair_exc:  # noqa: BLE001
+                raise ValueError(
+                    f"Model returned invalid JSON and repair failed. "
+                    f"Original: {primary_exc} | Repair: {repair_exc}"
+                ) from primary_exc
+        else:
+            raise ValueError(f"Model returned invalid JSON: {primary_exc}") from primary_exc
 
     if not isinstance(data, dict):
         raise ValueError(
@@ -252,7 +284,17 @@ async def extract_qna_from_chunk(
                 ],
                 temperature=0.1,  # low temperature for deterministic JSON extraction
                 response_format={"type": "json_object"},
+                max_tokens=8192,  # explicit limit to avoid silent truncation
             )
+            # Warn if the model stopped due to token limit (finish_reason == 'length')
+            finish_reason = (
+                response.choices[0].finish_reason if response.choices else None
+            )
+            if finish_reason == "length":
+                logger.warning(
+                    "OpenAI response was cut off at max_tokens limit (finish_reason='length'). "
+                    "The JSON may be truncated. Consider reducing chunk size or increasing max_tokens."
+                )
             raw_content = response.choices[0].message.content or ""
             pairs, uncategorized = _parse_qna_response(raw_content)
             logger.info(
