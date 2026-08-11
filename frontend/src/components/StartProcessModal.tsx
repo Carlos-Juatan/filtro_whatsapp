@@ -8,8 +8,8 @@ export interface StartProcessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (keyId: string, promptId: string) => void;
-  onOpenSettings: (tab: string) => void;
-  ferramenta?: "extrator" | "gerador";
+  onOpenSettings: (tab: string, ferramenta?: "extrator" | "gerador" | "consolidador") => void;
+  ferramenta?: "extrator" | "gerador" | "consolidador";
 }
 
 export const StartProcessModal: React.FC<StartProcessModalProps> = ({
@@ -33,8 +33,13 @@ export const StartProcessModal: React.FC<StartProcessModalProps> = ({
   }, [keys, selectedKey]);
 
   useEffect(() => {
-    if (prompts.length > 0 && !selectedPrompt) {
-      setSelectedPrompt(prompts[0].id);
+    if (prompts.length > 0) {
+      const isValidSelection = prompts.some((p) => p.id === selectedPrompt);
+      if (!isValidSelection) {
+        // Revert to the default FIXO prompt (or the first available if not found)
+        const defaultPrompt = prompts.find((p) => p.tipo === 'FIXO') || prompts[0];
+        setSelectedPrompt(defaultPrompt.id);
+      }
     }
   }, [prompts, selectedPrompt]);
 
@@ -125,7 +130,7 @@ export const StartProcessModal: React.FC<StartProcessModalProps> = ({
                     <button 
                       onClick={() => {
                         onOpenChange(false);
-                        onOpenSettings('prompts');
+                        onOpenSettings('prompts', ferramenta);
                       }}
                       className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-left mt-1"
                     >

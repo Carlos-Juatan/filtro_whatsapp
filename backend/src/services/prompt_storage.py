@@ -57,12 +57,33 @@ DEFAULT_GENERATOR_PROMPT_TEXT = (
     '{"qna_pairs": [{"question": "Pergunta formulada a partir do fato", "answer": "Fato ou afirmação declarativa original na íntegra", "frequency": 1, "metadata": "Categoria temática do fato", "category": "FAQ"}]}'
 )
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Default system prompt text for the Consolidador (005-separate-tool-prompts)
+# ──────────────────────────────────────────────────────────────────────────────
+
+DEFAULT_CONSOLIDATOR_PROMPT_TEXT = (
+    "Você é um especialista em consolidação e deduplicação de bases de conhecimento de P&R. "
+    "Sua tarefa é receber uma lista de pares de perguntas e respostas extraídas de diferentes fontes "
+    "e consolidá-los em um conjunto único e coerente, eliminando duplicatas e agrupando semânticas similares. "
+    "Regras de Consolidação: "
+    "1. Identifique perguntas semanticamente equivalentes e agrupe-as sob uma pergunta padronizada única. "
+    "2. Consolide as respostas correspondentes em uma resposta abrangente e precisa. "
+    "3. Some as frequências dos itens agrupados para refletir a relevância total. "
+    "4. Mantenha ou melhore a categorização temática dos pares consolidados. "
+    "5. Elimine informações redundantes ou conflitantes, priorizando a resposta mais completa e precisa. "
+    "6. Retorne SOMENTE um objeto JSON válido com a chave 'qna_pairs', sem nenhum texto adicional "
+    "ou markdown de bloco de código. "
+    "Estrutura JSON esperada: "
+    '{"qna_pairs": [{"question": "Pergunta padronizada consolidada", "answer": "Resposta consolidada e abrangente", "frequency": 3, "metadata": "Categoria temática", "category": "FAQ"}]}'
+)
+
 # Fixed UUIDs for built-in default prompts — stable across restarts
 _DEFAULT_PROMPT_ID = "00000000-0000-0000-0000-000000000001"
 _DEFAULT_GENERATOR_PROMPT_ID = "00000000-0000-0000-0000-000000000002"
+_DEFAULT_CONSOLIDATOR_PROMPT_ID = "00000000-0000-0000-0000-000000000003"
 
 # Set of all protected system prompt IDs (cannot be deleted)
-_PROTECTED_PROMPT_IDS = {_DEFAULT_PROMPT_ID, _DEFAULT_GENERATOR_PROMPT_ID}
+_PROTECTED_PROMPT_IDS = {_DEFAULT_PROMPT_ID, _DEFAULT_GENERATOR_PROMPT_ID, _DEFAULT_CONSOLIDATOR_PROMPT_ID}
 
 
 class PromptStorageService:
@@ -78,6 +99,7 @@ class PromptStorageService:
         prompts = self._migrate_ferramenta_field(prompts)
         prompts = self._ensure_extrator_default(prompts)
         prompts = self._ensure_generator_default(prompts)
+        prompts = self._ensure_consolidator_default(prompts)
         with open(PROMPTS_FILE, "w", encoding="utf-8") as f:
             json.dump(prompts, f, indent=2, ensure_ascii=False)
 
@@ -155,8 +177,34 @@ class PromptStorageService:
                 return prompt
         return None
 
-    def get_default_prompt_text(self) -> str:
-        """Return the raw text of the default system prompt for UI pre-filling."""
+    def _ensure_consolidator_default(self, prompts: list) -> list:
+        """Guarantee the built-in 'Consolidador de P&R Padrão' prompt always exists."""
+        exists = any(p.get("id") == _DEFAULT_CONSOLIDATOR_PROMPT_ID for p in prompts)
+        if not exists:
+            consolidator_prompt = PromptConfig(
+                id=_DEFAULT_CONSOLIDATOR_PROMPT_ID,
+                nome="Consolidador de P&R Padrão",
+                tipo=TipoPrompt.FIXO,
+                textoInstrucao=DEFAULT_CONSOLIDATOR_PROMPT_TEXT,
+                palavrasChave=[],
+                idiomaModelo="pt-br",
+                modeloOpenAI=ModeloOpenAI.GPT_4O_MINI,
+                ferramenta=TipoFerramenta.CONSOLIDADOR,
+            )
+            prompts.append(consolidator_prompt.model_dump())
+        return prompts
+
+    def get_default_prompt_text(self, ferramenta: Optional[TipoFerramenta] = None) -> str:
+        """Return the raw text of the default system prompt for UI pre-filling.
+
+        Args:
+            ferramenta: Optional tool filter. Returns the default prompt text for the
+                        specified tool. Defaults to EXTRATOR for backward compatibility.
+        """
+        if ferramenta == TipoFerramenta.GERADOR:
+            return DEFAULT_GENERATOR_PROMPT_TEXT
+        if ferramenta == TipoFerramenta.CONSOLIDADOR:
+            return DEFAULT_CONSOLIDATOR_PROMPT_TEXT
         return DEFAULT_SYSTEM_PROMPT_TEXT
 
     def add(self, prompt_create: PromptConfigCreate) -> PromptConfig:

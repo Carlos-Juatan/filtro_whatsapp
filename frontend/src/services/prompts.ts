@@ -23,7 +23,7 @@ export function usePrompts(ferramenta?: TipoFerramenta) {
   const fetchDefaultPromptText = async (): Promise<string> => {
     if (defaultPromptText !== null) return defaultPromptText;
     try {
-      const text = await apiClient.getDefaultPromptText();
+      const text = await apiClient.getDefaultPromptText(ferramenta);
       setDefaultPromptText(text);
       return text;
     } catch {
@@ -60,9 +60,11 @@ export function usePrompts(ferramenta?: TipoFerramenta) {
     }
   };
 
+  // Re-fetch prompts and reset cached default text whenever the active tool changes
   useEffect(() => {
+    setDefaultPromptText(null);
     fetchPrompts();
-  }, []);
+  }, [ferramenta]);
 
   return {
     prompts,
@@ -75,3 +77,4 @@ export function usePrompts(ferramenta?: TipoFerramenta) {
     deletePrompt,
   };
 }
+
