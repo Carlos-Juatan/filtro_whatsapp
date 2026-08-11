@@ -9,6 +9,12 @@
 
 ### Session 2026-08-11
 - Q: Como o sistema deve tratar perguntas que não possuem uma resposta correspondente no chat? → A: Ignorar perguntas sem resposta e não incluir no resultado final.
+- Q: Como tratar saudações sem dúvida expressa e mensagens de mídia/placeholder como <Ficheiro não revelado>? → A: Ignorar mensagens com apenas saudações sem dúvida expressa e descartar conteúdos omitidos/placeholders (<Ficheiro não revelado>, <Mídia omitida>) tanto como pergunta quanto como resposta.
+- Q: Como deve ser realizada a divisão da conversa em chunks para processamento pela LLM? → A: Dividir em lotes fixos de 100 mensagens por chunk com sobreposição (overlap) de 20 mensagens consecutivas entre chunks, deduplicando pares encontrados.
+- Q: Como prevenir erros de sintaxe e retornos incompletos da LLM (ex: Unterminated string)? → A: Configurar max_tokens adequado (ex: 4000), validar integridade da resposta JSON retornada pela LLM e implementar mecanismo de retry automático em caso de exceção de parse JSON.
+
+
+
 
 ## User Scenarios & Testing *(mandatory)*
 

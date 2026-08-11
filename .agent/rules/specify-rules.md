@@ -29,8 +29,8 @@ Python 3.10+ (Backend), TypeScript 5+, Node.js 18+ (Frontend): Follow standard c
 
 ## Recent Changes
 - 006-exact-qa-extractor: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+- 006-exact-qa-extractor: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 005-separate-tool-prompts: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
-- 003-gerador-perguntas: Added Python 3.10+ (Backend), TypeScript / React 18+ (Frontend) + FastAPI, Pydantic, tiktoken, openai, Tailwind CSS, Lucide React, shadcn/ui
 
 
 <!-- MANUAL ADDITIONS START -->

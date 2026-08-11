@@ -1,25 +1,22 @@
-# Quickstart: Extração Exata de P&R
+# Quickstart: Extrator Exato de P&R (006-exact-qa-extractor)
 
 ## Visão Geral
-Esta funcionalidade adiciona uma ferramenta no frontend e backend para extrair pares de Pergunta e Resposta exatamente como foram escritos no WhatsApp, sem paráfrases ou alterações de texto pela IA.
+Esta funcionalidade divide conversas exportadas do WhatsApp (`.txt`) em mensagens indexadas com IDs sequenciais (`MSG-XXXX`), fatia a conversa em chunks com overlap para evitar truncamentos na LLM e mapeia pares de pergunta e resposta. Os textos finais das perguntas e respostas são reconstruídos por lookup direto nos IDs brutos para garantir 100% de correspondência de caracteres sem alterações pela IA.
 
-## Passos para Execução/Testes
+## Executando os Testes Automatizados
 
-### 1. Testes Unitários no Backend
-Execute a suíte de testes do parser determinístico e da fábrica de reconstrução:
+### Backend (Pytest)
+Para rodar a suíte de testes do backend para o extrator exato:
+
 ```bash
-pytest backend/tests/test_exact_parser.py backend/tests/test_exact_extractor.py
+cd backend
+pytest tests/test_exact_extractor.py tests/test_exact_parser.py -v
 ```
 
-### 2. Executando Localmente no Ambiente Docker
-Inicie o ambiente de desenvolvimento completo:
-```bash
-docker-compose up --build
-```
-Acesse a aplicação no navegador em `http://localhost:8000` (ou na porta configurada) e selecione a ferramenta "Extração Exata P&R" no cabeçalho.
+## Protocolo WebSocket
 
-### 3. Teste com Arquivo de Exemplo
-1. Faça o upload de uma conversa exportada do WhatsApp (`.txt`).
-2. Clique no botão de processamento.
-3. Observe os logs de indexação determinística em tempo real na tela.
-4. Confira a lista final de pares e valide a exportação nos formatos `.txt` e `.json`.
+- Endpoint: `/api/exact-extractor/extract-ws`
+- Fluxo de Mensagens:
+  1. Frontend envia payload contendo `filename`, `content` e opcionalmente `api_key`.
+  2. Backend envia progresso real em JSON (`status`, `progress`, `current_chunk`, `total_chunks`).
+  3. Backend encerra enviando o payload final com status `completed` e objeto `result` contendo todos os `pairs`.

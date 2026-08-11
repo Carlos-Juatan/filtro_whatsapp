@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ExtractorPanel } from './components/ExtractorPanel';
 import { GeneratorPanel } from './components/GeneratorPanel';
 import { ConsolidatorPanel } from './components/ConsolidatorPanel';
-import { Database, Lightbulb, Settings, Layers } from 'lucide-react';
+import { ExactExtractorPanel } from './components/ExactExtractorPanel';
+import { Database, Lightbulb, Settings, Layers, FileCheck } from 'lucide-react';
 import { SettingsModal } from './components/SettingsModal';
 
 export default function App() {
@@ -25,18 +26,20 @@ export default function App() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white transition-colors duration-300 ${
-                activeTool === 'extrator' ? 'bg-blue-600' : activeTool === 'gerador' ? 'bg-emerald-600' : 'bg-purple-600'
+                activeTool === 'extrator' ? 'bg-blue-600' : activeTool === 'gerador' ? 'bg-emerald-600' : activeTool === 'exact' ? 'bg-teal-600' : 'bg-purple-600'
               }`}>
-                {activeTool === 'extrator' ? <Database size={18} /> : activeTool === 'gerador' ? <Lightbulb size={18} /> : <Layers size={18} />}
+                {activeTool === 'extrator' ? <Database size={18} /> : activeTool === 'gerador' ? <Lightbulb size={18} /> : activeTool === 'exact' ? <FileCheck size={18} /> : <Layers size={18} />}
               </div>
               <h1 className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r transition-all duration-300 ${
                 activeTool === 'extrator' 
                   ? 'from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400'
                   : activeTool === 'gerador'
                   ? 'from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400'
+                  : activeTool === 'exact'
+                  ? 'from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400'
                   : 'from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400'
               }`}>
-                {activeTool === 'extrator' ? 'Extrator P&R' : activeTool === 'gerador' ? 'Gerador de Perguntas' : 'Consolidador'}
+                {activeTool === 'extrator' ? 'Extrator P&R' : activeTool === 'gerador' ? 'Gerador de Perguntas' : activeTool === 'exact' ? 'Extração Exata P&R' : 'Consolidador'}
               </h1>
             </div>
 
@@ -52,6 +55,17 @@ export default function App() {
               >
                 <Database size={16} />
                 Extrator
+              </button>
+              <button
+                onClick={() => setActiveTool('exact')}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 flex items-center gap-2 ${
+                  activeTool === 'exact'
+                    ? 'bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700/50'
+                }`}
+              >
+                <FileCheck size={16} />
+                Extração Exata
               </button>
               <button
                 onClick={() => setActiveTool('gerador')}
@@ -94,35 +108,46 @@ export default function App() {
         <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-full max-w-sm">
           <button
             onClick={() => setActiveTool('extrator')}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-1 ${
               activeTool === 'extrator'
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700/50'
             }`}
           >
-            <Database size={16} />
+            <Database size={14} />
             Extrator
           </button>
           <button
+            onClick={() => setActiveTool('exact')}
+            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-1 ${
+              activeTool === 'exact'
+                ? 'bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700/50'
+            }`}
+          >
+            <FileCheck size={14} />
+            Exata
+          </button>
+          <button
             onClick={() => setActiveTool('gerador')}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-1 ${
               activeTool === 'gerador'
                 ? 'bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700/50'
             }`}
           >
-            <Lightbulb size={16} />
+            <Lightbulb size={14} />
             Gerador
           </button>
           <button
             onClick={() => setActiveTool('consolidador')}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 flex justify-center items-center gap-1 ${
               activeTool === 'consolidador'
                 ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700/50'
             }`}
           >
-            <Layers size={16} />
+            <Layers size={14} />
             Consolidador
           </button>
         </div>
@@ -130,13 +155,20 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid">
-          {/* We keep both mounted but toggle visibility so states don't reset */}
+          {/* We keep all mounted but toggle visibility so states don't reset */}
           <div 
             className={`col-start-1 row-start-1 transition-all duration-300 ${
               activeTool === 'extrator' ? 'opacity-100 z-10 translate-y-0' : 'opacity-0 z-0 translate-y-4 pointer-events-none'
             }`}
           >
             <ExtractorPanel onOpenSettings={handleOpenSettings} />
+          </div>
+          <div 
+            className={`col-start-1 row-start-1 transition-all duration-300 ${
+              activeTool === 'exact' ? 'opacity-100 z-10 translate-y-0' : 'opacity-0 z-0 translate-y-4 pointer-events-none'
+            }`}
+          >
+            <ExactExtractorPanel />
           </div>
           <div 
             className={`col-start-1 row-start-1 transition-all duration-300 ${
@@ -164,3 +196,4 @@ export default function App() {
     </div>
   );
 }
+

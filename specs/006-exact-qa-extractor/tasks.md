@@ -1,85 +1,75 @@
-# Tasks: Extração Exata de Perguntas e Respostas do WhatsApp
+# Tasks: Extração Exata de Perguntas e Respostas do WhatsApp (006-exact-qa-extractor)
 
 **Feature Branch**: `006-exact-qa-extractor`  
-**Feature Name**: Extração Exata de P&R  
-**Spec**: [`specs/006-exact-qa-extractor/spec.md`](./spec.md)  
-**Plan**: [`specs/006-exact-qa-extractor/plan.md`](./plan.md)  
+**Spec**: [`spec.md`](file:///mnt/D_DADOS/02_Projetos_Ativos/Vet_Manager/Projects/filtro_whatsapp/specs/006-exact-qa-extractor/spec.md)  
+**Plan**: [`plan.md`](file:///mnt/D_DADOS/02_Projetos_Ativos/Vet_Manager/Projects/filtro_whatsapp/specs/006-exact-qa-extractor/plan.md)  
+**Status**: Draft / Pending Execution
 
 ---
 
-## Dependency Graph
+## Task Execution Order & Dependencies
 
 ```mermaid
-flowchart TD
-    Phase1[Phase 1: Setup & Data Models] --> Phase2[Phase 2: Foundational Components]
-    Phase2 --> Phase3[Phase 3: User Story 1 - Extração Exata (P1)]
-    Phase3 --> Phase4[Phase 4: User Story 2 - Indexação Determinística (P2)]
-    Phase4 --> Phase5[Phase 5: User Story 3 - Mapeamento e Reconstrução (P3)]
-    Phase5 --> Phase6[Phase 6: Polish & Cross-Cutting]
+graph TD
+    P1[Phase 1: Setup & Data Models] --> P2[Phase 2: Foundational Chunking & Resiliência Backend]
+    P2 --> P3[Phase 3: User Story 1 - Extração Exata com Chunking]
+    P3 --> P4[Phase 4: User Story 2 - Indexação Determinística & Metadados]
+    P4 --> P5[Phase 5: User Story 3 - Visualização e Exportação na UI]
+    P5 --> P6[Phase 6: Polimento e Testes Integrados]
 ```
 
 ---
 
-## Execution Tasks
+## Phase 1: Setup & Data Models
 
-### Phase 1: Setup & Data Models
+Goal: Garantir os modelos de dados Pydantic e estruturas de entrada/saída para chunking, deduplicação e resiliência JSON.
 
-- [ ] T001 Define Pydantic data schemas for raw messages and exact QA pairs in `backend/src/models/exact_qa.py`
-- [ ] T002 Define TypeScript interfaces for exact QA extraction state in `frontend/src/types/exactQA.ts`
-
----
-
-### Phase 2: Foundational Components
-
-- [ ] T003 Implement unit tests for the deterministic WhatsApp message parser in `backend/tests/test_exact_parser.py`
-- [ ] T004 Implement deterministic WhatsApp message parser in `backend/src/services/exact_parser.py`
-- [ ] T005 Implement unit tests for LLM ID mapping and exact text reconstruction in `backend/tests/test_exact_extractor.py`
-- [ ] T006 Implement exact text reconstruction service and LLM prompt handler in `backend/src/services/exact_extractor.py`
+- [ ] T001 [P] Atualizar modelos Pydantic em `backend/src/models/exact_qa.py` incluindo suporte a `ChunkConfig`, metadados de progresso e deduplicação de pares.
 
 ---
 
-### Phase 3: User Story 1 - Extração Exata de Pares Pergunta/Resposta (Priority: P1)
+## Phase 2: Foundational Chunking & Resiliência Backend
 
-**Goal**: Garantir a extração exata de pares de pergunta e resposta preservando 100% o texto bruto original.  
-**Independent Test**: Enviar um arquivo `.txt` do WhatsApp com perguntas/respostas conhecidas e validar se o texto retornado pela API coincide caractere por caractere com o original.
+Goal: Implementar a infraestrutura básica de divisão por chunks com sobreposição e chamadas resilientes à LLM no backend.
 
-- [ ] T007 [US1] Create WebSocket router for exact QA extraction service in `backend/src/api/exact_extractor_ws.py`
-- [ ] T008 [US1] Register `exact_extractor_ws` router in FastAPI application in `backend/src/main.py`
-- [ ] T009 [US1] Create exact extraction WebSocket client service in `frontend/src/services/exactExtractorService.ts`
-
----
-
-### Phase 4: User Story 2 - Indexação Determinística das Mensagens (Priority: P2)
-
-**Goal**: Atribuir IDs únicos e sequenciais a todas as mensagens do arquivo `.txt` antes de enviar à IA.  
-**Independent Test**: Executar o parser determinístico em um arquivo com quebras de linha e emojis e verificar a atribuição correta de IDs (`MSG-0001`, `MSG-0002`).
-
-- [ ] T010 [US2] Update exact parser service in `backend/src/services/exact_parser.py` to handle multiline messages and timestamp edge cases
+- [ ] T002 Implementar método de divisão em chunks com overlap de 20 mensagens em `backend/src/services/exact_extractor.py`.
+- [ ] T003 Implementar resiliência com `max_tokens=4000`, validação de integridade JSON e retry automático (mecanismo contra `json.JSONDecodeError`) em `backend/src/services/exact_extractor.py`.
+- [ ] T004 Atualizar o System Prompt `EXACT_QA_SYSTEM_PROMPT` em `backend/src/services/exact_extractor.py` instruindo a ignorar saudações sem dúvida e descarte de placeholders (`<Ficheiro não revelado>`, `<Mídia omitida>`).
 
 ---
 
-### Phase 5: User Story 3 - Mapeamento e Reconstrução por IDs (Priority: P3)
+## Phase 3: User Story 1 - Extração Exata com Chunking (P1)
 
-**Goal**: Exibir a interface gráfica e permitir a visualização e exportação dos resultados reconstruídos nos formatos `.txt` e `.json`.  
-**Independent Test**: Carregar um arquivo na UI, acompanhar os logs de progresso e baixar os arquivos de exportação formatados.
+Goal: Extrair pares P&R processando grandes conversas em chunks sem perda de contexto e mantendo fidelidade textual 100%.
 
-- [ ] T011 [US3] Build `ExactExtractorPanel.tsx` UI component in `frontend/src/components/ExactExtractorPanel.tsx`
-- [ ] T012 [US3] Register `ExactExtractorPanel` component and header navigation button in `frontend/src/App.tsx`
-- [ ] T013 [US3] Implement `.txt` and `.json` exporter functions for exact QA pairs in `frontend/src/utils/exactExporters.ts`
-
----
-
-### Phase 6: Polish & Cross-Cutting Concerns
-
-- [ ] T014 Run full pytest suite for backend services (`pytest backend/tests/`)
-- [ ] T015 Verify single-container Docker build and local execution via `docker-compose up --build`
+- [ ] T005 [US1] Atualizar `extract_mappings_with_llm` em `backend/src/services/exact_extractor.py` para iterar sobre os chunks, agregando e deduplicando pares de `(question_id, answer_id)`.
+- [ ] T006 [P] [US1] Atualizar endpoint WebSocket `/api/exact-extractor/extract-ws` em `backend/src/api/exact_extractor_ws.py` transmitindo status de progresso chunk a chunk para o cliente.
+- [ ] T007 [P] [US1] Escrever testes unitários em `backend/tests/test_exact_extractor.py` validando o fatiamento em chunks, deduplicação e resiliência a retornos malformados da LLM.
 
 ---
 
-## Implementation Strategy & MVP Scope
+## Phase 4: User Story 2 - Indexação Determinística & Metadados (P2)
 
-1. **MVP Scope**: Concluir as Fases 1, 2 e 3 (User Story 1), o que entregará o parser backend funcional, o endpoint WebSocket e o serviço de comunicação básico para testes de extração.
-2. **Entrega Incremental**:
-   - **Etapa 1**: Estrutura de dados e Parser determinístico com testes pytest (Fases 1 e 2).
-   - **Etapa 2**: Integração WebSocket Backend/Frontend e Reconstrução Exata por IDs (Fase 3).
-   - **Etapa 3**: Refinamento de borda e interface web com download de resultados em `.txt` e `.json` (Fases 4 e 5).
+Goal: Garantir parser determinístico limpo com descarte prévio ou rotulagem adequada de placeholders e ruídos.
+
+- [ ] T008 [P] [US2] Atualizar parser determinístico em `backend/src/services/exact_parser.py` para identificar e rotular ou isolar mensagens de mídias/placeholders conhecidos.
+- [ ] T009 [P] [US2] Escrever testes unitários em `backend/tests/test_exact_parser.py` testando mensagens multilinhas, emojis e mensagens de cortesia sem pergunta.
+
+---
+
+## Phase 5: User Story 3 - Visualização e Exportação na UI (P3)
+
+Goal: Atualizar a interface React no frontend para exibir progresso do chunking em tempo real e exportação dos resultados exatos.
+
+- [ ] T010 [P] [US3] Atualizar tipos TypeScript em `frontend/src/types/exactQA.ts` alinhados com os novos payloads do WebSocket (progresso por chunk).
+- [ ] T011 [US3] Atualizar serviço de API WebSocket no frontend `frontend/src/services/exactExtractorService.ts` para processar eventos de progresso de chunks.
+- [ ] T012 [US3] Atualizar componente da interface `frontend/src/components/ExactExtractorPanel.tsx` para mostrar barra de progresso visual do chunking e estatísticas dos pares reconstruídos exatos.
+
+---
+
+## Phase 6: Polimento e Testes Integrados
+
+Goal: Validar a integração completa do extrator exato e executar a suíte de testes.
+
+- [ ] T013 Executar a suíte de testes unitários do backend (`pytest`) e validar zero regressões.
+- [ ] T014 Validar visualmente a interface no frontend garantindo aderência aos princípios da constituição (micro-animações, estética dark mode).

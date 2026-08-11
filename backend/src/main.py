@@ -180,6 +180,19 @@ def _register_routers() -> None:
     except Exception as exc:  # noqa: BLE001
         logger.error("Failed to register Generator WebSocket router: %s", exc, exc_info=True)
 
+    # Exact Extractor WebSocket router (/api/exact-extractor/ws)
+    try:
+        import importlib
+
+        exact_ws_module = importlib.import_module("src.api.exact_extractor_ws")
+        app.include_router(exact_ws_module.router, prefix="/api/exact-extractor", tags=["Exact Extractor WebSocket"])
+        logger.info("Exact Extractor WebSocket router registered.")
+    except ModuleNotFoundError:
+        logger.warning("Exact Extractor WebSocket module 'src.api.exact_extractor_ws' not found yet.")
+    except Exception as exc:  # noqa: BLE001
+        logger.error("Failed to register Exact Extractor WebSocket router: %s", exc, exc_info=True)
+
+
 
 _register_routers()
 

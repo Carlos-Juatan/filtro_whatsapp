@@ -1,35 +1,36 @@
-# Data Model: Extração Exata de Perguntas e Respostas do WhatsApp
+# Data Model: Extração Exata de P&R no WhatsApp
 
-## Entities
+## Entidades Principais
 
-### 1. RawMessage (Mensagem Bruta)
-Representa uma mensagem extraída do arquivo `.txt` do WhatsApp pelo parser determinístico.
+### RawMessage
+Representa uma mensagem bruta indexada pelo parser determinístico.
+- `id` (str, obrigatório): Identificador único no formato `MSG-XXXX` (ex: `MSG-0001`).
+- `timestamp` (str, opcional): Data/hora extraída do cabeçalho da mensagem.
+- `sender` (str, opcional): Autor/remetente da mensagem.
+- `content` (str, obrigatório): Conteúdo exato e intocado da mensagem (preservando pontuação, emojis e quebras de linha).
 
-- `id`: `str` (obrigatório, ex: `"MSG-0001"`) - Identificador único sequencial.
-- `timestamp`: `Optional[str]` - Data/hora extraída da linha de cabeçalho da mensagem (se presente).
-- `sender`: `Optional[str]` - Nome/número do remetente (se presente).
-- `content`: `str` (obrigatório) - Texto bruto e intacto da mensagem (incluindo emojis, quebras de linha e erros de digitação).
+### ChunkConfig
+Parâmetros de configuração para o fatiamento de mensagens.
+- `chunk_size` (int, padrão = 100): Quantidade de mensagens por lote enviado à LLM.
+- `overlap` (int, padrão = 20): Mensagens de sobreposição entre chunks adjacentes.
 
-### 2. LLMQAPairMapping (Mapeamento de IDs da IA)
-Estrutura de resposta retornada pela LLM após análise das mensagens.
+### LLMQAPairMapping
+Mapeamento retornado pela LLM para cada par de P&R.
+- `question_id` (str, obrigatório): ID da mensagem correspondente à pergunta (ex: `MSG-0010`).
+- `answer_id` (str, obrigatório): ID da mensagem correspondente à resposta (ex: `MSG-0012`).
 
-- `question_id`: `str` (obrigatório) - ID da mensagem identificada como pergunta.
-- `answer_id`: `str` (obrigatório) - ID da mensagem identificada como resposta correspondente.
+### ExactQAPair
+Representação final do par P&R reconstruído com 100% de fidelidade textual.
+- `id` (str, obrigatório): Identificador do par no resultado (ex: `PAIR-0001`).
+- `question_id` (str, obrigatório): ID da pergunta original.
+- `question_text` (str, obrigatório): Texto da pergunta obtido por lookup direto em `RawMessage`.
+- `answer_id` (str, obrigatório): ID da resposta original.
+- `answer_text` (str, obrigatório): Texto da resposta obtido por lookup direto em `RawMessage`.
+- `metadata` (dict): Informações adicionais (timestamps e senders de ambos).
 
-### 3. ExactQAPair (Par Extraído Exato)
-Objeto final gerado pela reconstrução exata através de lookup nos IDs.
-
-- `id`: `str` (obrigatório) - Identificador do par de Q&A.
-- `question_id`: `str` (obrigatório) - ID da mensagem de pergunta original.
-- `question_text`: `str` (obrigatório) - Texto 100% idêntico à mensagem bruta original da pergunta.
-- `answer_id`: `str` (obrigatório) - ID da mensagem de resposta original.
-- `answer_text`: `str` (obrigatório) - Texto 100% idêntico à mensagem bruta original da resposta.
-- `metadata`: `dict` - Informações adicionais (ex: remetente da pergunta, remetente da resposta, timestamps).
-
-### 4. ExtractionResult (Resultado Completo da Sessão)
-Container de resultados de um arquivo processado.
-
-- `filename`: `str` - Nome do arquivo carregado.
-- `total_messages_parsed`: `int` - Total de mensagens identificadas pelo parser.
-- `total_pairs_extracted`: `int` - Total de pares Pergunta/Resposta válidos reconstruídos.
-- `pairs`: `List[ExactQAPair]` - Lista dos pares reconstruídos.
+### ExtractionResult
+Objeto de saída contendo a consolidação dos pares reconstruídos.
+- `filename` (str): Nome do arquivo exportado do WhatsApp.
+- `total_messages_parsed` (int): Total de mensagens indexadas pelo parser.
+- `total_pairs_extracted` (int): Total de pares reconstruídos com sucesso.
+- `pairs` (List[ExactQAPair]): Lista dos pares de pergunta e resposta exatos.
