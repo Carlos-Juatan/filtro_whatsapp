@@ -1,7 +1,9 @@
-import type { ExtractionResult } from '../types/exactQA';
+import type { ChunkProgressPayload, ExtractionResult } from '../types/exactQA';
 
 export interface ExactExtractorCallbacks {
   onLog?: (log: { message: string; timestamp?: string }) => void;
+  /** Called for every chunk processed, enabling real-time progress bars (T011) */
+  onChunkProgress?: (progress: ChunkProgressPayload) => void;
   onComplete?: (result: ExtractionResult) => void;
   onError?: (error: string) => void;
   onOpen?: () => void;
@@ -39,8 +41,12 @@ export class ExactExtractorService {
     this.ws.onmessage = (event: MessageEvent<string>) => {
       try {
         const data = JSON.parse(event.data);
+
         if (data.type === 'log') {
           this.callbacks.onLog?.({ message: data.message, timestamp: data.timestamp });
+        } else if (data.type === 'chunk_progress') {
+          // T011: route chunk progress events to dedicated callback
+          this.callbacks.onChunkProgress?.(data.data as ChunkProgressPayload);
         } else if (data.type === 'complete') {
           this.callbacks.onComplete?.(data.data as ExtractionResult);
         } else if (data.type === 'error') {
@@ -52,7 +58,12 @@ export class ExactExtractorService {
     };
   }
 
-  public startExtraction(payload: { filename: string; content: string; key_id?: string; api_key?: string }): void {
+  public startExtraction(payload: {
+    filename: string;
+    content: string;
+    key_id?: string;
+    api_key?: string;
+  }): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       throw new Error('WebSocket não está conectado.');
     }

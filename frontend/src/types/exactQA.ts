@@ -3,6 +3,7 @@ export interface RawMessage {
   timestamp?: string;
   sender?: string;
   content: string;
+  is_placeholder?: boolean;
 }
 
 export interface LLMQAPairMapping {
@@ -32,11 +33,19 @@ export interface ExtractionResult {
   pairs: ExactQAPair[];
 }
 
+/** Progress payload emitted by the backend for each chunk processed (T010) */
+export interface ChunkProgressPayload {
+  chunk_index: number;
+  total_chunks: number;
+  pairs_found_in_chunk: number;
+  total_pairs_so_far: number;
+  percent: number;
+}
+
 export interface ExtractionProgressLog {
-  type: 'log' | 'progress' | 'result' | 'error';
+  type: 'log' | 'chunk_progress' | 'complete' | 'error';
   message?: string;
-  stage?: string;
-  percent?: number;
-  result?: ExtractionResult;
+  data?: ChunkProgressPayload | ExtractionResult;
+  timestamp?: string;
   error?: string;
 }

@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import datetime, timezone
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from src.models.exact_qa import ChunkConfig, ChunkProgressPayload
 from src.services.exact_parser import parse_whatsapp_chat
 from src.services.exact_extractor import ExactExtractorService
 from src.services.key_storage import key_storage
@@ -62,7 +63,9 @@ async def exact_extractor_websocket(websocket: WebSocket):
                 })
                 continue
 
+            # ---------------------------------------------------------------
             # Passo 1: Parser Determinístico
+            # ---------------------------------------------------------------
             await websocket.send_json({
                 "type": "log",
                 "message": f"Iniciando parser determinístico no arquivo '{filename}'...",
@@ -90,18 +93,48 @@ async def exact_extractor_websocket(websocket: WebSocket):
                 })
                 continue
 
-            # Passo 2: Mapeamento via IA (LLM)
+            # ---------------------------------------------------------------
+            # Passo 2: Chunking + Mapeamento via IA com progresso chunk a chunk
+            # ---------------------------------------------------------------
+            chunk_config = ChunkConfig()  # chunk_size=100, overlap=20
+            total_chunks_estimate = max(1, (total_messages + chunk_config.chunk_size - 1) // chunk_config.chunk_size)
+
             await websocket.send_json({
                 "type": "log",
-                "message": "Enviando lote de mensagens indexadas para identificação de pares com a IA...",
+                "message": (
+                    f"Iniciando processamento em {total_chunks_estimate} lote(s) de "
+                    f"{chunk_config.chunk_size} mensagens (overlap={chunk_config.overlap}) via IA..."
+                ),
                 "timestamp": datetime.now(timezone.utc).isoformat()
             })
 
+            mappings = None
             try:
-                mappings = await exact_extractor_service.extract_mappings_with_llm(
+                async for event in exact_extractor_service.extract_mappings_with_llm_streaming(
                     raw_messages=raw_messages,
-                    api_key=api_key
-                )
+                    api_key=api_key,
+                    chunk_config=chunk_config,
+                ):
+                    if isinstance(event, ChunkProgressPayload):
+                        # Transmit chunk-by-chunk progress to client (T006)
+                        await websocket.send_json({
+                            "type": "chunk_progress",
+                            "data": event.model_dump(),
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        })
+                        await websocket.send_json({
+                            "type": "log",
+                            "message": (
+                                f"Lote {event.chunk_index}/{event.total_chunks} processado — "
+                                f"{event.pairs_found_in_chunk} par(es) novo(s) encontrado(s) "
+                                f"({event.total_pairs_so_far} total, {event.percent}%)"
+                            ),
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        })
+                    else:
+                        # Final list of deduplicated mappings
+                        mappings = event
+
             except Exception as exc:
                 await websocket.send_json({
                     "type": "error",
@@ -109,13 +142,18 @@ async def exact_extractor_websocket(websocket: WebSocket):
                 })
                 continue
 
+            if mappings is None:
+                mappings = []
+
             await websocket.send_json({
                 "type": "log",
-                "message": f"IA retornou {len(mappings)} pares de IDs mapeados.",
+                "message": f"IA retornou {len(mappings)} pares de IDs únicos mapeados.",
                 "timestamp": datetime.now(timezone.utc).isoformat()
             })
 
+            # ---------------------------------------------------------------
             # Passo 3: Reconstrução Exata
+            # ---------------------------------------------------------------
             await websocket.send_json({
                 "type": "log",
                 "message": "Reconstruindo texto exato dos pares a partir do banco de mensagens brutas...",

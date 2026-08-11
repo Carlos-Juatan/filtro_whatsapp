@@ -10,6 +10,22 @@ HEADER_REGEXES = [
     re.compile(r'^(\d{1,4}[/\.-]\d{1,4}[/\.-]\d{1,4},\s*\d{1,2}:\d{2}(?::\d{2})?(?:\s*[APap][Mm])?)\s*-\s*(.*)$'),
 ]
 
+# Known placeholder patterns for omitted/unavailable media (T008)
+# All entries lowercased for case-insensitive comparison.
+_MEDIA_PLACEHOLDER_SET = frozenset([
+    "<ficheiro não revelado>",
+    "<mídia omitida>",
+    "<media omitted>",
+])
+
+
+def _is_placeholder(content: str) -> bool:
+    """
+    Returns True if the message content is exclusively a known media/file placeholder
+    that carries no textual Q&A value (T008).
+    """
+    return content.strip().lower() in _MEDIA_PLACEHOLDER_SET
+
 
 def _match_header(line: str) -> Optional[Tuple[Optional[str], Optional[str], str]]:
     """Tenta casar uma linha com os padrões conhecidos de cabeçalho do WhatsApp."""
@@ -32,9 +48,15 @@ def _match_header(line: str) -> Optional[Tuple[Optional[str], Optional[str], str
 def parse_whatsapp_chat(raw_text: str) -> List[RawMessage]:
     """
     Processa o texto bruto da conversa do WhatsApp, dividindo em mensagens individuais.
-    Se o arquivo contiver cabeçalhos WhatsApp padrão (timestamps), divide por cabeçalho
-    e agrupa linhas seguintes. Caso contrário, divide por linha individual.
-    Atribui IDs sequenciais únicos no formato MSG-XXXX.
+
+    Comportamento:
+    - Se o arquivo contiver cabeçalhos WhatsApp padrão (timestamps), divide por cabeçalho
+      e agrupa linhas seguintes.
+    - Caso contrário, divide por linha individual.
+    - Atribui IDs sequenciais únicos no formato MSG-XXXX.
+    - Detecta e rotula mensagens de mídia omitida/placeholders com ``is_placeholder=True`` (T008).
+      Estas mensagens permanecem na lista para preservar a integridade da indexação, mas são
+      marcadas para que o serviço de extração possa ignorá-las como candidatos a P&R.
     """
     lines = raw_text.splitlines()
     if not lines:
@@ -60,7 +82,8 @@ def parse_whatsapp_chat(raw_text: str) -> List[RawMessage]:
                     id=msg_id,
                     timestamp=current_timestamp,
                     sender=current_sender,
-                    content=content
+                    content=content,
+                    is_placeholder=_is_placeholder(content),  # T008: label placeholders
                 ))
                 msg_counter += 1
                 current_lines = []
@@ -87,11 +110,13 @@ def parse_whatsapp_chat(raw_text: str) -> List[RawMessage]:
         for line in lines:
             if line.strip():
                 msg_id = f"MSG-{msg_counter:04d}"
+                content = line.strip()
                 messages.append(RawMessage(
                     id=msg_id,
                     timestamp=None,
                     sender=None,
-                    content=line.strip()
+                    content=content,
+                    is_placeholder=_is_placeholder(content),  # T008: label placeholders
                 ))
                 msg_counter += 1
 

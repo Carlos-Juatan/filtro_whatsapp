@@ -1,19 +1,79 @@
 import { useState, useCallback, useEffect } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Layers, Database, FileText, Code, CheckCircle, AlertCircle } from 'lucide-react';
+import { Layers, Database, FileText, Code, CheckCircle, AlertCircle, Loader2, BarChart2 } from 'lucide-react';
 import { FileUploader } from './FileUploader';
 import { LogViewer } from './LogViewer';
 import { exactExtractorService } from '../services/exactExtractorService';
-import type { ExtractionResult, ExactQAPair } from '../types/exactQA';
+import type { ChunkProgressPayload, ExtractionResult, ExactQAPair } from '../types/exactQA';
 import { exportExactQAPairsToTxt, exportExactQAPairsToJson, downloadFile } from '../utils/exactExporters';
 import { ItemLog } from '../services/api';
+
+// ---------------------------------------------------------------------------
+// ChunkProgressBar — visual progress indicator for chunked LLM processing
+// ---------------------------------------------------------------------------
+
+interface ChunkProgressBarProps {
+  progress: ChunkProgressPayload | null;
+}
+
+function ChunkProgressBar({ progress }: ChunkProgressBarProps) {
+  if (!progress) return null;
+
+  const { chunk_index, total_chunks, total_pairs_so_far, percent } = progress;
+
+  return (
+    <div className="mt-4 flex flex-col gap-2 animate-in fade-in duration-300">
+      {/* Header row */}
+      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+        <span className="flex items-center gap-1.5 font-medium">
+          <BarChart2 size={13} className="text-emerald-500" />
+          Lote {chunk_index}/{total_chunks}
+        </span>
+        <span className="tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
+          {percent.toFixed(0)}%
+        </span>
+      </div>
+
+      {/* Progress track */}
+      <div className="relative h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 ease-out"
+          style={{ width: `${percent}%` }}
+        />
+        {/* Shimmer animation while processing */}
+        {percent < 100 && (
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"
+            style={{ backgroundSize: '200% 100%' }}
+          />
+        )}
+      </div>
+
+      {/* Stats row */}
+      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+        <span>
+          <span className="font-semibold text-gray-700 dark:text-gray-300">{total_pairs_so_far}</span>{' '}
+          par(es) únicos encontrado(s)
+        </span>
+        <span className="text-gray-300 dark:text-gray-600">•</span>
+        <span>
+          {total_chunks - chunk_index} lote(s) restante(s)
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main Panel
+// ---------------------------------------------------------------------------
 
 export function ExactExtractorPanel() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [logs, setLogs] = useState<ItemLog[]>([]);
   const [result, setResult] = useState<ExtractionResult | null>(null);
   const [activeTab, setActiveTab] = useState('process');
-
+  const [chunkProgress, setChunkProgress] = useState<ChunkProgressPayload | null>(null);
 
   useEffect(() => {
     return () => {
@@ -26,8 +86,8 @@ export function ExactExtractorPanel() {
     const file = files[0];
     setLogs([]);
     setResult(null);
+    setChunkProgress(null);
     setIsProcessing(true);
-
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -50,9 +110,14 @@ export function ExactExtractorPanel() {
             },
           ]);
         },
+        // T012: handle real-time chunk progress updates
+        onChunkProgress: (progress) => {
+          setChunkProgress(progress);
+        },
         onComplete: (extractionResult) => {
           setResult(extractionResult);
           setIsProcessing(false);
+          setChunkProgress(null);
           setActiveTab('results');
           exactExtractorService.disconnect();
         },
@@ -66,6 +131,7 @@ export function ExactExtractorPanel() {
             },
           ]);
           setIsProcessing(false);
+          setChunkProgress(null);
           exactExtractorService.disconnect();
         },
         onClose: () => {
@@ -114,6 +180,9 @@ export function ExactExtractorPanel() {
           </Tabs.Trigger>
         </Tabs.List>
 
+        {/* ---------------------------------------------------------------- */}
+        {/* Tab: Process                                                      */}
+        {/* ---------------------------------------------------------------- */}
         <Tabs.Content value="process" className="outline-none">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <section className="flex flex-col gap-4">
@@ -128,14 +197,52 @@ export function ExactExtractorPanel() {
                     </span>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Selecione o arquivo de conversa exportado do WhatsApp (.txt). As perguntas e respostas serão isoladas preservando o texto original caractere por caractere.
+                    Selecione o arquivo de conversa exportado do WhatsApp (.txt). As perguntas e respostas serão
+                    isoladas preservando o texto original caractere por caractere, processando em lotes
+                    inteligentes com contexto de sobreposição.
                   </p>
                 </div>
                 <FileUploader
                   onFilesReady={handleFilesReady}
                   isProcessing={isProcessing}
                 />
+
+                {/* T012: Chunk Progress Bar — visible during processing */}
+                {isProcessing && (
+                  <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Loader2 size={14} className="animate-spin text-emerald-500" />
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                        Processando em lotes com IA...
+                      </span>
+                    </div>
+                    <ChunkProgressBar progress={chunkProgress} />
+                  </div>
+                )}
               </div>
+
+              {/* T012: Statistics card — shown after processing completes */}
+              {result && (
+                <div className="bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/20 dark:border-emerald-500/10 rounded-xl p-5 flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                    <CheckCircle size={14} /> Extração concluída com sucesso
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white dark:bg-gray-900/60 rounded-lg p-3 border border-gray-200/50 dark:border-gray-700/50">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Mensagens analisadas</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 tabular-nums">
+                        {result.total_messages_parsed.toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-900/60 rounded-lg p-3 border border-gray-200/50 dark:border-gray-700/50">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Pares P&R extraídos</p>
+                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                        {result.total_pairs_extracted.toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
 
             <section className="flex flex-col h-[600px]">
@@ -148,6 +255,9 @@ export function ExactExtractorPanel() {
           </div>
         </Tabs.Content>
 
+        {/* ---------------------------------------------------------------- */}
+        {/* Tab: Results                                                      */}
+        {/* ---------------------------------------------------------------- */}
         <Tabs.Content value="results" className="outline-none">
           {result ? (
             <div className="flex flex-col gap-6">
@@ -159,7 +269,9 @@ export function ExactExtractorPanel() {
                     Resumo do Processamento: {result.filename}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {result.total_messages_parsed} mensagens analisadas • {result.total_pairs_extracted} pares de P&R identificados
+                    {result.total_messages_parsed.toLocaleString('pt-BR')} mensagens analisadas{' '}
+                    •{' '}
+                    {result.total_pairs_extracted.toLocaleString('pt-BR')} pares de P&R identificados
                   </p>
                 </div>
 
@@ -184,7 +296,9 @@ export function ExactExtractorPanel() {
                 {result.pairs.length === 0 ? (
                   <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
                     <AlertCircle className="mx-auto text-amber-500 mb-2" size={28} />
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Nenhum par de pergunta e resposta foi encontrado nesta conversa.</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">
+                      Nenhum par de pergunta e resposta foi encontrado nesta conversa.
+                    </p>
                   </div>
                 ) : (
                   result.pairs.map((pair: ExactQAPair, idx: number) => (
